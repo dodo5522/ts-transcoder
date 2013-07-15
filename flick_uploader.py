@@ -7,20 +7,8 @@ Upload media files to flickr.
  arg2 : none
 '''
 
-import os
-import sys
+import os,sys,string,re
 import flickr_api as flickr
-
-# API key
-API_KEY=''
-API_SEC=''
-PATH_FILE_TOKEN=''
-URL_CALLBACK=''
-
-API_KEY='68846c05f5861c882ebe1d53a96e985b'
-API_SEC='614b4942cf70afe9'
-PATH_FILE_TOKEN='/home/takashi/flickr_api_auth_token'
-URL_CALLBACK='http://www.flickr.com/photos/98824049@N05/'
 
 ###################
 # sub routine
@@ -28,18 +16,30 @@ URL_CALLBACK='http://www.flickr.com/photos/98824049@N05/'
 def LoadConfiguration():
 	argvs = sys.argv
 	argc = len(argvs)
+
+	# conf file is based on py script name	
+	path_conf = re.sub(r'(.*).py', r'\1.conf', argvs[0])
+	fp_conf = open(path_conf, 'r')	
+
+	# read configuration	
+	conf = dict()
+	for read_line in fp_conf:
+		line = string.strip(read_line)
+		if line[0:len('API_KEY')] == 'API_KEY':
+			conf['API_KEY'] = re.sub(r'API_KEY=([0-9a-z]+)', r'\1', line)
+		elif line[0:len('API_SEC')] == 'API_SEC':
+			conf['API_SEC'] = re.sub(r'API_SEC=([0-9a-z]+)', r'\1', line)
+		elif line[0:len('PATH_FILE_TOKEN')] == 'PATH_FILE_TOKEN':
+			conf['PATH_FILE_TOKEN'] = re.sub(r'PATH_FILE_TOKEN=(.+)', r'\1', line)
+		elif line[0:len('URL_CALLBACK')] == 'URL_CALLBACK':
+			conf['URL_CALLBACK'] = re.sub(r'URL_CALLBACK=(http://.+)', r'\1', line)
+	fp_conf.close()
 	
-	print argvs
-	print argc
+	# dump the configuration
+	for key in conf.keys():
+		print key + ' : ' + conf[key]
 	
-	
-	
-	print API_KEY
-	print API_SEC
-	print PATH_FILE_TOKEN
-	print URL_CALLBACK
-	sys.exit()
-	return (API_KEY, API_SEC, PATH_FILE_TOKEN, URL_CALLBACK)
+	return (conf['API_KEY'], conf['API_SEC'], conf['PATH_FILE_TOKEN'], conf['URL_CALLBACK'])
 
 def LoadTokenFileOrGenerateItIfNotExists(path_auth_file=None, api_key=None, api_sec=None, url_callback=None):
 	if api_key == None or api_sec == None or url_callback == None:
@@ -81,7 +81,7 @@ def LoadTokenFileOrGenerateItIfNotExists(path_auth_file=None, api_key=None, api_
 ###################
 
 # load configuration file and get some parameters
-#(API_KEY, API_SEC, PATH_FILE_TOKEN, URL_CALLBACK) = LoadConfiguration()
+(API_KEY, API_SEC, PATH_FILE_TOKEN, URL_CALLBACK) = LoadConfiguration()
 
 # initialize flickr_api object
 obj = LoadTokenFileOrGenerateItIfNotExists(path_auth_file=PATH_FILE_TOKEN,
@@ -91,7 +91,7 @@ obj = LoadTokenFileOrGenerateItIfNotExists(path_auth_file=PATH_FILE_TOKEN,
 
 if obj != None:
         # upload file
-        obj.upload(photo_file='/home/takashi/DSC_0593.jpg')
+        obj.upload(photo_file='/home/takashi/tools_private/python/DSC_0593.jpg')
 else:
         print 'Error: auth is empty.'
         sys.exit()

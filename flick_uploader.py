@@ -10,17 +10,18 @@ Upload media files to flickr.
 import os,sys,string,re
 import flickr_api as flickr
 
+argvs = sys.argv
+argc = len(argvs)
+path_conf = re.sub(r'(.*).py', r'\1.conf', argvs[0])
+path_auth_file = re.sub(r'(.*).py', r'\1.token', argvs[0])
+
 ###################
 # sub routine
 ###################
 def LoadConfiguration():
-	argvs = sys.argv
-	argc = len(argvs)
-
 	# conf file is based on py script name	
-	path_conf = re.sub(r'(.*).py', r'\1.conf', argvs[0])
-	fp_conf = open(path_conf, 'r')	
-
+	fp_conf = open(path_conf, 'r')
+	
 	# read configuration	
 	conf = dict()
 	for read_line in fp_conf:
@@ -29,8 +30,6 @@ def LoadConfiguration():
 			conf['API_KEY'] = re.sub(r'API_KEY=([0-9a-z]+)', r'\1', line)
 		elif line[0:len('API_SEC')] == 'API_SEC':
 			conf['API_SEC'] = re.sub(r'API_SEC=([0-9a-z]+)', r'\1', line)
-		elif line[0:len('PATH_FILE_TOKEN')] == 'PATH_FILE_TOKEN':
-			conf['PATH_FILE_TOKEN'] = re.sub(r'PATH_FILE_TOKEN=(.+)', r'\1', line)
 		elif line[0:len('URL_CALLBACK')] == 'URL_CALLBACK':
 			conf['URL_CALLBACK'] = re.sub(r'URL_CALLBACK=(http://.+)', r'\1', line)
 	fp_conf.close()
@@ -39,15 +38,11 @@ def LoadConfiguration():
 	for key in conf.keys():
 		print key + ' : ' + conf[key]
 	
-	return (conf['API_KEY'], conf['API_SEC'], conf['PATH_FILE_TOKEN'], conf['URL_CALLBACK'])
+	return (conf['API_KEY'], conf['API_SEC'], conf['URL_CALLBACK'])
 
-def LoadTokenFileOrGenerateItIfNotExists(path_auth_file=None, api_key=None, api_sec=None, url_callback=None):
+def LoadTokenFileOrGenerateItIfNotExists(api_key=None, api_sec=None, url_callback=None):
 	if api_key == None or api_sec == None or url_callback == None:
 		print 'Error: api_key(%s) or another is not specified.' % (api_key)
-		return None
-	
-	if path_auth_file == None:
-		print 'Error: path_auth_file(%s) is invalid.' % (path_auth_file)
 		return None
 	
 	# create object to authenticate
@@ -81,11 +76,10 @@ def LoadTokenFileOrGenerateItIfNotExists(path_auth_file=None, api_key=None, api_
 ###################
 
 # load configuration file and get some parameters
-(API_KEY, API_SEC, PATH_FILE_TOKEN, URL_CALLBACK) = LoadConfiguration()
+(API_KEY, API_SEC, URL_CALLBACK) = LoadConfiguration()
 
 # initialize flickr_api object
-obj = LoadTokenFileOrGenerateItIfNotExists(path_auth_file=PATH_FILE_TOKEN,
-                                           api_key=API_KEY,
+obj = LoadTokenFileOrGenerateItIfNotExists(api_key=API_KEY,
                                            api_sec=API_SEC,
                                            url_callback=URL_CALLBACK)
 

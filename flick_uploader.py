@@ -13,47 +13,42 @@ import flickr_api as flickr
 
 ARGVS = sys.argv
 ARGC = len(ARGVS)
-
 FILE_OWN = ARGVS[0]
-PATH_FILE_CONF = re.sub(r'(.*).py', r'\1.conf', FILE_OWN)
-PATH_FILE_TOKEN = re.sub(r'(.*).py', r'\1.token', FILE_OWN)
 
 ###################
 # sub routine
 ###################
 def LoadConfiguration():
 	
-	try:
-		# conf file is based on py script name	
-		fp_conf = open(PATH_FILE_CONF, 'r')
-		
-		# read configuration	
-		conf = dict()
-		for read_line in fp_conf:
-			line = string.strip(read_line)
-			if line[0:len('API_KEY')] == 'API_KEY':
-				conf['API_KEY'] = re.sub(r'API_KEY=([0-9a-z]+)', r'\1', line)
-			elif line[0:len('API_SEC')] == 'API_SEC':
-				conf['API_SEC'] = re.sub(r'API_SEC=([0-9a-z]+)', r'\1', line)
-			elif line[0:len('URL_CALLBACK')] == 'URL_CALLBACK':
-				conf['URL_CALLBACK'] = re.sub(r'URL_CALLBACK=(http://.+)', r'\1', line)
-		fp_conf.close()
-		
-		# dump the configuration
-		for key in conf.keys():
-			print key + ' : ' + conf[key]
-		
-		return (conf['API_KEY'], conf['API_SEC'], conf['URL_CALLBACK'])
+	# conf file is based on py script name	
+	PATH_FILE_CONF = re.sub(r'(.*).py', r'\1.conf', FILE_OWN)
+	fp_conf = open(PATH_FILE_CONF, 'r')
 	
-	except Exception as err:
-		print 'Error type is '+str(type(err))+', '+str(err.args)+'.'
-		return (None, None, None)
+	# read configuration	
+	conf = dict()
+	for read_line in fp_conf:
+		line = string.strip(read_line)
+		if line[0:len('API_KEY')] == 'API_KEY':
+			conf['API_KEY'] = re.sub(r'API_KEY=([0-9a-z]+)', r'\1', line)
+		elif line[0:len('API_SEC')] == 'API_SEC':
+			conf['API_SEC'] = re.sub(r'API_SEC=([0-9a-z]+)', r'\1', line)
+		elif line[0:len('URL_CALLBACK')] == 'URL_CALLBACK':
+			conf['URL_CALLBACK'] = re.sub(r'URL_CALLBACK=(http://.+)', r'\1', line)
+	fp_conf.close()
+	
+	# dump the configuration
+	for key in conf.keys():
+		print key + ' : ' + conf[key]
+	
+	return (conf['API_KEY'], conf['API_SEC'], conf['URL_CALLBACK'])
 
 def LoadTokenFileOrGenerateItIfNotExists(api_key=None, api_sec=None, url_callback=None):
 	
 	if api_key == None or api_sec == None or url_callback == None:
 		print 'Error: api_key(%s) or another is not specified.' % (api_key)
 		return None
+	
+	PATH_FILE_TOKEN = re.sub(r'(.*).py', r'\1.token', FILE_OWN)
 	
 	# create object to authenticate
 	flickr.set_keys(api_key, api_sec)
@@ -85,19 +80,23 @@ def LoadTokenFileOrGenerateItIfNotExists(api_key=None, api_sec=None, url_callbac
 # main routine
 ###################
 
-# load configuration file and get some parameters
-(API_KEY, API_SEC, URL_CALLBACK) = LoadConfiguration()
+try:
+	PATH_FILE_MEDIA = ARGVS[1]
+	
+	# load configuration file and get some parameters
+	(API_KEY, API_SEC, URL_CALLBACK) = LoadConfiguration()
+	
+	# initialize flickr_api object
+	obj = LoadTokenFileOrGenerateItIfNotExists(api_key=API_KEY,
+	                                           api_sec=API_SEC,
+	                                           url_callback=URL_CALLBACK)
+	
+	if obj != None and len(PATH_FILE_MEDIA) != 0:
+		print 'Uploading media file '+PATH_FILE_MEDIA+'...'
+		obj.upload(photo_file=PATH_FILE_MEDIA)
+	else:
+		print 'Upload error.'
 
-# initialize flickr_api object
-obj = LoadTokenFileOrGenerateItIfNotExists(api_key=API_KEY,
-                                           api_sec=API_SEC,
-                                           url_callback=URL_CALLBACK)
-
-if obj != None:
-        # upload file
-        obj.upload(photo_file='/home/takashi/tools_private/python/DSC_0593.jpg')
-else:
-        print 'Error: auth is empty.'
-        sys.exit()
-
+except Exception as err:
+	print 'Error type is '+str(type(err))+', '+str(err.args)+'.'
 

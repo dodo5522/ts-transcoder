@@ -11,10 +11,12 @@
 import os,sys,string,re
 import flickr_api as flickr
 
-argvs = sys.argv
-argc = len(argvs)
-path_conf = re.sub(r'(.*).py', r'\1.conf', argvs[0])
-path_auth_file = re.sub(r'(.*).py', r'\1.token', argvs[0])
+ARGVS = sys.argv
+ARGC = len(ARGVS)
+
+FILE_OWN = ARGVS[0]
+PATH_FILE_CONF = re.sub(r'(.*).py', r'\1.conf', FILE_OWN)
+PATH_FILE_TOKEN = re.sub(r'(.*).py', r'\1.token', FILE_OWN)
 
 ###################
 # sub routine
@@ -23,7 +25,7 @@ def LoadConfiguration():
 	
 	try:
 		# conf file is based on py script name	
-		fp_conf = open(path_conf, 'r')
+		fp_conf = open(PATH_FILE_CONF, 'r')
 		
 		# read configuration	
 		conf = dict()
@@ -56,11 +58,11 @@ def LoadTokenFileOrGenerateItIfNotExists(api_key=None, api_sec=None, url_callbac
 	# create object to authenticate
 	flickr.set_keys(api_key, api_sec)
 	
-	if os.path.exists(path_auth_file):
-		print '%s already exists so load it.' % (path_auth_file)
-		auth = flickr.auth.AuthHandler.load(path_auth_file)
+	if os.path.exists(PATH_FILE_TOKEN):
+		print '%s already exists so load it.' % (PATH_FILE_TOKEN)
+		auth = flickr.auth.AuthHandler.load(PATH_FILE_TOKEN)
 	else:
-		print '%s does not exist.' % (path_auth_file)
+		print '%s does not exist.' % (PATH_FILE_TOKEN)
 		
 		# set URL to get the query of oauth_token & oauth_verifier
 		auth = flickr.auth.AuthHandler(callback=url_callback)
@@ -72,7 +74,7 @@ def LoadTokenFileOrGenerateItIfNotExists(api_key=None, api_sec=None, url_callbac
 		# store the token already verified
 		verifier = raw_input('Enter the verifier:')
 		auth.set_verifier(verifier)
-		auth.save(path_auth_file)
+		auth.save(PATH_FILE_TOKEN)
 	
 	# set the AuthHandler for the session
 	flickr.set_auth_handler(auth)

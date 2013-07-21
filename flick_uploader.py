@@ -10,6 +10,7 @@
 
 import os,sys,string,re
 import flickr_api as flickr
+import pyexiv2 as exiv
 
 ARGVS = sys.argv
 ARGC = len(ARGVS)
@@ -76,12 +77,53 @@ def LoadTokenFileOrGenerateItIfNotExists(api_key=None, api_sec=None, url_callbac
 	
 	return flickr
 
+def DumpMetaDataOfImage(path_file_media=None):
+	if path_file_media is None:
+		return False
+	
+	# get Meta data of jpeg file
+	meta = exiv.ImageMetadata(path_file_media)
+	meta.read()
+	
+	#for x in meta.xmp_keys:
+	#        print x
+	#
+	#Xmp.dc.title
+	#Xmp.dc.subject
+	#...
+	
+	# only for debug
+	for x in meta.xmp_keys:
+		print x
+	
+	# tags
+	meta['Xmp.dc.subject'].value[0]
+	
+	# title
+	meta['Xmp.dc.title'].value['x-default']
+	
+	#for x in meta.xmp_keys:
+	#        print x
+	#
+	#Iptc.Application2.ObjectName
+	#Iptc.Application2.Keywords
+	#...
+	
+	# tags
+	meta['Iptc.Application2.ObjectName'].value[0]
+	
+	# title
+	meta['Iptc.Application2.Keywords'].value[0]
+
 ###################
 # main routine
 ###################
 
 try:
 	PATH_FILE_MEDIA = ARGVS[1]
+	
+	print 'Dump meta data of %s' % PATH_FILE_MEDIA
+	DumpMetaDataOfImage(PATH_FILE_MEDIA)
 	
 	# load configuration file and get some parameters
 	(API_KEY, API_SEC, URL_CALLBACK) = LoadConfiguration()

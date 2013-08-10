@@ -5,6 +5,12 @@ import os,sys,string,re
 ###################
 # sub routine
 ###################
+
+'''
+DESCRIPTION
+	To find all target directories to move media files.
+	The target directories' name is the keyword to find media files.
+'''
 def GetListOfDirectoryToMove(RootDirectory=""):
 	print("Found directory:")
 
@@ -16,6 +22,10 @@ def GetListOfDirectoryToMove(RootDirectory=""):
 	
 	return DictOfDirectoryToMove
 
+'''
+DESCRIPTION
+	To find all media files to be moved.
+'''
 def FindMediaFileWithKeyword(RootDirectory="", KeyWord=""):
 	print("Found media file:")
 	

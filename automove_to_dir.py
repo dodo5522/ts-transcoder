@@ -2,10 +2,6 @@
 
 import os,sys,string,re
 
-ARGVS = sys.argv
-ARGC = len(ARGVS)
-OWN = ARGVS[0]
-
 ###################
 # sub routine
 ###################
@@ -28,6 +24,10 @@ def FindMediaFileWithKeyword(KeyWord=""):
 ###################
 
 try:
+	ARGVS = sys.argv
+	ARGC = len(ARGVS)
+	OWN = ARGVS[0]
+	
 	ListOfDir = GetListOfDirectoryToMove(os.path.curdir)
 	
 	for Dir in ListOfDir:

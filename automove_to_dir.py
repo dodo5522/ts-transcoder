@@ -16,12 +16,19 @@ def GetListOfDirectoryToMove(RootDirectory=""):
 	
 	return DictOfDirectoryToMove
 
-def FindMediaFileWithKeyword(KeyWord=""):
-	ListOfMediaFile = [ \
-			"animalplanet.mp4", \
-			"get_animal_in_fieald.mp4", \
-			"some_animals.mp4"]
-	return ListOfMediaFile
+def FindMediaFileWithKeyword(RootDirectory="", KeyWord=""):
+	print("Found media file:")
+	
+	DictOfMediaFile = {}
+	for FileOrDir in os.listdir(RootDirectory):
+		if os.path.isfile(os.path.join(RootDirectory, FileOrDir)):
+			MediaFile = FileOrDir
+			ReObj = re.search('.*' + KeyWord + '.*', MediaFile)
+			if ReObj != None:
+				print(" {File}".format(File=MediaFile))
+				DictOfMediaFile[MediaFile] = os.path.join(RootDirectory, MediaFile)
+	
+	return DictOfMediaFile
 
 ###################
 # main routine
@@ -35,11 +42,12 @@ try:
 	DIR_TARGET = ARGVS[2]
 	
 	DictOfDir = GetListOfDirectoryToMove(DIR_TARGET)
-	
 	for KeyToFind in DictOfDir:
-		print("Key is {Key}, dir is {Dir}.".format(Key=KeyToFind, Dir=DictOfDir[KeyToFind]))
-#		for MediaFile in ListOfMediaFile:
-#			print("Keyword is {KeyWord}, Mediafile is {KeyMediaFile}.".format(KeyWord=Dir, KeyMediaFile=MediaFile))
+		DictOfMediaFile = FindMediaFileWithKeyword(DIR_MEDIA, KeyToFind)
+		for FoundMediaFile in DictOfMediaFile:
+			print("Keyword          : {Key}".format(Key=KeyToFind))
+			print("Found media file : {File}".format(File=DictOfMediaFile[FoundMediaFile]))
+			print("Target to move   : {Dir}".format(Dir=DictOfDir[KeyToFind]))
 
 except Exception as err:
 	print("Error type is {ErrType}, {Args}.".format(ErrType=type(err),Args=err.args))

@@ -33,7 +33,7 @@ def FindMediaFileWithKeyword(RootDirectory="", KeyWord=""):
 	for FileOrDir in os.listdir(RootDirectory):
 		if os.path.isfile(os.path.join(RootDirectory, FileOrDir)):
 			MediaFile = FileOrDir
-			ReObj = re.search('.*' + KeyWord + '.*', MediaFile)
+			ReObj = re.search('.*' + KeyWord + '.*\.mp4', MediaFile)
 			if ReObj != None:
 				print(" {File}".format(File=MediaFile))
 				DictOfMediaFile[MediaFile] = os.path.join(RootDirectory, MediaFile)

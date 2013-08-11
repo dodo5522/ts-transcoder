@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os,sys,string,re
+DEBUG_PYTHON = False
 
 ###################
 # sub routine
@@ -12,13 +13,15 @@ DESCRIPTION
 	The target directories' name is the keyword to find media files.
 '''
 def GetListOfDirectoryToMove(RootDirectory=""):
-	print("Found directory:")
-
 	DictOfDirectoryToMove = {}
 	for FileOrDir in os.listdir(RootDirectory):
 		if os.path.isdir(os.path.join(RootDirectory, FileOrDir)):
-			print(" {Dir}".format(Dir=FileOrDir))
 			DictOfDirectoryToMove[FileOrDir] = os.path.join(RootDirectory, FileOrDir)
+	
+	if DEBUG_PYTHON == True:
+		print("Found directory:")
+		for FoundKey in DictOfDirectoryToMove:
+			print(" {FoundKey}".format(FoundKey=FoundKey))
 	
 	return DictOfDirectoryToMove
 
@@ -27,16 +30,18 @@ DESCRIPTION
 	To find all media files to be moved.
 '''
 def FindMediaFileWithKeyword(RootDirectory="", KeyWord=""):
-	print("Found media file:")
-	
 	DictOfMediaFile = {}
 	for FileOrDir in os.listdir(RootDirectory):
 		if os.path.isfile(os.path.join(RootDirectory, FileOrDir)):
 			MediaFile = FileOrDir
 			ReObj = re.search('.*' + KeyWord + '.*\.mp4', MediaFile)
 			if ReObj != None:
-				print(" {File}".format(File=MediaFile))
 				DictOfMediaFile[MediaFile] = os.path.join(RootDirectory, MediaFile)
+	
+	if DEBUG_PYTHON == True:
+		print("Found media file:")
+		for FoundMediaFile in DictOfMediaFile:
+			print(" {FoundMediaFile}".format(FoundMediaFile=FoundMediaFile))
 	
 	return DictOfMediaFile
 

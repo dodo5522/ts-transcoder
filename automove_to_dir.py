@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os,sys,string,re
+import shutil as sh
 DEBUG_PYTHON = False
 
 ###################
@@ -69,6 +70,7 @@ try:
 			print("Keyword          : {Key}".format(Key=KeyToFind))
 			print("Found media file : {File}".format(File=DictOfMediaFile[FoundMediaFile]))
 			print("Target to move   : {Dir}".format(Dir=DictOfDir[KeyToFind]))
+			sh.move(DictOfMediaFile[FoundMediaFile], DictOfDir[KeyToFind])
 
 except Exception as err:
 	print("Error type is {ErrType}, {Args}.".format(ErrType=type(err),Args=err.args))

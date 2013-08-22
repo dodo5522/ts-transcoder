@@ -67,12 +67,13 @@ try:
 	for KeyToFind in DictOfDir:
 		DictOfMediaFile = FindMediaFileWithKeyword(DIR_MEDIA, KeyToFind)
 		for FoundMediaFile in DictOfMediaFile:
-			print("Keyword          : {Key}".format(Key=KeyToFind))
-			print("Found media file : {File}".format(File=DictOfMediaFile[FoundMediaFile]))
-			print("Target to move   : {Dir}".format(Dir=DictOfDir[KeyToFind]))
+			print("Keyword : {Key}".format(Key=KeyToFind))
 			if os.path.isdir(DictOfDir[KeyToFind]):
+				print("{Dir} already exists so removed.".format(Dir=DictOfDir[KeyToFind]))
 				os.remove(DictOfMediaFile[FoundMediaFile])
 			else:
+				print("Found media file : {File}".format(File=DictOfMediaFile[FoundMediaFile]))
+				print("Target to move : {Dir}".format(Dir=DictOfDir[KeyToFind]))
 				sh.move(DictOfMediaFile[FoundMediaFile], DictOfDir[KeyToFind])
 
 except Exception as err:

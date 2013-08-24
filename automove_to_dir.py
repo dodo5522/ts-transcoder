@@ -73,7 +73,7 @@ try:
 			DstPathOfMediaFile = os.path.join(DictOfDir[KeyToFind],FoundMediaFile)
 			
 			if os.path.isfile(DstPathOfMediaFile):
-				print("{Dir} already exists so removed.".format(Dir=DstPathOfMediaFile))
+				print("{File} for destination already exists, so source file is removed.".format(File=DstPathOfMediaFile))
 				os.remove(SrcPathOfMediaFile)
 			else:
 				print("Found media file : {File}".format(File=SrcPathOfMediaFile)) 

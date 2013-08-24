@@ -62,19 +62,23 @@ try:
 	
 	DIR_MEDIA = ARGVS[1]
 	DIR_TARGET = ARGVS[2]
-	
 	DictOfDir = GetListOfDirectoryToMove(DIR_TARGET)
+	
 	for KeyToFind in DictOfDir:
+		print("Keyword : {Key}".format(Key=KeyToFind))
 		DictOfMediaFile = FindMediaFileWithKeyword(DIR_MEDIA, KeyToFind)
+		
 		for FoundMediaFile in DictOfMediaFile:
-			print("Keyword : {Key}".format(Key=KeyToFind))
-			if os.path.isdir(DictOfDir[KeyToFind]):
-				print("{Dir} already exists so removed.".format(Dir=DictOfDir[KeyToFind]))
-				os.remove(DictOfMediaFile[FoundMediaFile])
+			SrcPathOfMediaFile = DictOfMediaFile[FoundMediaFile]
+			DstPathOfMediaFile = os.path.join(DictOfDir[KeyToFind],FoundMediaFile)
+			
+			if os.path.isfile(DstPathOfMediaFile):
+				print("{Dir} already exists so removed.".format(Dir=DstPathOfMediaFile))
+				os.remove(SrcPathOfMediaFile)
 			else:
-				print("Found media file : {File}".format(File=DictOfMediaFile[FoundMediaFile]))
+				print("Found media file : {File}".format(File=SrcPathOfMediaFile)) 
 				print("Target to move : {Dir}".format(Dir=DictOfDir[KeyToFind]))
-				sh.move(DictOfMediaFile[FoundMediaFile], DictOfDir[KeyToFind])
+				sh.move(SrcPathOfMediaFile, DstPathOfMediaFile)
 
 except Exception as err:
 	print("Error type is {ErrType}, {Args}.".format(ErrType=type(err),Args=err.args))

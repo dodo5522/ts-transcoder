@@ -10,15 +10,19 @@
 """
 
 import os,glob,sys,string,re
-import pyexiv2 as exiv
+#import pyexiv2 as exiv
 
 class PhotoSort:
-	def __init__(self, aTargetDirectory):
+	def __init__(self, aTargetDirectory, aExtList):
 		print "constructor is called."
-		pathWithFileNamePattern = os.path.join(aTargetDirectory,"*.jpg")
 		self.targetDirectory = aTargetDirectory
-		self.foundFilesPathList = glob.glob(pathWithFileNamePattern)
+		self.foundFilesPathList = []
 		
+		for fileExtention in aExtList:
+			fileNameWithWildCard = "*."+fileExtention
+			pathWithFileNamePattern = os.path.join(aTargetDirectory,fileNameWithWildCard)
+			self.foundFilesPathList.append(glob.glob(pathWithFileNamePattern))
+
 	def getPhotoFilesPathList(self):
 		return self.foundFilesPathList
 	
@@ -35,10 +39,11 @@ if __name__ == '__main__':
 			raise ValueError("invalid arguments")
 		elif sys.argv[1] == "error":
 			raise Exception("exception test")
-		else:
-			pathRoot = sys.argv[1]
 		
-		objPhotoSort = PhotoSort(pathRoot)
+		pathRoot = sys.argv[1]
+		extList = ["jpg","png"]
+		
+		objPhotoSort = PhotoSort(pathRoot,extList)
 		pathsOfPhoto = objPhotoSort.getPhotoFilesPathList()
 		print "Photo files paths are",pathsOfPhoto
 

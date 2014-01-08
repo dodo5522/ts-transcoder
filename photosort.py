@@ -23,9 +23,16 @@ class PhotoSort:
 	def getFileExtentionsList(self):
 		return self.fileExtentions
 	
-	def getPhotoFilesPathList(self):
+	def getPhotoFilesPathList(self, aExtentionLowerOnly):
+		extentionsToFind = []
 		foundFilesPathList = []
+		
 		for fileExtention in self.fileExtentions:
+			extentionsToFind.append(fileExtention.lower())
+			if not aExtentionLowerOnly:
+				extentionsToFind.append(fileExtention.upper())
+		
+		for fileExtention in extentionsToFind:
 			fileNameWithWildCard = "*."+fileExtention
 			pathWithFileNamePattern = os.path.join(self.targetDirectory,fileNameWithWildCard)
 			foundFilesPathList.append(glob.glob(pathWithFileNamePattern))
@@ -53,8 +60,7 @@ if __name__ == '__main__':
 		extList = ["jpg","png"]
 		
 		objPhotoSort = PhotoSort(pathRoot,extList)
-		pathsOfPhoto = objPhotoSort.getPhotoFilesPathList()
-		print "Photo files paths are",pathsOfPhoto
+		print "Photo files paths are",objPhotoSort.getPhotoFilesPathList(False)
 
 	except Exception as err:
 		print "Exception type is ",type(err)

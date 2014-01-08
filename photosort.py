@@ -13,12 +13,12 @@ import os,glob,sys,string,re
 #import pyexiv2 as exiv
 
 class PhotoSort:
-	def __init__(self, directoryRoot, listExtentions):
-		self.directoryRoot = directoryRoot
+	def __init__(self, stringPathOfRoot, listExtentions):
+		self.stringPathOfRoot = stringPathOfRoot
 		self.listExtentions = listExtentions
 	
 	def getTargetDirectory(self):
-		return self.directoryRoot
+		return self.stringPathOfRoot
 	
 	def getFileExtentionsList(self):
 		return self.listExtentions
@@ -33,7 +33,7 @@ class PhotoSort:
 				listExtentionsToFind.append(stringExtention.upper())
 		
 		for stringExtention in listExtentionsToFind:
-			stringPathToFind = os.path.join(self.directoryRoot,"*."+stringExtention)
+			stringPathToFind = os.path.join(self.stringPathOfRoot,"*."+stringExtention)
 			listPathOfFiles.append(glob.glob(stringPathToFind))
 		
 		return listPathOfFiles

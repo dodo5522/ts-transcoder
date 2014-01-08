@@ -13,31 +13,30 @@ import os,glob,sys,string,re
 #import pyexiv2 as exiv
 
 class PhotoSort:
-	def __init__(self, aTargetDirectory, aExtList):
-		self.targetDirectory = aTargetDirectory
-		self.fileExtentions = aExtList
+	def __init__(self, directoryRoot, listExtentions):
+		self.directoryRoot = directoryRoot
+		self.listExtentions = listExtentions
 	
 	def getTargetDirectory(self):
-		return self.targetDirectory
+		return self.directoryRoot
 	
 	def getFileExtentionsList(self):
-		return self.fileExtentions
+		return self.listExtentions
 	
-	def getPhotoFilesPathList(self, aExtentionLowerOnly):
-		extentionsToFind = []
-		foundFilesPathList = []
+	def getPhotoFilesPathList(self, isExtentionsLowerOnly):
+		listExtentionsToFind = []
+		listPathOfFiles = []
 		
-		for fileExtention in self.fileExtentions:
-			extentionsToFind.append(fileExtention.lower())
-			if not aExtentionLowerOnly:
-				extentionsToFind.append(fileExtention.upper())
+		for stringExtention in self.listExtentions:
+			listExtentionsToFind.append(stringExtention.lower())
+			if not isExtentionsLowerOnly:
+				listExtentionsToFind.append(stringExtention.upper())
 		
-		for fileExtention in extentionsToFind:
-			fileNameWithWildCard = "*."+fileExtention
-			pathWithFileNamePattern = os.path.join(self.targetDirectory,fileNameWithWildCard)
-			foundFilesPathList.append(glob.glob(pathWithFileNamePattern))
+		for stringExtention in listExtentionsToFind:
+			stringPathToFind = os.path.join(self.directoryRoot,"*."+stringExtention)
+			listPathOfFiles.append(glob.glob(stringPathToFind))
 		
-		return foundFilesPathList
+		return listPathOfFiles
 	
 	def makeDirAndSortPhotoFiles(self):
 		return True

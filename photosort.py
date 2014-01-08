@@ -14,17 +14,26 @@ import os,glob,sys,string,re
 
 class PhotoSort:
 	def __init__(self, aTargetDirectory, aExtList):
-		print "constructor is called."
 		self.targetDirectory = aTargetDirectory
-		self.foundFilesPathList = []
-		
-		for fileExtention in aExtList:
-			fileNameWithWildCard = "*."+fileExtention
-			pathWithFileNamePattern = os.path.join(aTargetDirectory,fileNameWithWildCard)
-			self.foundFilesPathList.append(glob.glob(pathWithFileNamePattern))
-
+		self.fileExtentions = aExtList
+	
+	def getTargetDirectory(self):
+		return self.targetDirectory
+	
+	def getFileExtentionsList(self):
+		return self.fileExtentions
+	
 	def getPhotoFilesPathList(self):
-		return self.foundFilesPathList
+		foundFilesPathList = []
+		for fileExtention in self.fileExtentions:
+			fileNameWithWildCard = "*."+fileExtention
+			pathWithFileNamePattern = os.path.join(self.targetDirectory,fileNameWithWildCard)
+			foundFilesPathList.append(glob.glob(pathWithFileNamePattern))
+		
+		return foundFilesPathList
+	
+	def makeDirAndSortPhotoFiles(self):
+		return True
 	
 	def showHelp(self):
 		print "this_script path_to_root_directory"

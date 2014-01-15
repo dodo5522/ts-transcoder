@@ -15,6 +15,14 @@ class Manememo:
 	def __del__(self):
 		print "destructor is called."
 
+	def parseCsvFile(self,pathCsvFile):
+		print "parseCsvFile"
+		return True
+
+	def getParsedData(self,dataAll):
+		print "getParsedData"
+		return True
+
 if __name__ == '__main__':
 	mm = Manememo()
 

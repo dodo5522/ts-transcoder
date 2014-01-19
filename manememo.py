@@ -10,10 +10,10 @@ sed -e '1,6d' ${FILE_INPUT}_2.utf8 > ${FILE_INPUT}_3.utf8
 
 class Manememo:
 	def __init__(self):
-		print "constructor is called."
+		return
 
 	def __del__(self):
-		print "destructor is called."
+		return
 
 	def parseCsvFile(self,pathCsvFile):
 		self.titleOfBank = []

@@ -70,8 +70,8 @@ class Manememo:
 		return True
 
 	def getParsedDataAll(self):
-		if hasattr(self,'dataAll'):
-			return self.dataAll
+		if hasattr(self,'dataAll') and hasattr(self,'titleAll'):
+			return (self.titleAll,self.dataAll)
 		else:
 			return None
 

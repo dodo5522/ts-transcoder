@@ -29,7 +29,9 @@ class TestManememo(unittest.TestCase):
 		_errorCode = _objManememo.parseCsvFile(_pathCsvSrcFile)
 		self.assertTrue(_errorCode,None)
 		
-		dataAll = _objManememo.getParsedDataAll()
+		(titleAll,dataAll) = _objManememo.getParsedDataAll()
+		self.assertIsNotNone(titleAll,None)
+		print "title data length : %d" % len(titleAll)
 		self.assertIsNotNone(dataAll,None)
 		print "all data length : %d" % len(dataAll)
 		self.assertGreater(len(dataAll),0,None)

@@ -70,7 +70,10 @@ class Manememo:
 		return True
 
 	def getParsedData(self):
-		return self.dataAll
+		if hasattr(self,'dataAll'):
+			return self.dataAll
+		else:
+			return None
 
 if __name__ == '__main__':
 	mm = Manememo()

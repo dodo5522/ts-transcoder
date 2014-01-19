@@ -49,9 +49,10 @@ class TestManememo(unittest.TestCase):
 	def test_saveParsedDataAsCsv(self):
 		print "test saveParsedDataAsCsv start."
 		objManememo = Manememo()
-		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
-		self.assertTrue(errorCode,None)
-		dataAll = objManememo.getParsedDataAll()
+		#errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		#self.assertTrue(errorCode,None)
+		(titleAll,dataAll) = objManememo.getParsedDataAll()
+		self.assertIsNotNone(titleAll,None)
 		self.assertIsNotNone(dataAll,None)
 		
 		errorCode = objManememo.saveParsedDataAsCsv(dataAll)

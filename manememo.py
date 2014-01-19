@@ -73,7 +73,7 @@ class Manememo:
 		if hasattr(self,'dataAll') and hasattr(self,'titleAll'):
 			return (self.titleAll,self.dataAll)
 		else:
-			return None
+			return (None,None)
 
 	def saveParsedDataAsCsv(self,dataAll):
 		return True

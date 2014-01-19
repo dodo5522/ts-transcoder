@@ -30,6 +30,7 @@ class TestManememo(unittest.TestCase):
 		self.assertTrue(_errorCode,None)
 		
 		dataAll = _objManememo.getParsedData()
+		self.assertIsNotNone(dataAll,None)
 		print "all data length : %d" % len(dataAll)
 		self.assertGreater(len(dataAll),0,None)
 		print "bank data length : %d" % len(dataAll[0])

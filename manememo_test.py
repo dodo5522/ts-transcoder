@@ -23,13 +23,13 @@ class TestManememo(unittest.TestCase):
 		print "test parseCsvFile end."
 		pass
 		
-	def test_getParsedData(self):
+	def test_getParsedDataAll(self):
 		print "test getParsedData start."
 		_objManememo = Manememo()
 		_errorCode = _objManememo.parseCsvFile(_pathCsvSrcFile)
 		self.assertTrue(_errorCode,None)
 		
-		dataAll = _objManememo.getParsedData()
+		dataAll = _objManememo.getParsedDataAll()
 		self.assertIsNotNone(dataAll,None)
 		print "all data length : %d" % len(dataAll)
 		self.assertGreater(len(dataAll),0,None)
@@ -49,7 +49,7 @@ class TestManememo(unittest.TestCase):
 		objManememo = Manememo()
 		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
 		self.assertTrue(errorCode,None)
-		dataAll = objManememo.getParsedData()
+		dataAll = objManememo.getParsedDataAll()
 		self.assertIsNotNone(dataAll,None)
 		
 		errorCode = objManememo.saveParsedDataAsCsv(dataAll)

@@ -69,7 +69,7 @@ class Manememo:
 		fileCsv.close()
 		return True
 
-	def getParsedData(self):
+	def getParsedDataAll(self):
 		if hasattr(self,'dataAll'):
 			return self.dataAll
 		else:

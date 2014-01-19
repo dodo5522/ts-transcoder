@@ -75,7 +75,23 @@ class Manememo:
 		else:
 			return (None,None)
 
-	def saveParsedDataAsCsv(self,dataAll):
+	def saveParsedDataAllAsCsv(self,titleAll,dataAll,pathCsvFile):
+		# FIXME:
+		return True
+
+	def saveParsedDataBankAsCsv(self,titleOfBank,dataOfBank,pathCsvFile):
+		stringOfLine = titleOfBank[0]
+		for title in titleOfBank[1:]:
+			stringOfLine = stringOfLine + u',' + title
+		
+		print stringOfLine.encode('utf-8')
+		
+		#fileSaved = open(pathCsvFile)
+		#fileSaved.close()
+		return True
+
+	def saveParsedDataCardAsCsv(self,titleAll,dataAll,pathCsvFile):
+		# FIXME:
 		return True
 
 if __name__ == '__main__':

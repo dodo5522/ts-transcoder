@@ -5,6 +5,9 @@ import unittest
 from manememo import Manememo
 
 _pathCsvSrcFile = './btmu_torihiki_20140114004100.csv'
+_pathCsvDstFileOfAll = './btmu_torihiki_20140114004100_all.csv'
+_pathCsvDstFileOfBank = './btmu_torihiki_20140114004100_bank.csv'
+_pathCsvDstFileOfCard = './btmu_torihiki_20140114004100_card.csv'
 
 class TestManememo(unittest.TestCase):
 	def test_init(self):
@@ -46,18 +49,58 @@ class TestManememo(unittest.TestCase):
 		print "test getParsedData end."
 		pass
 
-	def test_saveParsedDataAsCsv(self):
-		print "test saveParsedDataAsCsv start."
+	def test_saveParsedDataAllAsCsv(self):
+		print "test saveParsedDataAllAsCsv start."
 		objManememo = Manememo()
-		#errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
-		#self.assertTrue(errorCode,None)
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
 		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		self.assertIsNotNone(titleAll,None)
 		self.assertIsNotNone(dataAll,None)
 		
-		errorCode = objManememo.saveParsedDataAsCsv(dataAll)
+		errorCode = objManememo.saveParsedDataAllAsCsv(titleAll,dataAll,_pathCsvDstFileOfAll)
 		self.assertTrue(errorCode,None)
-		print "test saveParsedDataAsCsv end."
+		print "test saveParsedDataAllAsCsv end."
+		pass
+
+	def test_saveParsedDataBankAsCsv(self):
+		print "test saveParsedDataBankAsCsv start."
+		objManememo = Manememo()
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
+		(titleAll,dataAll) = objManememo.getParsedDataAll()
+		self.assertIsNotNone(titleAll,None)
+		self.assertIsNotNone(dataAll,None)
+		
+		# index 0 means Bank data
+		titleOfBank = titleAll[0]	
+		self.assertGreater(len(titleOfBank),0,None)
+		dataOfBank = dataAll[0]
+		self.assertGreater(len(dataOfBank),0,None)
+		
+		errorCode = objManememo.saveParsedDataBankAsCsv(titleOfBank,dataOfBank,_pathCsvDstFileOfBank)
+		self.assertTrue(errorCode,None)
+		print "test saveParsedDataBankAsCsv end."
+		pass
+
+	def test_saveParsedDataCardAsCsv(self):
+		print "test saveParsedDataCardAsCsv start."
+		objManememo = Manememo()
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
+		(titleAll,dataAll) = objManememo.getParsedDataAll()
+		self.assertIsNotNone(titleAll,None)
+		self.assertIsNotNone(dataAll,None)
+		
+		# index 3 means Credit Card data
+		titleOfCard = titleAll[3]	
+		self.assertGreater(len(titleOfCard),0,None)
+		dataOfCard = dataAll[3]
+		self.assertGreater(len(dataOfCard),0,None)
+		
+		errorCode = objManememo.saveParsedDataCardAsCsv(titleOfCard,dataOfCard,_pathCsvDstFileOfCard)
+		self.assertTrue(errorCode,None)
+		print "test saveParsedDataCardAsCsv end."
 		pass
 
 if __name__ == '__main__':

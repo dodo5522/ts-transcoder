@@ -75,6 +75,9 @@ class Manememo:
 		else:
 			return None
 
+	def saveParsedDataAsCsv(self,dataAll):
+		return True
+
 if __name__ == '__main__':
 	mm = Manememo()
 

@@ -16,22 +16,22 @@ class Manememo:
 		print "destructor is called."
 
 	def parseCsvFile(self,pathCsvFile):
-		titleOfBank = []
-		titleOfOther = []
-		titleOfStock = []
-		titleOfCard = []
-		titleAll = [titleOfBank,titleOfOther,titleOfStock,titleOfCard]
+		self.titleOfBank = []
+		self.titleOfOther = []
+		self.titleOfStock = []
+		self.titleOfCard = []
+		self.titleAll = [self.titleOfBank,self.titleOfOther,self.titleOfStock,self.titleOfCard]
 		
-		listDataOfBank = []
-		listDataOfOther = []
-		listDataOfStock = []
-		listDataOfCard = []
-		dataAll = [listDataOfBank,listDataOfOther,listDataOfStock,listDataOfCard]
+		self.listDataOfBank = []
+		self.listDataOfOther = []
+		self.listDataOfStock = []
+		self.listDataOfCard = []
+		self.dataAll = [self.listDataOfBank,self.listDataOfOther,self.listDataOfStock,self.listDataOfCard]
 		
 		boolSectionStart = False
 		fileCsv = open(pathCsvFile)
 		
-		# count to array titleOfAll and dataAll
+		# count to array self.titleOfAll and self.dataAll
 		countListAll = -1
 		
 		# read csv file and store the data into internal buffer
@@ -48,12 +48,12 @@ class Manememo:
 					countListAll += 1
 					
 					# skip the first word '*' and store the titles
-					titleAll[countListAll] = stringRawUnicode[1:].split(u',')
+					self.titleAll[countListAll] = stringRawUnicode[1:].split(u',')
 				else:
 					if boolSectionStart is True:
 						# store one line data as list read from CSV file
 						listElementOfALine = stringRawUnicode.split(',')
-						listTitle = titleAll[countListAll]
+						listTitle = self.titleAll[countListAll]
 						
 						# generate dictionary sorted by title string
 						dictElementOfALine = {}
@@ -62,16 +62,15 @@ class Manememo:
 							dictElementOfALine.update({title:listElementOfALine[indexOfTitle]})
 						
 						# store the generated dictionary
-						dataAll[countListAll].append(dictElementOfALine)
+						self.dataAll[countListAll].append(dictElementOfALine)
 			else:
 				boolSectionStart = False
 		
 		fileCsv.close()
 		return True
 
-	def getParsedData(self,dataAll):
-		print "getParsedData"
-		return True
+	def getParsedData(self):
+		return self.dataAll
 
 if __name__ == '__main__':
 	mm = Manememo()

@@ -12,27 +12,27 @@ _pathCsvDstFileOfCard = './btmu_torihiki_20140114004100_card.csv'
 class TestManememo(unittest.TestCase):
 	def test_init(self):
 		print "test init start."
-		_objManememo = Manememo()
-		self.assertIsNotNone(_objManememo,None)
-		self.assertIsInstance(_objManememo,Manememo,None)
+		objManememo = Manememo()
+		self.assertIsNotNone(objManememo,None)
+		self.assertIsInstance(objManememo,Manememo,None)
 		print "test init end."
 		pass
 
 	def test_parseCsvFile(self):
 		print "test parseCsvFile start."
-		_objManememo = Manememo()
-		_errorCode = _objManememo.parseCsvFile(_pathCsvSrcFile)
-		self.assertTrue(_errorCode,None)
+		objManememo = Manememo()
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
 		print "test parseCsvFile end."
 		pass
 		
 	def test_getParsedDataAll(self):
 		print "test getParsedData start."
-		_objManememo = Manememo()
-		_errorCode = _objManememo.parseCsvFile(_pathCsvSrcFile)
-		self.assertTrue(_errorCode,None)
+		objManememo = Manememo()
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
 		
-		(titleAll,dataAll) = _objManememo.getParsedDataAll()
+		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		self.assertIsNotNone(titleAll,None)
 		print "title data length : %d" % len(titleAll)
 		self.assertIsNotNone(dataAll,None)
@@ -51,10 +51,10 @@ class TestManememo(unittest.TestCase):
 
 	def test_setParsedDataAll(self):
 		print "test setParsedData start."
-		_objManememo = Manememo()
-		_errorCode = _objManememo.parseCsvFile(_pathCsvSrcFile)
-		self.assertTrue(_errorCode,None)
-		(titleAll,dataAll) = _objManememo.getParsedDataAll()
+		objManememo = Manememo()
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
+		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		self.assertIsNotNone(titleAll,None)
 		self.assertIsNotNone(dataAll,None)
 		
@@ -72,11 +72,11 @@ class TestManememo(unittest.TestCase):
 				#print '\n'
 		
 		# set modified data to instance
-		_errorCode = _objManememo.setParsedDataAll(titleAll,dataAll)
-		self.assertTrue(_errorCode,None)
+		errorCode = objManememo.setParsedDataAll(titleAll,dataAll)
+		self.assertTrue(errorCode,None)
 		
 		# check if the data in the instance does NOT have u'--'
-		(titleAll,dataAll) = _objManememo.getParsedDataAll()
+		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		
 		# dump
 		#titleOfBank = titleAll[0]
@@ -139,8 +139,8 @@ class TestManememo(unittest.TestCase):
 					dataOfLine[u'預入金額（円）'] = u'0'
 		
 		# set modified data to instance
-		_errorCode = objManememo.setParsedDataAll(titleAll,dataAll)
-		self.assertTrue(_errorCode,None)
+		errorCode = objManememo.setParsedDataAll(titleAll,dataAll)
+		self.assertTrue(errorCode,None)
 		
 		# save bank data in the instance as CSV file
 		errorCode = objManememo.saveParsedDataBankAsCsv(_pathCsvDstFileOfBank)

@@ -9,6 +9,11 @@ sed -e '1,6d' ${FILE_INPUT}_2.utf8 > ${FILE_INPUT}_3.utf8
 '''
 
 class Manememo:
+	_indexOfBank = 0
+	_indexOfOther = 1
+	_indexOfStock = 2
+	_indexOfCard = 3
+
 	def __init__(self):
 		return
 
@@ -94,6 +99,12 @@ class Manememo:
 		return True
 
 	def saveParsedDataBankAsCsv(self,pathCsvFile):
+		return self._saveParsedDataToFile(self._indexOfBank,pathCsvFile)
+
+	def saveParsedDataCardAsCsv(self,pathCsvFile):
+		return self._saveParsedDataToFile(self._indexOfCard,pathCsvFile)
+
+	def _saveParsedDataToFile(self,index,pathCsvFile):
 		# check error
 		if not hasattr(self,'titleAll'):
 			return False
@@ -104,7 +115,7 @@ class Manememo:
 		fileSaved = open(pathCsvFile,'w')
 		
 		# generate first line of CSV file
-		titleOfBank = self.titleAll[0]
+		titleOfBank = self.titleAll[index]
 		stringOfLine = titleOfBank[0]
 		for title in titleOfBank[1:]:
 			stringOfLine = stringOfLine + u',' + title
@@ -114,7 +125,7 @@ class Manememo:
 		fileSaved.write(stringOfLine.encode('utf-8'))
 		
 		# generate data lines and write them to CSV file
-		dataOfBank = self.dataAll[0]
+		dataOfBank = self.dataAll[index]
 		for data in dataOfBank:
 			stringOfLine = data[titleOfBank[0]]
 			for title in titleOfBank[1:]:
@@ -123,16 +134,6 @@ class Manememo:
 			fileSaved.write(stringOfLine.encode('utf-8'))
 		
 		fileSaved.close()
-		return True
-
-	def saveParsedDataCardAsCsv(self,pathCsvFile):
-		# check error
-		if not hasattr(self,'titleAll'):
-			return False
-		if not hasattr(self,'dataAll'):
-			return False
-		
-		# FIXME:
 		return True
 
 if __name__ == '__main__':

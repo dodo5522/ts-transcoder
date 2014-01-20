@@ -75,22 +75,63 @@ class Manememo:
 		else:
 			return (None,None)
 
-	def saveParsedDataAllAsCsv(self,titleAll,dataAll,pathCsvFile):
+	def setParsedDataAll(self,titleAll,dataAll):
+		if hasattr(self,'dataAll') and hasattr(self,'titleAll'):
+			self.titleAll = titleAll
+			self.dataAll = dataAll
+			return True
+		else:
+			return False
+
+	def saveParsedDataAllAsCsv(self,pathCsvFile):
+		# check error
+		if not hasattr(self,'titleAll'):
+			return False
+		if not hasattr(self,'dataAll'):
+			return False
+		
 		# FIXME:
 		return True
 
-	def saveParsedDataBankAsCsv(self,titleOfBank,dataOfBank,pathCsvFile):
+	def saveParsedDataBankAsCsv(self,pathCsvFile):
+		# check error
+		if not hasattr(self,'titleAll'):
+			return False
+		if not hasattr(self,'dataAll'):
+			return False
+		
+		# open file with writable if the path is specified.
+		fileSaved = open(pathCsvFile,'w')
+		
+		# generate first line of CSV file
+		titleOfBank = self.titleAll[0]
 		stringOfLine = titleOfBank[0]
 		for title in titleOfBank[1:]:
 			stringOfLine = stringOfLine + u',' + title
+		stringOfLine = stringOfLine + u'\n'
 		
-		print stringOfLine.encode('utf-8')
+		# write the genareted first line
+		fileSaved.write(stringOfLine.encode('utf-8'))
 		
-		#fileSaved = open(pathCsvFile)
-		#fileSaved.close()
+		# generate data lines and write them to CSV file
+		dataOfBank = self.dataAll[0]
+		for data in dataOfBank:
+			stringOfLine = data[titleOfBank[0]]
+			for title in titleOfBank[1:]:
+				stringOfLine = stringOfLine + u',' + data[title]
+			stringOfLine = stringOfLine + u'\n'
+			fileSaved.write(stringOfLine.encode('utf-8'))
+		
+		fileSaved.close()
 		return True
 
-	def saveParsedDataCardAsCsv(self,titleAll,dataAll,pathCsvFile):
+	def saveParsedDataCardAsCsv(self,pathCsvFile):
+		# check error
+		if not hasattr(self,'titleAll'):
+			return False
+		if not hasattr(self,'dataAll'):
+			return False
+		
 		# FIXME:
 		return True
 

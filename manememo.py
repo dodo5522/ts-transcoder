@@ -8,6 +8,8 @@ sed -e 's/--/0/g' ${FILE_INPUT}_1.utf8 > ${FILE_INPUT}_2.utf8
 sed -e '1,6d' ${FILE_INPUT}_2.utf8 > ${FILE_INPUT}_3.utf8
 '''
 
+import sys
+
 class Manememo:
 	_indexOfBank = 0
 	_indexOfOther = 1
@@ -137,5 +139,31 @@ class Manememo:
 		return True
 
 if __name__ == '__main__':
-	mm = Manememo()
-
+	try:
+		pathCsvFile = sys.argv[1]
+		objManememo = Manememo()
+		
+		errorCode = objManememo.parseCsvFile(pathCsvFile)
+		(titleAll,dataAll) = objManememo.getParsedDataAll()
+		
+		# dataAll has list of listOfBank, listOfStock, etc.
+		# listOfBank, listOfStock has the list of dictionary data for elements.
+		for data in dataAll:
+			for dataOfLine in data:
+				if dataOfLine.get(u'支払金額（円）') == u'--':
+					dataOfLine[u'支払金額（円）'] = u'0'
+				if dataOfLine.get(u'預入金額（円）') == u'--':
+					dataOfLine[u'預入金額（円）'] = u'0'
+		
+		# set modified data to instance
+		errorCode = objManememo.setParsedDataAll(titleAll,dataAll)
+		
+		# save bank data in the instance as CSV file
+		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFile+'_bank')
+		
+		# save card data in the instance as CSV file
+		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFile+'_card')
+	except Exception as err:
+		print err
+	finally:
+		print "end function."

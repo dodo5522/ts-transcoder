@@ -49,16 +49,68 @@ class TestManememo(unittest.TestCase):
 		print "test getParsedData end."
 		pass
 
+	def test_setParsedDataAll(self):
+		print "test setParsedData start."
+		_objManememo = Manememo()
+		_errorCode = _objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(_errorCode,None)
+		(titleAll,dataAll) = _objManememo.getParsedDataAll()
+		self.assertIsNotNone(titleAll,None)
+		self.assertIsNotNone(dataAll,None)
+		
+		# dataAll has list of listOfBank, listOfStock, etc.
+		# listOfBank, listOfStock has the list of dictionary data for elements.
+		for data in dataAll:
+			for dataOfLine in data:
+				if dataOfLine.get(u'支払金額（円）') == u'--':
+					dataOfLine[u'支払金額（円）'] = u'0'
+				if dataOfLine.get(u'預入金額（円）') == u'--':
+					dataOfLine[u'預入金額（円）'] = u'0'
+				
+				#for key in dataOfLine.keys():
+				#	print key.encode('utf-8')+':'+dataOfLine[key].encode('utf-8')
+				#print '\n'
+		
+		# set modified data to instance
+		_errorCode = _objManememo.setParsedDataAll(titleAll,dataAll)
+		self.assertTrue(_errorCode,None)
+		
+		# check if the data in the instance does NOT have u'--'
+		(titleAll,dataAll) = _objManememo.getParsedDataAll()
+		
+		# dump
+		#titleOfBank = titleAll[0]
+		#dataOfBank = dataAll[0]
+		#for title in titleOfBank:
+		#	print title.encode('utf-8')+','
+		#for data in dataOfBank:
+		#	for title in titleOfBank:
+		#		print data[title].encode('utf-8')+','
+		
+		for data in dataAll:
+			for dataOfLine in data:
+				self.assertFalse(dataOfLine.get(u'支払金額（円）') == u'--')
+				self.assertFalse(dataOfLine.get(u'預入金額（円）') == u'--')
+		
+		print "test setParsedData end."
+		pass
+
 	def test_saveParsedDataAllAsCsv(self):
 		print "test saveParsedDataAllAsCsv start."
 		objManememo = Manememo()
+		
+		# should be false if saving all data in the instance to CSV file without requesting parsing
+		errorCode = objManememo.saveParsedDataAllAsCsv(_pathCsvDstFileOfAll)
+		self.assertFalse(errorCode,None)
+		
 		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
 		self.assertTrue(errorCode,None)
 		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		self.assertIsNotNone(titleAll,None)
 		self.assertIsNotNone(dataAll,None)
 		
-		errorCode = objManememo.saveParsedDataAllAsCsv(titleAll,dataAll,_pathCsvDstFileOfAll)
+		# save all data in the instance to CSV file
+		errorCode = objManememo.saveParsedDataAllAsCsv(_pathCsvDstFileOfAll)
 		self.assertTrue(errorCode,None)
 		print "test saveParsedDataAllAsCsv end."
 		pass
@@ -66,19 +118,32 @@ class TestManememo(unittest.TestCase):
 	def test_saveParsedDataBankAsCsv(self):
 		print "test saveParsedDataBankAsCsv start."
 		objManememo = Manememo()
+		
+		# should be false if saving all data in the instance to CSV file without requesting parsing
+		errorCode = objManememo.saveParsedDataAllAsCsv(_pathCsvDstFileOfBank)
+		self.assertFalse(errorCode,None)
+		
 		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
 		self.assertTrue(errorCode,None)
 		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		self.assertIsNotNone(titleAll,None)
 		self.assertIsNotNone(dataAll,None)
 		
-		# index 0 means Bank data
-		titleOfBank = titleAll[0]	
-		self.assertGreater(len(titleOfBank),0,None)
-		dataOfBank = dataAll[0]
-		self.assertGreater(len(dataOfBank),0,None)
+		# dataAll has list of listOfBank, listOfStock, etc.
+		# listOfBank, listOfStock has the list of dictionary data for elements.
+		for data in dataAll:
+			for dataOfLine in data:
+				if dataOfLine.get(u'支払金額（円）') == u'--':
+					dataOfLine[u'支払金額（円）'] = u'0'
+				if dataOfLine.get(u'預入金額（円）') == u'--':
+					dataOfLine[u'預入金額（円）'] = u'0'
 		
-		errorCode = objManememo.saveParsedDataBankAsCsv(titleOfBank,dataOfBank,_pathCsvDstFileOfBank)
+		# set modified data to instance
+		_errorCode = objManememo.setParsedDataAll(titleAll,dataAll)
+		self.assertTrue(_errorCode,None)
+		
+		# save bank data in the instance as CSV file
+		errorCode = objManememo.saveParsedDataBankAsCsv(_pathCsvDstFileOfBank)
 		self.assertTrue(errorCode,None)
 		print "test saveParsedDataBankAsCsv end."
 		pass
@@ -86,19 +151,16 @@ class TestManememo(unittest.TestCase):
 	def test_saveParsedDataCardAsCsv(self):
 		print "test saveParsedDataCardAsCsv start."
 		objManememo = Manememo()
+		
+		# should be false if saving all data in the instance to CSV file without requesting parsing
+		errorCode = objManememo.saveParsedDataAllAsCsv(_pathCsvDstFileOfCard)
+		self.assertFalse(errorCode,None)
+		
 		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
 		self.assertTrue(errorCode,None)
-		(titleAll,dataAll) = objManememo.getParsedDataAll()
-		self.assertIsNotNone(titleAll,None)
-		self.assertIsNotNone(dataAll,None)
 		
-		# index 3 means Credit Card data
-		titleOfCard = titleAll[3]	
-		self.assertGreater(len(titleOfCard),0,None)
-		dataOfCard = dataAll[3]
-		self.assertGreater(len(dataOfCard),0,None)
-		
-		errorCode = objManememo.saveParsedDataCardAsCsv(titleOfCard,dataOfCard,_pathCsvDstFileOfCard)
+		# save card data in the instance as CSV file
+		errorCode = objManememo.saveParsedDataCardAsCsv(_pathCsvDstFileOfCard)
 		self.assertTrue(errorCode,None)
 		print "test saveParsedDataCardAsCsv end."
 		pass

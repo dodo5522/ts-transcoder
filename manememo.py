@@ -173,15 +173,14 @@ if __name__ == '__main__':
 		
 		# dataAll has list of listOfBank, listOfStock, etc.
 		# listOfBank, listOfStock has the list of dictionary data for elements.
+		titleOfBank.append(keyDiff)
 		for dataOfEachLine in dataOfBank:
 			if dataOfEachLine.get(keyOut) == u'--':
 				dataOfEachLine[keyOut] = u'0'
 			if dataOfEachLine.get(keyIn) == u'--':
 				dataOfEachLine[keyIn] = u'0'
-		
-		# Add diff data to each line.
-		titleOfBank.append(keyDiff)
-		for dataOfEachLine in dataOfBank:
+			
+			# Add diff data to each line.
 			intDiff = int(dataOfEachLine.get(keyIn)) - int(dataOfEachLine.get(keyOut))
 			dataOfEachLine[keyDiff] = unicode(str(intDiff))
 		

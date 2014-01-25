@@ -164,7 +164,9 @@ if __name__ == '__main__':
 		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		
 		titleOfBank = titleAll[0]
+		titleOfCard = titleAll[3]
 		dataOfBank = dataAll[0]
+		dataOfCard = dataAll[3]
 		keyIn = u'預入金額（円）'
 		keyOut = u'支払金額（円）'
 		keyDiff = u'差額（円）'
@@ -185,11 +187,11 @@ if __name__ == '__main__':
 		
 		# save bank data in the instance as CSV file
 		pathCsvFileBank = re.sub(r'\.csv$','_bank.csv',pathCsvFile)
-		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFileBank,titleAll[0],dataAll[0])
+		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFileBank,titleOfBank,dataOfBank)
 		
 		# save card data in the instance as CSV file
 		pathCsvFileCard = re.sub(r'\.csv$','_card.csv',pathCsvFile)
-		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFileCard,titleAll[3],dataAll[3])
+		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFileCard,titleOfCard,dataOfCard)
 	except Exception as err:
 		print type(err)
 		print err

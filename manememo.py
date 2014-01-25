@@ -8,7 +8,7 @@ sed -e 's/--/0/g' ${FILE_INPUT}_1.utf8 > ${FILE_INPUT}_2.utf8
 sed -e '1,6d' ${FILE_INPUT}_2.utf8 > ${FILE_INPUT}_3.utf8
 '''
 
-import sys
+import sys,re
 
 class Manememo:
 	_indexOfBank = 0
@@ -184,10 +184,12 @@ if __name__ == '__main__':
 			dataOfEachLine[keyDiff] = unicode(str(intDiff))
 		
 		# save bank data in the instance as CSV file
-		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFile+'_bank',titleAll[0],dataAll[0])
+		pathCsvFileBank = re.sub(r'\.csv$','_bank.csv',pathCsvFile)
+		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFileBank,titleAll[0],dataAll[0])
 		
 		# save card data in the instance as CSV file
-		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFile+'_card',titleAll[3],dataAll[3])
+		pathCsvFileCard = re.sub(r'\.csv$','_card.csv',pathCsvFile)
+		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFileCard,titleAll[3],dataAll[3])
 	except Exception as err:
 		print type(err)
 		print err

@@ -5,9 +5,9 @@ import unittest
 from manememo import Manememo
 
 _pathCsvSrcFile = './btmu_torihiki_20140114004100.csv'
-_pathCsvDstFileOfAll = './btmu_torihiki_20140114004100_all.csv'
-_pathCsvDstFileOfBank = './btmu_torihiki_20140114004100_bank.csv'
-_pathCsvDstFileOfCard = './btmu_torihiki_20140114004100_card.csv'
+_pathCsvDstFileOfAll = './btmu_torihiki_20140114004100_test_all.csv'
+_pathCsvDstFileOfBank = './btmu_torihiki_20140114004100_test_bank.csv'
+_pathCsvDstFileOfCard = './btmu_torihiki_20140114004100_test_card.csv'
 
 class TestManememo(unittest.TestCase):
 	def test_init(self):

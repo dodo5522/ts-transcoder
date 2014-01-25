@@ -112,26 +112,30 @@ class Manememo:
 		# FIXME:
 		return True
 
-	def saveParsedDataBankAsCsv(self,pathCsvFile):
-		return self._saveParsedDataToFile(self._indexOfBank,pathCsvFile)
+	def saveParsedDataBankAsCsv(self,pathCsvFile,titleOfBank=None,dataOfBank=None):
+			return self._saveParsedDataToFile(self._indexOfBank,titleOfBank,dataOfBank,pathCsvFile)
 
-	def saveParsedDataCardAsCsv(self,pathCsvFile):
-		return self._saveParsedDataToFile(self._indexOfCard,pathCsvFile)
+	def saveParsedDataCardAsCsv(self,pathCsvFile,titleOfCard=None,dataOfCard=None):
+			return self._saveParsedDataToFile(self._indexOfCard,titleOfCard,dataOfCard,pathCsvFile)
 
-	def _saveParsedDataToFile(self,section,pathCsvFile):
+	def _saveParsedDataToFile(self,section,titleOfSection,dataOfSection,pathCsvFile):
 		# check error
 		if not hasattr(self,'titleAll'):
 			return False
 		if not hasattr(self,'dataAll'):
+			return False
+		if (titleOfSection is not None and dataOfSection is None) or \
+				(titleOfSection is None and dataOfSection is not None):
 			return False
 		
 		# open file with writable if the path is specified.
 		fileSaved = open(pathCsvFile,'w')
 		
 		# generate first line of CSV file
-		titleOfBank = self.titleAll[section]
-		stringOfLine = titleOfBank[0]
-		for title in titleOfBank[1:]:
+		if titleOfSection is None:
+			titleOfSection = self.titleAll[section]
+		stringOfLine = titleOfSection[0]
+		for title in titleOfSection[1:]:
 			stringOfLine = stringOfLine + u',' + title
 		stringOfLine = stringOfLine + u'\n'
 		
@@ -139,10 +143,11 @@ class Manememo:
 		fileSaved.write(stringOfLine.encode('utf-8'))
 		
 		# generate data lines and write them to CSV file
-		dataOfBank = self.dataAll[section]
-		for data in dataOfBank:
-			stringOfLine = data[titleOfBank[0]]
-			for title in titleOfBank[1:]:
+		if dataOfSection is None:
+			dataOfSection = self.dataAll[section]
+		for data in dataOfSection:
+			stringOfLine = data[titleOfSection[0]]
+			for title in titleOfSection[1:]:
 				stringOfLine = stringOfLine + u',' + data[title]
 			stringOfLine = stringOfLine + u'\n'
 			fileSaved.write(stringOfLine.encode('utf-8'))

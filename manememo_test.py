@@ -49,6 +49,36 @@ class TestManememo(unittest.TestCase):
 		print "test getParsedData end."
 		pass
 
+	def test_getParsedDataBank(self):
+		print "test getParsedDataBank start."
+		objManememo = Manememo()
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
+		
+		(titleOfSectionBank,dataOfSectionBank) = objManememo.getParsedDataBank()
+		self.assertIsNotNone(titleOfSectionBank,None)
+		print "title data length : %d" % len(titleOfSectionBank)
+		self.assertIsNotNone(dataOfSectionBank,None)
+		print "bank data lines : %d" % len(dataOfSectionBank)
+		self.assertGreater(len(dataOfSectionBank),0,None)
+		print "each bank data length : %d" % len(dataOfSectionBank[0])
+		pass
+
+	def test_getParsedDataCard(self):
+		print "test getParsedDataCard start."
+		objManememo = Manememo()
+		errorCode = objManememo.parseCsvFile(_pathCsvSrcFile)
+		self.assertTrue(errorCode,None)
+		
+		(titleOfSectionCard,dataOfSectionCard) = objManememo.getParsedDataCard()
+		self.assertIsNotNone(titleOfSectionCard,None)
+		print "title data length : %d" % len(titleOfSectionCard)
+		self.assertIsNotNone(dataOfSectionCard,None)
+		print "bank data lines : %d" % len(dataOfSectionCard)
+		self.assertGreater(len(dataOfSectionCard),0,None)
+		print "each bank data length : %d" % len(dataOfSectionCard[0])
+		pass
+
 	def test_setParsedDataAll(self):
 		print "test setParsedData start."
 		objManememo = Manememo()

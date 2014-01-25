@@ -39,7 +39,7 @@ class Manememo:
 		fileCsv = open(pathCsvFile)
 		
 		# count to array self.titleOfAll and self.dataAll
-		countListAll = -1
+		countSection = -1
 		
 		# read csv file and store the data into internal buffer
 		for line in fileCsv:
@@ -52,15 +52,15 @@ class Manememo:
 				# section starts with '*'
 				if boolSectionStart is False and stringRawUtf8[0] is '*':
 					boolSectionStart = True
-					countListAll += 1
+					countSection += 1
 					
 					# skip the first word '*' and store the titles
-					self.titleAll[countListAll] = stringRawUnicode[1:].split(u',')
+					self.titleAll[countSection] = stringRawUnicode[1:].split(u',')
 				else:
 					if boolSectionStart is True:
 						# store one line data as list read from CSV file
 						listElementOfALine = stringRawUnicode.split(',')
-						listTitle = self.titleAll[countListAll]
+						listTitle = self.titleAll[countSection]
 						
 						# generate dictionary sorted by title string
 						dictElementOfALine = {}
@@ -69,7 +69,7 @@ class Manememo:
 							dictElementOfALine.update({title:listElementOfALine[indexOfTitle]})
 						
 						# store the generated dictionary
-						self.dataAll[countListAll].append(dictElementOfALine)
+						self.dataAll[countSection].append(dictElementOfALine)
 			else:
 				boolSectionStart = False
 		
@@ -79,6 +79,18 @@ class Manememo:
 	def getParsedDataAll(self):
 		if hasattr(self,'dataAll') and hasattr(self,'titleAll'):
 			return (self.titleAll,self.dataAll)
+		else:
+			return (None,None)
+
+	def getParsedDataBank(self):
+		if hasattr(self,'dataAll') and hasattr(self,'titleAll'):
+			return (self.titleAll[self._indexOfBank],self.dataAll[self._indexOfBank])
+		else:
+			return (None,None)
+
+	def getParsedDataCard(self):
+		if hasattr(self,'dataAll') and hasattr(self,'titleAll'):
+			return (self.titleAll[self._indexOfCard],self.dataAll[self._indexOfCard])
 		else:
 			return (None,None)
 
@@ -106,7 +118,7 @@ class Manememo:
 	def saveParsedDataCardAsCsv(self,pathCsvFile):
 		return self._saveParsedDataToFile(self._indexOfCard,pathCsvFile)
 
-	def _saveParsedDataToFile(self,index,pathCsvFile):
+	def _saveParsedDataToFile(self,section,pathCsvFile):
 		# check error
 		if not hasattr(self,'titleAll'):
 			return False
@@ -117,7 +129,7 @@ class Manememo:
 		fileSaved = open(pathCsvFile,'w')
 		
 		# generate first line of CSV file
-		titleOfBank = self.titleAll[index]
+		titleOfBank = self.titleAll[section]
 		stringOfLine = titleOfBank[0]
 		for title in titleOfBank[1:]:
 			stringOfLine = stringOfLine + u',' + title
@@ -127,7 +139,7 @@ class Manememo:
 		fileSaved.write(stringOfLine.encode('utf-8'))
 		
 		# generate data lines and write them to CSV file
-		dataOfBank = self.dataAll[index]
+		dataOfBank = self.dataAll[section]
 		for data in dataOfBank:
 			stringOfLine = data[titleOfBank[0]]
 			for title in titleOfBank[1:]:
@@ -148,8 +160,8 @@ if __name__ == '__main__':
 		
 		# dataAll has list of listOfBank, listOfStock, etc.
 		# listOfBank, listOfStock has the list of dictionary data for elements.
-		for data in dataAll:
-			for dataOfLine in data:
+		for dataOfEachSection in dataAll:
+			for dataOfLine in dataOfEachSection:
 				if dataOfLine.get(u'支払金額（円）') == u'--':
 					dataOfLine[u'支払金額（円）'] = u'0'
 				if dataOfLine.get(u'預入金額（円）') == u'--':
@@ -164,6 +176,7 @@ if __name__ == '__main__':
 		# save card data in the instance as CSV file
 		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFile+'_card')
 	except Exception as err:
+		print type(err)
 		print err
 	finally:
 		print "end function."

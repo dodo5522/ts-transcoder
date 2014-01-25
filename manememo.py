@@ -163,23 +163,31 @@ if __name__ == '__main__':
 		errorCode = objManememo.parseCsvFile(pathCsvFile)
 		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		
+		titleOfBank = titleAll[0]
+		dataOfBank = dataAll[0]
+		keyIn = u'預入金額（円）'
+		keyOut = u'支払金額（円）'
+		keyDiff = u'差額（円）'
+		
 		# dataAll has list of listOfBank, listOfStock, etc.
 		# listOfBank, listOfStock has the list of dictionary data for elements.
-		for dataOfEachSection in dataAll:
-			for dataOfLine in dataOfEachSection:
-				if dataOfLine.get(u'支払金額（円）') == u'--':
-					dataOfLine[u'支払金額（円）'] = u'0'
-				if dataOfLine.get(u'預入金額（円）') == u'--':
-					dataOfLine[u'預入金額（円）'] = u'0'
+		for dataOfEachLine in dataOfBank:
+			if dataOfEachLine.get(keyOut) == u'--':
+				dataOfEachLine[keyOut] = u'0'
+			if dataOfEachLine.get(keyIn) == u'--':
+				dataOfEachLine[keyIn] = u'0'
 		
-		# set modified data to instance
-		errorCode = objManememo.setParsedDataAll(titleAll,dataAll)
+		# Add diff data to each line.
+		titleOfBank.append(keyDiff)
+		for dataOfEachLine in dataOfBank:
+			intDiff = int(dataOfEachLine.get(keyIn)) - int(dataOfEachLine.get(keyOut))
+			dataOfEachLine[keyDiff] = unicode(str(intDiff))
 		
 		# save bank data in the instance as CSV file
-		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFile+'_bank')
+		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFile+'_bank',titleAll[0],dataAll[0])
 		
 		# save card data in the instance as CSV file
-		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFile+'_card')
+		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFile+'_card',titleAll[3],dataAll[3])
 	except Exception as err:
 		print type(err)
 		print err

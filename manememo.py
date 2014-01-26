@@ -164,9 +164,7 @@ if __name__ == '__main__':
 		(titleAll,dataAll) = objManememo.getParsedDataAll()
 		
 		titleOfBank = titleAll[0]
-		titleOfCard = titleAll[3]
 		dataOfBank = dataAll[0]
-		dataOfCard = dataAll[3]
 		keyIn = u'預入金額（円）'
 		keyOut = u'支払金額（円）'
 		keyDiff = u'差額（円）'
@@ -187,6 +185,18 @@ if __name__ == '__main__':
 		# save bank data in the instance as CSV file
 		pathCsvFileBank = re.sub(r'\.csv$','_bank.csv',pathCsvFile)
 		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFileBank,titleOfBank,dataOfBank)
+		
+		titleOfCard = titleAll[3]
+		dataOfCard = dataAll[3]
+		keyOut = u'お支払い金額（円）'
+		
+		# dataAll has list of listOfBank, listOfStock, etc.
+		# listOfBank, listOfStock has the list of dictionary data for elements.
+		for dataOfEachLine in dataOfCard:
+			objectOut = dataOfEachLine.get(keyOut)
+			if objectOut != None and objectOut.isdigit():
+				intOut = int(objectOut) * -1
+				dataOfEachLine[keyOut] = unicode(str(intOut))
 		
 		# save card data in the instance as CSV file
 		pathCsvFileCard = re.sub(r'\.csv$','_card.csv',pathCsvFile)

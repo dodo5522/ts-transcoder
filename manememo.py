@@ -40,16 +40,17 @@ class Table(object):
 	Default table object.
 	'''
 	
-	_record_constructor = None
-	_records = []
-	
-	def __init__(self, records_on_cvs=None, constructor=None):
-		_record_constructor = constructor
+	def __init__(self, constructor, records_on_cvs=None):
+		self.records = []
+		obj = constructor()
 		
 		for record in records_on_cvs:
-			record_raw = record.split(u',')
-		
-		
+			values_in_record = record.split(u',')
+			
+			for i, (field, cast) in enumerate(self.GetFields()):
+				setattr(obj, field, cast(values_in_record[i]))
+			
+			self.records.append(obj)
 	
 	def GetFields(self):
 		'''
@@ -57,15 +58,9 @@ class Table(object):
 		This method should be overriden on inherited class.
 		'''
 		return ()
-		
-		
-		
 
 class RecordsOfBank(Table):
 	'''A table of bank.'''
-	
-	def __init__(self):
-		'''Initialize as constructor.'''
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
@@ -82,9 +77,6 @@ class RecordsOfBank(Table):
 class RecordsOfOther(Table):
 	'''A table of other.'''
 	
-	def __init__(self):
-		'''Initialize as constructor.'''
-	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
 		return ((u"Gyoukai",str),
@@ -99,9 +91,6 @@ class RecordsOfOther(Table):
 
 class RecordsOfStock(Table):
 	'''A table of stock.'''
-	
-	def __init__(self):
-		'''Initialize as constructor.'''
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
@@ -121,9 +110,6 @@ class RecordsOfStock(Table):
 class RecordsOfCard(Table):
 	'''A table of credit card.'''
 	
-	def __init__(self):
-		'''Initialize as constructor.'''
-	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
 		return ((u"Gyoukai",str),
@@ -138,11 +124,15 @@ class RecordsOfCard(Table):
 
 class Manememo2():
 	def __init__(self, pathCsvFile=None):
-		fp = open(pathCsvFile)
+		#FIXME: only for test
+		#fp = open(pathCsvFile)
 		
+		data = [u"銀行,りそな,,2014/03/30,利息,--,--,1,100",
+		        u"銀行,新生,,2014/03/31,利息,--,--,2,101"]
 		
+		objRecordsOfBank = RecordsOfBank(RecordOfBank, data)
 		
-		fp.close()
+		#fp.close()
 
 
 
@@ -300,6 +290,9 @@ class Manememo:
 		return True
 
 if __name__ == '__main__':
+	#FIXME: only for test
+	obj = Manememo2()
+	
 	try:
 		pathCsvFile = sys.argv[1]
 		objManememo = Manememo()

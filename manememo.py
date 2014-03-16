@@ -10,6 +10,140 @@ sed -e '1,6d' ${FILE_INPUT}_2.utf8 > ${FILE_INPUT}_3.utf8
 
 import sys,re
 
+class Record(object):
+	'''
+	Default record object.
+	'''
+
+class RecordOfBank(Record):
+	'''
+	A record of bank.
+	'''
+
+class RecordOfOther(Record):
+	'''
+	A record of other.
+	'''
+
+class RecordOfStock(Record):
+	'''
+	A record of stock.
+	'''
+
+class RecordOfCard(Record):
+	'''
+	A record of credit card.
+	'''
+
+class Table(object):
+	'''
+	Default table object.
+	'''
+	
+	_record = {}
+	
+	def __len__(self):
+		'''Length of this record.'''
+		return len(self._record)
+	
+	def GetFields(self):
+		'''Get tables of string and value type of all field as tuple.'''
+		'''This method should be overriden on inherited class.'''
+		return ()
+
+class TableOfBank(Table):
+	'''A table of bank.'''
+	
+	def __init__(self):
+		'''Initialize as constructor.'''
+	
+	def GetFields(self):
+		'''Get strings of all field as tuple.'''
+		return ((u"業界",str),
+				(u"企業名",str),
+				(u"備考",str),
+				(u"ご利用日",str),
+				(u"区分",str),
+				(u"摘要",str),
+				(u"支払金額（円）",int),
+				(u"預入金額（円）",int),
+				(u"残高（円）",int))
+
+class TableOfOther(Table):
+	'''A table of other.'''
+	
+	def __init__(self):
+		'''Initialize as constructor.'''
+	
+	def GetFields(self):
+		'''Get strings of all field as tuple.'''
+		return ((u"業界",str),
+				(u"企業名",str),
+				(u"備考",str),
+				(u"ご利用日",str),
+				(u"ご利用先",str),
+				(u"ご利用者",str),
+				(u"お支払い区分",int),
+				(u"ご利用金額（円）",int),
+				(u"お支払い金額（円）",int))
+
+class TableOfStock(Table):
+	'''A table of stock.'''
+	
+	def __init__(self):
+		'''Initialize as constructor.'''
+	
+	def GetFields(self):
+		'''Get strings of all field as tuple.'''
+		return ((u"業界",str),
+				(u"企業名",str),
+				(u"備考",str),
+				(u"約定日",str),
+				(u"受渡日",str),
+				(u"取引名",str),
+				(u"銘柄名",str),
+				(u"数量",str),
+				(u"単価（円）",int),
+				(u"通貨",str),
+				(u"受渡代金（外貨）",str),
+				(u"受渡代金（円）",int))
+
+class TableOfCard(Table):
+	'''A table of credit card.'''
+	
+	def __init__(self):
+		'''Initialize as constructor.'''
+	
+	def GetFields(self):
+		'''Get strings of all field as tuple.'''
+		return ((u"業界",str),
+				(u"企業名",str),
+				(u"備考",str),
+				(u"ご利用日",str),
+				(u"ご利用先",str),
+				(u"ご利用者",str),
+				(u"お支払い区分",int),
+				(u"ご利用金額（円）",int),
+				(u"お支払い金額（円）",int))
+
+class Manememo2():
+	def __init__(self, pathCsvFile=None):
+		fp = open(pathCsvFile)
+		
+		
+		
+		fp.close()
+
+
+
+
+
+
+
+
+
+
+
 class Manememo:
 	_indexOfBank = 0
 	_indexOfOther = 1

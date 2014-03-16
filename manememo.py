@@ -61,7 +61,7 @@ class Table(object):
 		
 		
 
-class TableOfBank(Table):
+class RecordsOfBank(Table):
 	'''A table of bank.'''
 	
 	def __init__(self):
@@ -79,7 +79,7 @@ class TableOfBank(Table):
 				(u"AzukeireKingaku_Yen",int),
 				(u"Zandaka_Yen",int))
 
-class TableOfOther(Table):
+class RecordsOfOther(Table):
 	'''A table of other.'''
 	
 	def __init__(self):
@@ -97,7 +97,7 @@ class TableOfOther(Table):
 				(u"RiyouKingaku_Yen",int),
 				(u"ShiharaiKingaku_Yen",int))
 
-class TableOfStock(Table):
+class RecordsOfStock(Table):
 	'''A table of stock.'''
 	
 	def __init__(self):
@@ -118,7 +118,7 @@ class TableOfStock(Table):
 				(u"UkewatashiDaikin",str),
 				(u"UkewatashiDaikin_Yen",int))
 
-class TableOfCard(Table):
+class RecordsOfCard(Table):
 	'''A table of credit card.'''
 	
 	def __init__(self):

@@ -64,12 +64,12 @@ class RecordsOfBank(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",str),
-				(u"Kigyoumei",str),
-				(u"Bikou",str),
-				(u"Riyoubi",str),
-				(u"Kubun",str),
-				(u"Tekiyou",str),
+		return ((u"Gyoukai",unicode),
+				(u"Kigyoumei",unicode),
+				(u"Bikou",unicode),
+				(u"Riyoubi",unicode),
+				(u"Kubun",unicode),
+				(u"Tekiyou",unicode),
 				(u"ShiharaiKingaku_Yen",int),
 				(u"AzukeireKingaku_Yen",int),
 				(u"Zandaka_Yen",int))
@@ -79,12 +79,12 @@ class RecordsOfOther(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",str),
-				(u"Kigyoumei",str),
-				(u"Bikou",str),
-				(u"Riyoubi",str),
-				(u"Riyousaki",str),
-				(u"Riyousha",str),
+		return ((u"Gyoukai",unicode),
+				(u"Kigyoumei",unicode),
+				(u"Bikou",unicode),
+				(u"Riyoubi",unicode),
+				(u"Riyousaki",unicode),
+				(u"Riyousha",unicode),
 				(u"ShiharaiKubun",int),
 				(u"RiyouKingaku_Yen",int),
 				(u"ShiharaiKingaku_Yen",int))
@@ -94,17 +94,17 @@ class RecordsOfStock(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",str),
-				(u"Kigyoumei",str),
-				(u"Bikou",str),
-				(u"Yakujoubi",str),
-				(u"Ukewatashibi",str),
-				(u"Torihikimei",str),
-				(u"Meigaramei",str),
-				(u"Suuryou",str),
+		return ((u"Gyoukai",unicode),
+				(u"Kigyoumei",unicode),
+				(u"Bikou",unicode),
+				(u"Yakujoubi",unicode),
+				(u"Ukewatashibi",unicode),
+				(u"Torihikimei",unicode),
+				(u"Meigaramei",unicode),
+				(u"Suuryou",unicode),
 				(u"Tanka_Yen",int),
-				(u"Tsuuka",str),
-				(u"UkewatashiDaikin",str),
+				(u"Tsuuka",unicode),
+				(u"UkewatashiDaikin",unicode),
 				(u"UkewatashiDaikin_Yen",int))
 
 class RecordsOfCard(Table):
@@ -112,12 +112,12 @@ class RecordsOfCard(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",str),
-				(u"Kigyoumei",str),
-				(u"Bikou",str),
-				(u"Riyoubi",str),
-				(u"Riyousaki",str),
-				(u"Riyousha",str),
+		return ((u"Gyoukai",unicode),
+				(u"Kigyoumei",unicode),
+				(u"Bikou",unicode),
+				(u"Riyoubi",unicode),
+				(u"Riyousaki",unicode),
+				(u"Riyousha",unicode),
 				(u"ShiharaiKubun",int),
 				(u"RiyouKingaku_Yen",int),
 				(u"ShiharaiKingaku_Yen",int))

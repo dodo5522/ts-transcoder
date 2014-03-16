@@ -48,9 +48,20 @@ class Table(object):
 			values_in_record = record.split(u',')
 			
 			for i, (field, cast) in enumerate(self.GetFields()):
-				setattr(obj, field, cast(values_in_record[i]))
+				self.AddValueToRecord(obj, field, values_in_record[i], cast)
 			
 			self.records.append(obj)
+	
+	def AddValueToRecord(self, obj_record, field, value, cast):
+		try:
+			casted_value = cast(value)
+		except ValueError as err:
+			if cast == str:
+				casted_value = u''
+			else:
+				casted_value = 0
+		finally:
+			setattr(obj_record, field, casted_value)
 	
 	def GetFields(self):
 		'''
@@ -131,6 +142,7 @@ class Manememo2():
 		        u"銀行,新生,,2014/03/31,利息,--,--,2,101"]
 		
 		objRecordsOfBank = RecordsOfBank(RecordOfBank, data)
+		print objRecordsOfBank
 		
 		#fp.close()
 

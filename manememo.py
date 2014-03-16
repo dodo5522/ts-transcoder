@@ -74,64 +74,64 @@ class RecordsOfBank(Table):
 	'''A table of bank.'''
 	
 	def GetFields(self):
-		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",unicode),
-				(u"Kigyoumei",unicode),
-				(u"Bikou",unicode),
-				(u"Riyoubi",unicode),
-				(u"Kubun",unicode),
-				(u"Tekiyou",unicode),
-				(u"ShiharaiKingaku_Yen",int),
-				(u"AzukeireKingaku_Yen",int),
-				(u"Zandaka_Yen",int))
+		'''Get attribute name and value's type as tuple.'''
+		return (("Gyoukai",unicode),
+				("Kigyoumei",unicode),
+				("Bikou",unicode),
+				("Riyoubi",unicode),
+				("Kubun",unicode),
+				("Tekiyou",unicode),
+				("ShiharaiKingaku_Yen",int),
+				("AzukeireKingaku_Yen",int),
+				("Zandaka_Yen",int))
 
 class RecordsOfOther(Table):
 	'''A table of other.'''
 	
 	def GetFields(self):
-		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",unicode),
-				(u"Kigyoumei",unicode),
-				(u"Bikou",unicode),
-				(u"Riyoubi",unicode),
-				(u"Riyousaki",unicode),
-				(u"Riyousha",unicode),
-				(u"ShiharaiKubun",int),
-				(u"RiyouKingaku_Yen",int),
-				(u"ShiharaiKingaku_Yen",int))
+		'''Get attribute name and value's type as tuple.'''
+		return (("Gyoukai",unicode),
+				("Kigyoumei",unicode),
+				("Bikou",unicode),
+				("Riyoubi",unicode),
+				("Riyousaki",unicode),
+				("Riyousha",unicode),
+				("ShiharaiKubun",int),
+				("RiyouKingaku_Yen",int),
+				("ShiharaiKingaku_Yen",int))
 
 class RecordsOfStock(Table):
 	'''A table of stock.'''
 	
 	def GetFields(self):
-		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",unicode),
-				(u"Kigyoumei",unicode),
-				(u"Bikou",unicode),
-				(u"Yakujoubi",unicode),
-				(u"Ukewatashibi",unicode),
-				(u"Torihikimei",unicode),
-				(u"Meigaramei",unicode),
-				(u"Suuryou",unicode),
-				(u"Tanka_Yen",int),
-				(u"Tsuuka",unicode),
-				(u"UkewatashiDaikin",unicode),
-				(u"UkewatashiDaikin_Yen",int))
+		'''Get attribute name and value's type as tuple.'''
+		return (("Gyoukai",unicode),
+				("Kigyoumei",unicode),
+				("Bikou",unicode),
+				("Yakujoubi",unicode),
+				("Ukewatashibi",unicode),
+				("Torihikimei",unicode),
+				("Meigaramei",unicode),
+				("Suuryou",unicode),
+				("Tanka_Yen",int),
+				("Tsuuka",unicode),
+				("UkewatashiDaikin",unicode),
+				("UkewatashiDaikin_Yen",int))
 
 class RecordsOfCard(Table):
 	'''A table of credit card.'''
 	
 	def GetFields(self):
-		'''Get strings of all field as tuple.'''
-		return ((u"Gyoukai",unicode),
-				(u"Kigyoumei",unicode),
-				(u"Bikou",unicode),
-				(u"Riyoubi",unicode),
-				(u"Riyousaki",unicode),
-				(u"Riyousha",unicode),
-				(u"ShiharaiKubun",int),
-				(u"RiyouKingaku_Yen",int),
-				(u"ShiharaiKingaku_Yen",int))
+		'''Get attribute name and value's type as tuple.'''
+		return (("Gyoukai",unicode),
+				("Kigyoumei",unicode),
+				("Bikou",unicode),
+				("Riyoubi",unicode),
+				("Riyousaki",unicode),
+				("Riyousha",unicode),
+				("ShiharaiKubun",int),
+				("RiyouKingaku_Yen",int),
+				("ShiharaiKingaku_Yen",int))
 
 class Manememo2():
 	def __init__(self, pathCsvFile=None):

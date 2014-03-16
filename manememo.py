@@ -41,6 +41,13 @@ class Table(object):
 	'''
 	
 	def __init__(self, constructor, records_on_cvs=None):
+		'''
+		Constructor of Table class.
+		
+		Args:
+			constructor: Record object type to be making from now
+			records_on_cvs: An unicode string read from CSV file.
+		'''
 		self.records = []
 		obj = constructor()
 		
@@ -53,6 +60,14 @@ class Table(object):
 			self.records.append(obj)
 	
 	def AddValueToRecord(self, obj_record, field, value, cast):
+		'''
+		Add value which is casted with "cast" to the record object as the attribute with "field".
+		Args:
+			obj_record: record object
+			field: attribute name
+			value: string or integer as value
+			cast: type to cast the value
+		'''
 		try:
 			casted_value = cast(value)
 		except ValueError as err:

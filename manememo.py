@@ -40,16 +40,26 @@ class Table(object):
 	Default table object.
 	'''
 	
-	_record = {}
+	_record_constructor = None
+	_records = []
 	
-	def __len__(self):
-		'''Length of this record.'''
-		return len(self._record)
+	def __init__(self, records_on_cvs=None, constructor=None):
+		_record_constructor = constructor
+		
+		for record in records_on_cvs:
+			record_raw = record.split(u',')
+		
+		
 	
 	def GetFields(self):
-		'''Get tables of string and value type of all field as tuple.'''
-		'''This method should be overriden on inherited class.'''
+		'''
+		Get tables of string and value type of all field as tuple.
+		This method should be overriden on inherited class.
+		'''
 		return ()
+		
+		
+		
 
 class TableOfBank(Table):
 	'''A table of bank.'''
@@ -59,15 +69,15 @@ class TableOfBank(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"業界",str),
-				(u"企業名",str),
-				(u"備考",str),
-				(u"ご利用日",str),
-				(u"区分",str),
-				(u"摘要",str),
-				(u"支払金額（円）",int),
-				(u"預入金額（円）",int),
-				(u"残高（円）",int))
+		return ((u"Gyoukai",str),
+				(u"Kigyoumei",str),
+				(u"Bikou",str),
+				(u"Riyoubi",str),
+				(u"Kubun",str),
+				(u"Tekiyou",str),
+				(u"ShiharaiKingaku_Yen",int),
+				(u"AzukeireKingaku_Yen",int),
+				(u"Zandaka_Yen",int))
 
 class TableOfOther(Table):
 	'''A table of other.'''
@@ -77,15 +87,15 @@ class TableOfOther(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"業界",str),
-				(u"企業名",str),
-				(u"備考",str),
-				(u"ご利用日",str),
-				(u"ご利用先",str),
-				(u"ご利用者",str),
-				(u"お支払い区分",int),
-				(u"ご利用金額（円）",int),
-				(u"お支払い金額（円）",int))
+		return ((u"Gyoukai",str),
+				(u"Kigyoumei",str),
+				(u"Bikou",str),
+				(u"Riyoubi",str),
+				(u"Riyousaki",str),
+				(u"Riyousha",str),
+				(u"ShiharaiKubun",int),
+				(u"RiyouKingaku_Yen",int),
+				(u"ShiharaiKingaku_Yen",int))
 
 class TableOfStock(Table):
 	'''A table of stock.'''
@@ -95,18 +105,18 @@ class TableOfStock(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"業界",str),
-				(u"企業名",str),
-				(u"備考",str),
-				(u"約定日",str),
-				(u"受渡日",str),
-				(u"取引名",str),
-				(u"銘柄名",str),
-				(u"数量",str),
-				(u"単価（円）",int),
-				(u"通貨",str),
-				(u"受渡代金（外貨）",str),
-				(u"受渡代金（円）",int))
+		return ((u"Gyoukai",str),
+				(u"Kigyoumei",str),
+				(u"Bikou",str),
+				(u"Yakujoubi",str),
+				(u"Ukewatashibi",str),
+				(u"Torihikimei",str),
+				(u"Meigaramei",str),
+				(u"Suuryou",str),
+				(u"Tanka_Yen",int),
+				(u"Tsuuka",str),
+				(u"UkewatashiDaikin",str),
+				(u"UkewatashiDaikin_Yen",int))
 
 class TableOfCard(Table):
 	'''A table of credit card.'''
@@ -116,15 +126,15 @@ class TableOfCard(Table):
 	
 	def GetFields(self):
 		'''Get strings of all field as tuple.'''
-		return ((u"業界",str),
-				(u"企業名",str),
-				(u"備考",str),
-				(u"ご利用日",str),
-				(u"ご利用先",str),
-				(u"ご利用者",str),
-				(u"お支払い区分",int),
-				(u"ご利用金額（円）",int),
-				(u"お支払い金額（円）",int))
+		return ((u"Gyoukai",str),
+				(u"Kigyoumei",str),
+				(u"Bikou",str),
+				(u"Riyoubi",str),
+				(u"Riyousaki",str),
+				(u"Riyousha",str),
+				(u"ShiharaiKubun",int),
+				(u"RiyouKingaku_Yen",int),
+				(u"ShiharaiKingaku_Yen",int))
 
 class Manememo2():
 	def __init__(self, pathCsvFile=None):

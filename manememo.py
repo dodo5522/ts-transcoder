@@ -52,7 +52,7 @@ class Table(object):
 		'''Get attribute name and value's type as tuple.'''
 		return ()
 	
-	def __init__(self, class_record, lines_csv=None):
+	def __init__(self, class_record, lines_csv=None, path_csv_out=None):
 		'''
 		Constructor of Table class.
 		
@@ -61,6 +61,7 @@ class Table(object):
 			lines_csv: An unicode string read from CSV file.
 		'''
 		self.records = []
+		self.path_csv_out = path_csv_out
 		
 		for line in lines_csv:
 			obj = class_record()
@@ -90,10 +91,10 @@ class Table(object):
 		finally:
 			setattr(obj_record, field, casted_value)
 	
-	def WriteRecordsToFile(self, path_csv_out=None):
+	def WriteRecordsToFile(self):
 		'''Write all record to file.'''
 		
-		fp = open(path_csv_out, 'w')
+		fp = open(self.path_csv_out, 'w')
 		fields = self.GetFields()
 		
 		for i, (field, field_jp, cast) in enumerate(fields): 
@@ -255,8 +256,8 @@ class Manememo2():
 			
 			# store the read data into table object and another CSV file.
 			if len(lines_csv) > 0:
-				obj = class_table(class_record, lines_csv)
-				obj.WriteRecordsToFile(path_csv_out)
+				obj = class_table(class_record, lines_csv, path_csv_out)
+				obj.WriteRecordsToFile()
 		
 		fpin.close()
 	

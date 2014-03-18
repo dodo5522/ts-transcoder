@@ -8,7 +8,9 @@ sed -e 's/--/0/g' ${FILE_INPUT}_1.utf8 > ${FILE_INPUT}_2.utf8
 sed -e '1,6d' ${FILE_INPUT}_2.utf8 > ${FILE_INPUT}_3.utf8
 '''
 
-import sys,re
+import os,sys,re
+
+_ENCODING = 'utf-8'
 
 class Record(object):
 	'''
@@ -40,19 +42,29 @@ class Table(object):
 	Default table object.
 	'''
 	
-	def __init__(self, constructor, records_on_cvs=None):
+	@classmethod
+	def GetKindOfTable(cls):
+		'''Get kind of table.'''
+		return ''
+	
+	@classmethod
+	def GetFields(cls):
+		'''Get attribute name and value's type as tuple.'''
+		return ()
+	
+	def __init__(self, class_record, lines_csv=None):
 		'''
 		Constructor of Table class.
 		
 		Args:
-			constructor: Record object type to be making from now
-			records_on_cvs: An unicode string read from CSV file.
+			class_table_record: Record object type to be making from now
+			lines_csv: An unicode string read from CSV file.
 		'''
 		self.records = []
-		obj = constructor()
 		
-		for record in records_on_cvs:
-			values_in_record = record.split(u',')
+		for line in lines_csv:
+			obj = class_record()
+			values_in_record = line.split(u',')
 			
 			for i, (field, field_jp, cast) in enumerate(self.GetFields()):
 				self.AddValueToRecord(obj, field, values_in_record[i], cast)
@@ -78,17 +90,49 @@ class Table(object):
 		finally:
 			setattr(obj_record, field, casted_value)
 	
-	def GetFields(self):
-		'''
-		Get tables of string and value type of all field as tuple.
-		This method should be overriden on inherited class.
-		'''
-		return ()
+	def WriteRecordsToFile(self, path_csv_out=None):
+		'''Write all record to file.'''
+		
+		fp = open(path_csv_out, 'w')
+		fields = self.GetFields()
+		
+		for i, (field, field_jp, cast) in enumerate(fields): 
+			fp.write(field_jp.encode(_ENCODING))
+			if i < len(fields) - 1:
+				fp.write(u','.encode(_ENCODING))
+			else:
+				fp.write(u'\n'.encode(_ENCODING))
+		
+		for record in self.records:
+			for i, (field, field_jp, cast) in enumerate(fields):
+				value = getattr(record, field)
+				if type(value) == unicode:
+					value = value.encode(_ENCODING)
+				else:
+					value = str(value)
+				fp.write(value)
+				if i < len(fields) - 1:
+					fp.write(u','.encode(_ENCODING))
+				else:
+					fp.write(u'\n'.encode(_ENCODING))
+		
+		fp.close()
 
 class RecordsOfBank(Table):
 	'''A table of bank.'''
 	
-	def GetFields(self):
+	@classmethod
+	def GetKindOfTable(cls):
+		'''Get kind of table.'''
+		return 'bank'
+	
+	@classmethod
+	def GetRecordClass(self):
+		'''Get record class.'''
+		return RecordOfBank
+	
+	@classmethod
+	def GetFields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -103,7 +147,18 @@ class RecordsOfBank(Table):
 class RecordsOfOther(Table):
 	'''A table of other.'''
 	
-	def GetFields(self):
+	@classmethod
+	def GetKindOfTable(cls):
+		'''Get kind of table.'''
+		return 'other'
+	
+	@classmethod
+	def GetRecordClass(self):
+		'''Get record class.'''
+		return RecordOfOther
+	
+	@classmethod
+	def GetFields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -118,7 +173,18 @@ class RecordsOfOther(Table):
 class RecordsOfStock(Table):
 	'''A table of stock.'''
 	
-	def GetFields(self):
+	@classmethod
+	def GetKindOfTable(cls):
+		'''Get kind of table.'''
+		return 'stock'
+	
+	@classmethod
+	def GetRecordClass(self):
+		'''Get record class.'''
+		return RecordOfStock
+	
+	@classmethod
+	def GetFields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -136,7 +202,18 @@ class RecordsOfStock(Table):
 class RecordsOfCard(Table):
 	'''A table of credit card.'''
 	
-	def GetFields(self):
+	@classmethod
+	def GetKindOfTable(cls):
+		'''Get kind of table.'''
+		return 'card'
+	
+	@classmethod
+	def GetRecordClass(self):
+		'''Get record class.'''
+		return RecordOfCard
+	
+	@classmethod
+	def GetFields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -149,21 +226,45 @@ class RecordsOfCard(Table):
 				("ShiharaiKingaku_Yen",u"お支払い金額（円）",int))
 
 class Manememo2():
-	def __init__(self, pathCsvFile=None):
-		#FIXME: only for test
-		#fp = open(pathCsvFile)
+	def __init__(self, path_csv_in=None):
+		setattr(self, "path_csv_in", path_csv_in)
+
+	def Parse(self):
+		# get path to the file of CSV got from manememo site.
+		(path_csv_in_noext, ext) = os.path.splitext(self.path_csv_in)
 		
-		data = [u"銀行,りそな,,2014/03/30,利息,--,--,1,100",
-		        u"銀行,新生,,2014/03/31,利息,--,--,2,101"]
+		# get records from the raw CSV file.
+		fpin = open(self.path_csv_in)
+		for class_table in self.GetOrderOfTables():
+			class_record = class_table.GetRecordClass()
+			path_csv_out = path_csv_in_noext + '_' + class_table.GetKindOfTable() + '.csv'
+			
+			# skip unnecessary lines.
+			for line in fpin:
+				line_unicode = unicode(line, 'shift-jis').encode(_ENCODING)
+				if line_unicode[0] == u'*':
+					break
+			
+			# store the lines needed.
+			lines_csv = []
+			for line in fpin:
+				line_unicode = unicode(line, 'shift-jis').rstrip()
+				if len(line_unicode) == 0:
+					break
+				lines_csv.append(line_unicode)
+			
+			# store the read data into table object and another CSV file.
+			if len(lines_csv) > 0:
+				obj = class_table(class_record, lines_csv)
+				obj.WriteRecordsToFile(path_csv_out)
 		
-		objRecordsOfBank = RecordsOfBank(RecordOfBank, data)
-		print objRecordsOfBank
-		
-		#fp.close()
-
-
-
-
+		fpin.close()
+	
+	def GetOrderOfTables(self):
+		return (RecordsOfBank,
+				RecordsOfOther,
+				RecordsOfStock,
+				RecordsOfCard)
 
 
 
@@ -317,54 +418,55 @@ class Manememo:
 		return True
 
 if __name__ == '__main__':
-	#FIXME: only for test
-	obj = Manememo2()
 	
 	try:
 		pathCsvFile = sys.argv[1]
-		objManememo = Manememo()
 		
-		errorCode = objManememo.parseCsvFile(pathCsvFile)
-		(titleAll,dataAll) = objManememo.getParsedDataAll()
+		objManememo = Manememo2(pathCsvFile)
+		objManememo.Parse()
 		
-		titleOfBank = titleAll[0]
-		dataOfBank = dataAll[0]
-		keyIn = u'預入金額（円）'
-		keyOut = u'支払金額（円）'
-		keyDiff = u'差額（円）'
-		
-		# dataAll has list of listOfBank, listOfStock, etc.
-		# listOfBank, listOfStock has the list of dictionary data for elements.
-		titleOfBank.append(keyDiff)
-		for dataOfEachLine in dataOfBank:
-			if dataOfEachLine.get(keyOut) == u'--':
-				dataOfEachLine[keyOut] = u'0'
-			if dataOfEachLine.get(keyIn) == u'--':
-				dataOfEachLine[keyIn] = u'0'
-			
-			# Add diff data to each line.
-			intDiff = int(dataOfEachLine.get(keyIn)) - int(dataOfEachLine.get(keyOut))
-			dataOfEachLine[keyDiff] = unicode(str(intDiff))
-		
-		# save bank data in the instance as CSV file
-		pathCsvFileBank = re.sub(r'\.csv$','_bank.csv',pathCsvFile)
-		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFileBank,titleOfBank,dataOfBank)
-		
-		titleOfCard = titleAll[3]
-		dataOfCard = dataAll[3]
-		keyOut = u'お支払い金額（円）'
-		
-		# dataAll has list of listOfBank, listOfStock, etc.
-		# listOfBank, listOfStock has the list of dictionary data for elements.
-		for dataOfEachLine in dataOfCard:
-			objectOut = dataOfEachLine.get(keyOut)
-			if objectOut != None and objectOut.isdigit():
-				intOut = int(objectOut) * -1
-				dataOfEachLine[keyOut] = unicode(str(intOut))
-		
-		# save card data in the instance as CSV file
-		pathCsvFileCard = re.sub(r'\.csv$','_card.csv',pathCsvFile)
-		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFileCard,titleOfCard,dataOfCard)
+#		objManememo = Manememo()
+#		errorCode = objManememo.parseCsvFile(pathCsvFile)
+#		(titleAll,dataAll) = objManememo.getParsedDataAll()
+#		
+#		titleOfBank = titleAll[0]
+#		dataOfBank = dataAll[0]
+#		keyIn = u'預入金額（円）'
+#		keyOut = u'支払金額（円）'
+#		keyDiff = u'差額（円）'
+#		
+#		# dataAll has list of listOfBank, listOfStock, etc.
+#		# listOfBank, listOfStock has the list of dictionary data for elements.
+#		titleOfBank.append(keyDiff)
+#		for dataOfEachLine in dataOfBank:
+#			if dataOfEachLine.get(keyOut) == u'--':
+#				dataOfEachLine[keyOut] = u'0'
+#			if dataOfEachLine.get(keyIn) == u'--':
+#				dataOfEachLine[keyIn] = u'0'
+#			
+#			# Add diff data to each line.
+#			intDiff = int(dataOfEachLine.get(keyIn)) - int(dataOfEachLine.get(keyOut))
+#			dataOfEachLine[keyDiff] = unicode(str(intDiff))
+#		
+#		# save bank data in the instance as CSV file
+#		pathCsvFileBank = re.sub(r'\.csv$','_bank.csv',pathCsvFile)
+#		errorCode = objManememo.saveParsedDataBankAsCsv(pathCsvFileBank,titleOfBank,dataOfBank)
+#		
+#		titleOfCard = titleAll[3]
+#		dataOfCard = dataAll[3]
+#		keyOut = u'お支払い金額（円）'
+#		
+#		# dataAll has list of listOfBank, listOfStock, etc.
+#		# listOfBank, listOfStock has the list of dictionary data for elements.
+#		for dataOfEachLine in dataOfCard:
+#			objectOut = dataOfEachLine.get(keyOut)
+#			if objectOut != None and objectOut.isdigit():
+#				intOut = int(objectOut) * -1
+#				dataOfEachLine[keyOut] = unicode(str(intOut))
+#		
+#		# save card data in the instance as CSV file
+#		pathCsvFileCard = re.sub(r'\.csv$','_card.csv',pathCsvFile)
+#		errorCode = objManememo.saveParsedDataCardAsCsv(pathCsvFileCard,titleOfCard,dataOfCard)
 	except Exception as err:
 		print type(err)
 		print err

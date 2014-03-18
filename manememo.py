@@ -43,12 +43,12 @@ class Table(object):
 	'''
 	
 	@classmethod
-	def GetKindOfTable(cls):
+	def get_kind_table(cls):
 		'''Get kind of table.'''
 		return ''
 	
 	@classmethod
-	def GetFields(cls):
+	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return ()
 	
@@ -67,12 +67,12 @@ class Table(object):
 			obj = class_record()
 			values_in_record = line.split(u',')
 			
-			for i, (field, field_jp, cast) in enumerate(self.GetFields()):
-				self.AddValueToRecord(obj, field, values_in_record[i], cast)
+			for i, (field, field_jp, cast) in enumerate(self.get_fields()):
+				self._add_value_to_record(obj, field, values_in_record[i], cast)
 			
 			self.records.append(obj)
 	
-	def AddValueToRecord(self, obj_record, field, value, cast):
+	def _add_value_to_record(self, obj_record, field, value, cast):
 		'''
 		Add value which is casted with "cast" to the record object as the attribute with "field".
 		Args:
@@ -91,11 +91,11 @@ class Table(object):
 		finally:
 			setattr(obj_record, field, casted_value)
 	
-	def WriteRecordsToFile(self):
+	def write_records_file(self):
 		'''Write all record to file.'''
 		
 		fp = open(self.path_csv_out, 'w')
-		fields = self.GetFields()
+		fields = self.get_fields()
 		
 		for i, (field, field_jp, cast) in enumerate(fields): 
 			fp.write(field_jp.encode(_ENCODING))
@@ -123,17 +123,17 @@ class RecordsOfBank(Table):
 	'''A table of bank.'''
 	
 	@classmethod
-	def GetKindOfTable(cls):
+	def get_kind_table(cls):
 		'''Get kind of table.'''
 		return 'bank'
 	
 	@classmethod
-	def GetRecordClass(self):
+	def get_class_record(self):
 		'''Get record class.'''
 		return RecordOfBank
 	
 	@classmethod
-	def GetFields(cls):
+	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -149,17 +149,17 @@ class RecordsOfOther(Table):
 	'''A table of other.'''
 	
 	@classmethod
-	def GetKindOfTable(cls):
+	def get_kind_table(cls):
 		'''Get kind of table.'''
 		return 'other'
 	
 	@classmethod
-	def GetRecordClass(self):
+	def get_class_record(self):
 		'''Get record class.'''
 		return RecordOfOther
 	
 	@classmethod
-	def GetFields(cls):
+	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -175,17 +175,17 @@ class RecordsOfStock(Table):
 	'''A table of stock.'''
 	
 	@classmethod
-	def GetKindOfTable(cls):
+	def get_kind_table(cls):
 		'''Get kind of table.'''
 		return 'stock'
 	
 	@classmethod
-	def GetRecordClass(self):
+	def get_class_record(self):
 		'''Get record class.'''
 		return RecordOfStock
 	
 	@classmethod
-	def GetFields(cls):
+	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -204,17 +204,17 @@ class RecordsOfCard(Table):
 	'''A table of credit card.'''
 	
 	@classmethod
-	def GetKindOfTable(cls):
+	def get_kind_table(cls):
 		'''Get kind of table.'''
 		return 'card'
 	
 	@classmethod
-	def GetRecordClass(self):
+	def get_class_record(self):
 		'''Get record class.'''
 		return RecordOfCard
 	
 	@classmethod
-	def GetFields(cls):
+	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
 				("Kigyoumei",u"企業名",unicode),
@@ -230,15 +230,15 @@ class Manememo2():
 	def __init__(self, path_csv_in=None):
 		setattr(self, "path_csv_in", path_csv_in)
 
-	def Parse(self):
+	def parse(self):
 		# get path to the file of CSV got from manememo site.
 		(path_csv_in_noext, ext) = os.path.splitext(self.path_csv_in)
 		
 		# get records from the raw CSV file.
 		fpin = open(self.path_csv_in)
-		for class_table in self.GetOrderOfTables():
-			class_record = class_table.GetRecordClass()
-			path_csv_out = path_csv_in_noext + '_' + class_table.GetKindOfTable() + '.csv'
+		for class_table in self._get_order_tables():
+			class_record = class_table.get_class_record()
+			path_csv_out = path_csv_in_noext + '_' + class_table.get_kind_table() + '.csv'
 			
 			# skip unnecessary lines.
 			for line in fpin:
@@ -257,11 +257,11 @@ class Manememo2():
 			# store the read data into table object and another CSV file.
 			if len(lines_csv) > 0:
 				obj = class_table(class_record, lines_csv, path_csv_out)
-				obj.WriteRecordsToFile()
+				obj.write_records_file()
 		
 		fpin.close()
 	
-	def GetOrderOfTables(self):
+	def _get_order_tables(self):
 		return (RecordsOfBank,
 				RecordsOfOther,
 				RecordsOfStock,
@@ -424,7 +424,7 @@ if __name__ == '__main__':
 		pathCsvFile = sys.argv[1]
 		
 		objManememo = Manememo2(pathCsvFile)
-		objManememo.Parse()
+		objManememo.parse()
 		
 #		objManememo = Manememo()
 #		errorCode = objManememo.parseCsvFile(pathCsvFile)

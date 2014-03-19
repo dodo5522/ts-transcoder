@@ -11,6 +11,7 @@ sed -e '1,6d' ${FILE_INPUT}_2.utf8 > ${FILE_INPUT}_3.utf8
 import os,sys,re
 
 _ENCODING = 'utf-8'
+_KEY_COMPANY = 'Kigyoumei'
 
 class Record(object):
 	'''
@@ -52,23 +53,33 @@ class Table(object):
 		'''Get attribute name and value's type as tuple.'''
 		return ()
 	
-	def __init__(self, class_record, lines_csv=None, path_csv_out=None):
+	def __init__(self, class_record, lines_csv=None, path_csv_in=None):
 		'''
 		Constructor of Table class.
 		
 		Args:
 			class_table_record: Record object type to be making from now
-			lines_csv: An unicode string read from CSV file.
+			class_record: Class type of record to be stored.
+			lines_csv: Lines read from CSV file with unicode.
+			path_csv_in: File path of input CSV file.
 		'''
-		self.records = []
-		self.path_csv_out = path_csv_out
 		
+		self.path_csv_in = path_csv_in
+		self.records = []
+		self.companies = {}
+		
+		# make records from each line of CSV data.
 		for line in lines_csv:
 			obj = class_record()
 			values_in_record = line.split(u',')
 			
 			for i, (field, field_jp, cast) in enumerate(self.get_fields()):
-				self._add_value_to_record(obj, field, values_in_record[i], cast)
+				value = values_in_record[i]
+				self._add_value_to_record(obj, field, value, cast)
+				
+				# to count the number of company to generate output CSV file later.
+				if field == _KEY_COMPANY:
+					self.companies[value] = None
 			
 			self.records.append(obj)
 	
@@ -94,30 +105,43 @@ class Table(object):
 	def write_records_file(self):
 		'''Write all record to file.'''
 		
-		fp = open(self.path_csv_out, 'w')
 		fields = self.get_fields()
 		
-		for i, (field, field_jp, cast) in enumerate(fields): 
-			fp.write(field_jp.encode(_ENCODING))
-			if i < len(fields) - 1:
-				fp.write(u','.encode(_ENCODING))
-			else:
-				fp.write(u'\n'.encode(_ENCODING))
-		
-		for record in self.records:
-			for i, (field, field_jp, cast) in enumerate(fields):
-				value = getattr(record, field)
-				if type(value) == unicode:
-					value = value.encode(_ENCODING)
-				else:
-					value = str(value)
-				fp.write(value)
+		# process to devide output CSV file by company name.
+		for company in self.companies.keys():
+			# generate output CSV file path with company name.
+			(path_csv_out, ext) = os.path.splitext(self.path_csv_in)
+			path_csv_out += '_' + self.get_kind_table()
+			path_csv_out += '_' + company.encode(_ENCODING) + ext
+			
+			fp = open(path_csv_out, 'w')
+			
+			for i, (field, field_jp, cast) in enumerate(fields): 
+				fp.write(field_jp.encode(_ENCODING))
 				if i < len(fields) - 1:
 					fp.write(u','.encode(_ENCODING))
 				else:
 					fp.write(u'\n'.encode(_ENCODING))
-		
-		fp.close()
+			
+			for record in self.records:
+				# return to the gegining if company name differs from the one of a record.
+				value = getattr(record, _KEY_COMPANY)
+				if company != value:
+					continue
+				
+				for i, (field, field_jp, cast) in enumerate(fields):
+					value = getattr(record, field)
+					if type(value) == unicode:
+						value = value.encode(_ENCODING)
+					else:
+						value = str(value)
+					fp.write(value)
+					if i < len(fields) - 1:
+						fp.write(u','.encode(_ENCODING))
+					else:
+						fp.write(u'\n'.encode(_ENCODING))
+			
+			fp.close()
 
 class RecordsOfBank(Table):
 	'''A table of bank.'''
@@ -136,7 +160,7 @@ class RecordsOfBank(Table):
 	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
-				("Kigyoumei",u"企業名",unicode),
+				(_KEY_COMPANY,u"企業名",unicode),
 				("Bikou",u"備考",unicode),
 				("Riyoubi",u"ご利用日",unicode),
 				("Kubun",u"区分",unicode),
@@ -162,7 +186,7 @@ class RecordsOfOther(Table):
 	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
-				("Kigyoumei",u"企業名",unicode),
+				(_KEY_COMPANY,u"企業名",unicode),
 				("Bikou",u"備考",unicode),
 				("Riyoubi",u"ご利用日",unicode),
 				("Riyousaki",u"ご利用先",unicode),
@@ -188,7 +212,7 @@ class RecordsOfStock(Table):
 	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
-				("Kigyoumei",u"企業名",unicode),
+				(_KEY_COMPANY,u"企業名",unicode),
 				("Bikou",u"備考",unicode),
 				("Yakujoubi",u"約定日",unicode),
 				("Ukewatashibi",u"受渡日",unicode),
@@ -217,7 +241,7 @@ class RecordsOfCard(Table):
 	def get_fields(cls):
 		'''Get attribute name and value's type as tuple.'''
 		return (("Gyoukai",u"*業界",unicode),
-				("Kigyoumei",u"企業名",unicode),
+				(_KEY_COMPANY,u"企業名",unicode),
 				("Bikou",u"備考",unicode),
 				("Riyoubi",u"ご利用日",unicode),
 				("Riyousaki",u"ご利用先",unicode),
@@ -236,16 +260,12 @@ class Manememo2():
 	
 	def __init__(self, path_csv_in=None):
 		setattr(self, "path_csv_in", path_csv_in)
-
+	
 	def parse(self):
-		# get path to the file of CSV got from manememo site.
-		(path_csv_in_noext, ext) = os.path.splitext(self.path_csv_in)
-		
 		# get records from the raw CSV file.
 		fpin = open(self.path_csv_in)
 		for class_table in self._get_order_tables():
 			class_record = class_table.get_class_record()
-			path_csv_out = path_csv_in_noext + '_' + class_table.get_kind_table() + '.csv'
 			
 			# skip unnecessary lines.
 			for line in fpin:
@@ -263,7 +283,7 @@ class Manememo2():
 			
 			# store the read data into table object and another CSV file.
 			if len(lines_csv) > 0:
-				obj = class_table(class_record, lines_csv, path_csv_out)
+				obj = class_table(class_record, lines_csv, self.path_csv_in)
 				obj.write_records_file()
 		
 		fpin.close()

@@ -227,6 +227,13 @@ class RecordsOfCard(Table):
 				("ShiharaiKingaku_Yen",u"お支払い金額（円）",int))
 
 class Manememo2():
+	@classmethod
+	def _get_order_tables(cls):
+		return (RecordsOfBank,
+				RecordsOfOther,
+				RecordsOfStock,
+				RecordsOfCard)
+	
 	def __init__(self, path_csv_in=None):
 		setattr(self, "path_csv_in", path_csv_in)
 
@@ -260,12 +267,6 @@ class Manememo2():
 				obj.write_records_file()
 		
 		fpin.close()
-	
-	def _get_order_tables(self):
-		return (RecordsOfBank,
-				RecordsOfOther,
-				RecordsOfStock,
-				RecordsOfCard)
 
 
 

@@ -89,7 +89,7 @@ class PhotoSort:
 # main routine for executed as python script
 if __name__ == '__main__':
 	try:
-		pathRoot = "/Users/takashi/Pictures"
+		pathRoot = sys.argv[1]
 		extList = ["jpg","png"]
 		
 		objPhotoSort = PhotoSort(pathRoot,extList)

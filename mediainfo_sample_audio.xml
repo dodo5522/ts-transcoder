@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Mediainfo version="0.7.67">
+<File>
+<track type="General">
+<Complete_name>/Volumes/sounds/クラシック/gontiti/28.mp3</Complete_name>
+<Format>MPEG Audio</Format>
+<File_size>4.19 MiB</File_size>
+<Duration>3mn 24s</Duration>
+<Overall_bit_rate_mode>Variable</Overall_bit_rate_mode>
+<Overall_bit_rate>172 Kbps</Overall_bit_rate>
+<Track_name>28</Track_name>
+<Track_name_Position>5</Track_name_Position>
+<Performer>gontiti</Performer>
+<Genre>Instrumental</Genre>
+<Writing_library>LAME3.92 </Writing_library>
+</track>
+
+<track type="Audio">
+<Format>MPEG Audio</Format>
+<Format_version>Version 1</Format_version>
+<Format_profile>Layer 3</Format_profile>
+<Duration>3mn 24s</Duration>
+<Bit_rate_mode>Variable</Bit_rate_mode>
+<Bit_rate>172 Kbps</Bit_rate>
+<Minimum_bit_rate>128 Kbps</Minimum_bit_rate>
+<Channel_s_>2 channels</Channel_s_>
+<Sampling_rate>44.1 KHz</Sampling_rate>
+<Compression_mode>Lossy</Compression_mode>
+<Stream_size>4.18 MiB (100%)</Stream_size>
+<Writing_library>LAME3.92 </Writing_library>
+<Encoding_settings>-m s -V 0 -q 2 -lowpass 19.9 --vbr-old -b 128</Encoding_settings>
+</track>
+
+</File>
+</Mediainfo>
+

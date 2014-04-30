@@ -9,7 +9,7 @@ from exifread import process_file, __version__
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class PhotoSort:
-	def __init__(self, stringPathOfRoot, listExtentions, debug=False):
+	def __init__(self, path_root_src=None, path_root_dst=None, listExtentions=None, debug=False):
 		extentions = []
 		extention_lower = []
 		extention_upper = []
@@ -22,18 +22,19 @@ class PhotoSort:
 		extentions.extend(extention_upper)
 		
 		setattr(self, "_listExtentions", extentions)
-		setattr(self, "_stringPathOfRoot", stringPathOfRoot)
+		setattr(self, "_path_root_src", path_root_src)
+		setattr(self, "_path_root_dst", path_root_dst)
 		setattr(self, "_debug", debug)
 	
 	def getTargetDirectory(self):
-		return self._stringPathOfRoot
+		return self._path_root_src
 	
 	def getFileExtentionsList(self):
 		return self._listExtentions
 	
 	def sortFiles(self):
-		for fileFound in os.listdir(self._stringPathOfRoot):
-			pathSrcImg = os.path.join(self._stringPathOfRoot, fileFound)
+		for fileFound in os.listdir(self._path_root_src):
+			pathSrcImg = os.path.join(self._path_root_src, fileFound)
 			if not os.path.isfile(pathSrcImg):
 				continue
 			
@@ -119,7 +120,7 @@ if __name__ == '__main__':
 				help='debug mode if this flag is set (default: False)')
 		args = parser.parse_args()
 		
-		objPhotoSort = PhotoSort(args.path_root_src, args.sort_files_extentions, args.debug)
+		objPhotoSort = PhotoSort(args.path_root_src, args.path_root_dst, args.sort_files_extentions, args.debug)
 		objPhotoSort.sortFiles()
 		
 	except Exception as err:

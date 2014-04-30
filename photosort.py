@@ -11,8 +11,9 @@
 
 import os,glob,sys,string,re
 import shutil
-from exifread.tags import DEFAULT_STOP_TAG, FIELD_TYPES
 from exifread import process_file, __version__
+
+TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class PhotoSort:
 	def __init__(self, stringPathOfRoot, listExtentions):
@@ -50,7 +51,7 @@ class PhotoSort:
 				index = self._listExtentions.index(ext[1:])
 				
 				objImgFile = open(pathSrcImg, "rb")
-				exif_data = process_file(objImgFile, stop_tag='EXIF DateTimeOriginal')
+				exif_data = process_file(objImgFile, stop_tag=TAG_DATE_TIME)
 				objImgFile.close()
 				
 				# thumbnail binary data is not used in this script.
@@ -59,7 +60,7 @@ class PhotoSort:
 					del exif_data[unusedParam]
 				
 				# EXIF DateTimeOriginal is stored with this format "YYYY:MM:DD HH:MM:SS".
-				dateAndTime = exif_data['EXIF DateTimeOriginal']
+				dateAndTime = exif_data[TAG_DATE_TIME]
 				
 				if hasattr(dateAndTime, 'printable'):
 					# FIXME: want to translate directory name with some optional character.

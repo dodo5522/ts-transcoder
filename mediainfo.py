@@ -87,10 +87,19 @@ class VideoInfo(TrackInfo):
 			return None
 
 class MediaInfo(object):
-	def __init__(self, path_or_file_xml):
-		etree = et.parse(path_or_file_xml)
+	def __init__(self, path_file_media=None, path_file_xml=None):
+		if path_file_media is not None:
+			cmd = 'mediainfo --Output=XML "%s"' % path_file_media
+			proc = subprocess.Popen(cmd, shell=True, \
+					stdout=subprocess.PIPE, \
+					stderr=subprocess.PIPE)
+			
+			(stdout_data, stderr_data) = proc.communicate()
+			eroot = et.fromstring(stdout_data)
+		else:
+			etree = et.parse(path_file_xml)
+			eroot = etree.getroot()
 		
-		eroot = etree.getroot()
 		for key in eroot.attrib.keys():
 			setattr(self, key, eroot.attrib[key])
 		
@@ -137,8 +146,20 @@ if __name__ == '__main__':
 				default=None, \
 				type=str)
 		
-		pass
+		args = parser.parse_args()
+		
+		if args.input_media_file is not None:
+			obj = MediaInfo(args.input_media_file, None)
+		elif args.input_xml_file is not None:
+			obj = MediaInfo(None, args.input_xml_file)
+		else:
+			raise IOError('argument is invalid.')
+		
+		print obj.info_video.get_format()
+		print obj.info_video.get_aspect_ratio()
+		print obj.info_video.get_encoded_date()
+		
 	except Exception as err:
-		print err
+		print type(err), err.message
 	finally:
 		pass

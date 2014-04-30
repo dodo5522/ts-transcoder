@@ -1,23 +1,15 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-"""
-	module:		photosort
-
-	This script to make directory of date which the photo is taken, and move the photo into the directory.
-
-	argument1:	root directory path of source
-	argument2:	root directory path of destination
-"""
-
 import os,glob,sys,string,re
 import shutil
+import argparse
 from exifread import process_file, __version__
 
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class PhotoSort:
-	def __init__(self, stringPathOfRoot, listExtentions):
+	def __init__(self, stringPathOfRoot, listExtentions, debug=False):
 		extentions = []
 		extention_lower = []
 		extention_upper = []
@@ -31,6 +23,7 @@ class PhotoSort:
 		
 		setattr(self, "_listExtentions", extentions)
 		setattr(self, "_stringPathOfRoot", stringPathOfRoot)
+		setattr(self, "_debug", debug)
 	
 	def getTargetDirectory(self):
 		return self._stringPathOfRoot
@@ -75,7 +68,8 @@ class PhotoSort:
 					shutil.move(pathSrcImg, pathDstImg)
 				
 			except Exception as err:
-				print str(type(err)) + " occurs with message \"" + err.message + "\"."
+				if self._debug == True:
+					print str(type(err)) + " occurs with message \"" + err.message + "\"."
 				continue
 			
 			finally:
@@ -91,16 +85,45 @@ class PhotoSort:
 # main routine for executed as python script
 if __name__ == '__main__':
 	try:
-		pathRoot = sys.argv[1]
-		extList = ["jpg","png"]
+		parser = argparse.ArgumentParser(description='This script to make directory of date which the photo is taken, and move the photo into the directory.')
+		parser.add_argument('path_root_src', \
+				action='store', \
+				nargs=None, \
+				const=None, \
+				default=None, \
+				type=str, \
+				choices=None, \
+				help='Directory path where your taken photo files are located.', \
+				metavar=None)
+		parser.add_argument('-d', '--path-root-dst', \
+				action='store', \
+				nargs='?', \
+				const=None, \
+				default=None, \
+				type=str, \
+				choices=None, \
+				help='Directory path where you want to create date folder and locate photo files. (default: same as source directory)', \
+				metavar=None)
+		parser.add_argument('-e', '--sort-files-extentions', \
+				action='store', \
+				nargs='+', \
+				const=None, \
+				default=['jpg'], \
+				type=str, \
+				choices=None, \
+				help='Extentions of file which you want to sort. (default: jpg)', \
+				metavar=None)
+		parser.add_argument('--debug', \
+				action='store_true', \
+				default=False, \
+				help='debug mode if this flag is set (default: False)')
+		args = parser.parse_args()
 		
-		objPhotoSort = PhotoSort(pathRoot,extList)
-		print objPhotoSort.getFileExtentionsList()
-		
+		objPhotoSort = PhotoSort(args.path_root_src, args.sort_files_extentions, args.debug)
 		objPhotoSort.sortFiles()
 		
-
 	except Exception as err:
-		print "Exception type is ",type(err)
-		print "Exception arg is ",err.args
-		print "Exception is ",err
+		if args.debug == True:
+			print "Exception type is ",type(err)
+			print "Exception arg is ",err.args
+			print "Exception is ",err

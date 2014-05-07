@@ -77,9 +77,6 @@ class PhotoSort:
 				if objImgFile is not None:
 					objImgFile.close()
 	
-	def showHelp(self):
-		print "this_script path_to_root_directory"
-	
 	def __del__(self):
 		print "destructor is called."
 

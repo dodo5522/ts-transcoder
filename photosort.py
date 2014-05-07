@@ -9,64 +9,64 @@ from exifread import process_file, __version__
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class PhotoSort:
-	def __init__(self, path_root_src=None, path_root_dst=None, listExtentions=None, debug=False):
+	def __init__(self, path_root_src=None, path_root_dst=None, ext_src=None, debug=False):
 		extentions = []
 		extention_lower = []
 		extention_upper = []
 		
-		for extention in listExtentions:
+		for extention in ext_src:
 			extention_lower.append(extention.lower())
 			extention_upper.append(extention.upper())
 		
 		extentions.extend(extention_lower)
 		extentions.extend(extention_upper)
 		
-		setattr(self, "_listExtentions", extentions)
+		setattr(self, "_ext_src", extentions)
 		setattr(self, "_path_root_src", path_root_src)
 		setattr(self, "_path_root_dst", path_root_dst)
 		setattr(self, "_debug", debug)
 	
-	def getTargetDirectory(self):
+	def get_src_dir(self):
 		return self._path_root_src
 	
-	def getFileExtentionsList(self):
-		return self._listExtentions
+	def get_src_ext(self):
+		return self._ext_src
 	
-	def sortFiles(self):
-		for fileFound in os.listdir(self._path_root_src):
-			pathSrcImg = os.path.join(self._path_root_src, fileFound)
-			if not os.path.isfile(pathSrcImg):
+	def sort_files(self):
+		for file_found in os.listdir(self._path_root_src):
+			path_src_img = os.path.join(self._path_root_src, file_found)
+			if not os.path.isfile(path_src_img):
 				continue
 			
 			try:
-				objImgFile = None
-				(pathSrcImgWoExt, ext) = os.path.splitext(fileFound)
+				obj_img = None
+				(path_src_img_wo_ext, ext) = os.path.splitext(file_found)
 				
 				# if error, exception process continue to the next loop.
-				index = self._listExtentions.index(ext[1:])
+				index = self._ext_src.index(ext[1:])
 				
-				objImgFile = open(pathSrcImg, "rb")
-				exif_data = process_file(objImgFile, stop_tag=TAG_DATE_TIME)
-				objImgFile.close()
+				obj_img = open(path_src_img, "rb")
+				exif_data = process_file(obj_img, stop_tag=TAG_DATE_TIME)
+				obj_img.close()
 				
 				# thumbnail binary data is not used in this script.
-				unusedParam = 'JPEGThumbnail'
-				if unusedParam in exif_data:
-					del exif_data[unusedParam]
+				tag_unused = 'JPEGThumbnail'
+				if tag_unused in exif_data:
+					del exif_data[tag_unused]
 				
 				# EXIF DateTimeOriginal is stored with this format "YYYY:MM:DD HH:MM:SS".
-				dateAndTime = exif_data[TAG_DATE_TIME]
+				date_and_time = exif_data[TAG_DATE_TIME]
 				
-				if hasattr(dateAndTime, 'printable'):
+				if hasattr(date_and_time, 'printable'):
 					# FIXME: want to translate directory name with some optional character.
-					(date, time) = dateAndTime.printable.split(' ')
-					pathDstDir = os.path.join(os.path.dirname(pathSrcImg), date.translate(None, ':'))
-					pathDstImg = os.path.join(pathDstDir, os.path.basename(pathSrcImg))
+					(date, time) = date_and_time.printable.split(' ')
+					path_dst_dir = os.path.join(os.path.dirname(path_src_img), date.translate(None, ':'))
+					path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
 					
 					# create directory to move.
-					if not os.path.isdir(pathDstDir):
-						os.mkdir(pathDstDir)
-					shutil.move(pathSrcImg, pathDstImg)
+					if not os.path.isdir(path_dst_dir):
+						os.mkdir(path_dst_dir)
+					shutil.move(path_src_img, path_dst_img)
 				
 			except Exception as err:
 				if self._debug == True:
@@ -74,8 +74,8 @@ class PhotoSort:
 				continue
 			
 			finally:
-				if objImgFile is not None:
-					objImgFile.close()
+				if obj_img is not None:
+					obj_img.close()
 	
 	def __del__(self):
 		print "destructor is called."
@@ -117,8 +117,8 @@ if __name__ == '__main__':
 				help='debug mode if this flag is set (default: False)')
 		args = parser.parse_args()
 		
-		objPhotoSort = PhotoSort(args.path_root_src, args.path_root_dst, args.sort_files_extentions, args.debug)
-		objPhotoSort.sortFiles()
+		obj_photosort= PhotoSort(args.path_root_src, args.path_root_dst, args.sort_files_extentions, args.debug)
+		obj_photosort.sort_files()
 		
 	except Exception as err:
 		if args.debug == True:

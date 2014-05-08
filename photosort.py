@@ -4,6 +4,7 @@
 import os,glob,sys,string,re
 import shutil
 import argparse
+import mediainfo
 from exifread import process_file, __version__
 
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
@@ -38,6 +39,17 @@ class PhotoSort:
 				
 				# if error, exception process continue to the next loop.
 				index = self._ext_src.index(ext[1:])
+				
+				# if mediafile is movies, use mediaionfo class method to get encoded date.
+				if self._ext_src[index] in EXT_MOVIES:
+					obj_media = MediaInfo(file_found, None)
+					
+					media_data = obj_media.info_video.get_encoded_date()
+					date_and_time = media_data.split()
+					# FIXME: issue#4:  want to translate directory name with some optional character.
+					date = date_and_time[1].replace('-', '')
+				
+				
 				
 				obj_img = open(path_src_img, "rb")
 				exif_data = process_file(obj_img, stop_tag=TAG_DATE_TIME)

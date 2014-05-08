@@ -11,15 +11,9 @@ TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 class PhotoSort:
 	def __init__(self, path_root_src=None, path_root_dst=None, ext_src=None, debug=False):
 		extentions = []
-		extention_lower = []
-		extention_upper = []
-		
 		for extention in ext_src:
-			extention_lower.append(extention.lower())
-			extention_upper.append(extention.upper())
-		
-		extentions.extend(extention_lower)
-		extentions.extend(extention_upper)
+			extentions.append(extention.lower())
+			extentions.append(extention.upper())
 		
 		setattr(self, "_ext_src", extentions)
 		setattr(self, "_path_root_src", path_root_src)

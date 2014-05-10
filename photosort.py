@@ -23,6 +23,9 @@ class PhotoSort:
 	def get_src_dir(self):
 		return self._path_root_src
 	
+	def get_dst_dir(self):
+		return self._path_root_dst
+	
 	def get_src_ext(self):
 		return self._ext_src
 	

@@ -119,3 +119,6 @@ if __name__ == '__main__':
 			print "Exception type is ",type(err)
 			print "Exception arg is ",err.args
 			print "Exception is ",err
+		
+	finally:
+		pass

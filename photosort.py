@@ -57,7 +57,14 @@ class PhotoSort:
 				if hasattr(date_and_time, 'printable'):
 					# FIXME: want to translate directory name with some optional character.
 					(date, time) = date_and_time.printable.split(' ')
-					path_dst_dir = os.path.join(os.path.dirname(path_src_img), date.translate(None, ':'))
+					dir_date = date.translate(None, ':')
+					
+					# if destination path is not set, destination is same as source.
+					if self._path_root_dst is not None:
+						path_dst_dir = os.path.join(self._path_root_dst, dir_date)
+					else:
+						path_dst_dir = os.path.join(os.path.dirname(path_src_img), dir_date)
+					
 					path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
 					
 					# create directory to move.

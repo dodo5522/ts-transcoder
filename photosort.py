@@ -39,11 +39,9 @@ class PhotoSort:
 				obj_img = None
 				(path_src_img_wo_ext, ext) = os.path.splitext(file_found)
 				
-				# if error, exception process continue to the next loop.
-				index = self._ext_src.index(ext[1:])
-				
 				#FIXME: issue#8
 				# if the found mediafile is movies, use mediaionfo class method to get encoded date.
+				date = None
 				if ext[1:] in EXT_MOVIES:
 					obj_media = mediainfo.MediaInfo(path_src_img, None)
 					
@@ -52,30 +50,36 @@ class PhotoSort:
 					# FIXME: issue#4:  want to translate directory name with some optional character.
 					date = date_and_time[1].replace('-', '')
 				
-				
-				
-				obj_img = open(path_src_img, "rb")
-				exif_data = process_file(obj_img, stop_tag=TAG_DATE_TIME)
-				obj_img.close()
-				
-				# thumbnail binary data is not used in this script.
-				tag_unused = 'JPEGThumbnail'
-				if tag_unused in exif_data:
-					del exif_data[tag_unused]
-				
-				# EXIF DateTimeOriginal is stored with this format "YYYY:MM:DD HH:MM:SS".
-				date_and_time = exif_data[TAG_DATE_TIME]
-				
-				if hasattr(date_and_time, 'printable'):
-					# FIXME: want to translate directory name with some optional character.
-					(date, time) = date_and_time.printable.split(' ')
-					path_dst_dir = os.path.join(os.path.dirname(path_src_img), date.translate(None, ':'))
-					path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
+				# if the found mediafile is movies, use mediaionfo class method to get encoded date.
+				elif ext[1:] in self._ext_src:
+					obj_img = open(path_src_img, "rb")
+					exif_data = process_file(obj_img, stop_tag=TAG_DATE_TIME)
+					obj_img.close()
 					
-					# create directory to move.
-					if not os.path.isdir(path_dst_dir):
-						os.mkdir(path_dst_dir)
-					shutil.move(path_src_img, path_dst_img)
+					# thumbnail binary data is not used in this script.
+					tag_unused = 'JPEGThumbnail'
+					if tag_unused in exif_data:
+						del exif_data[tag_unused]
+					
+					# EXIF DateTimeOriginal is stored with this format "YYYY:MM:DD HH:MM:SS".
+					date_and_time = exif_data[TAG_DATE_TIME]
+					
+					# if date_and_time does not have attribute 'printable', enter to next loop.
+					# FIXME: issue #4: want to translate directory name with some optional character.
+					(date, time) = date_and_time.printable.split(' ')
+					date = date.translate(None, ':')
+				
+				else:
+					msg = 'This extention \'%s\' is not supported.' % ext[1:]
+					raise ValueError(msg)
+				
+				path_dst_dir = os.path.join(os.path.dirname(path_src_img), date)
+				path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
+				
+				# create directory to move.
+				if not os.path.isdir(path_dst_dir):
+					os.mkdir(path_dst_dir)
+				shutil.move(path_src_img, path_dst_img)
 				
 			except Exception as err:
 				if self._debug == True:

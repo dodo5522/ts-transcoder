@@ -78,9 +78,9 @@ class PhotoSort:
 				
 				# if destination path is not set, destination is same as source.
 				if self._path_root_dst is not None:
-					path_dst_dir = os.path.join(self._path_root_dst, dir_date)
+					path_dst_dir = os.path.join(self._path_root_dst, date)
 				else:
-					path_dst_dir = os.path.join(os.path.dirname(path_src_img), dir_date)
+					path_dst_dir = os.path.join(os.path.dirname(path_src_img), date)
 				path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
 				
 				# create directory to move.

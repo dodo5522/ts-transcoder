@@ -8,6 +8,8 @@ import mediainfo
 from exifread import process_file, __version__
 
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
+#FIXME: issue#8
+EXT_MOVIES = ('avi', 'AVI', 'mov', 'MOV', 'mp4', 'MP4')
 
 class PhotoSort:
 	def __init__(self, path_root_src=None, path_root_dst=None, ext_src=None, debug=False):

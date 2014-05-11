@@ -40,9 +40,10 @@ class PhotoSort:
 				# if error, exception process continue to the next loop.
 				index = self._ext_src.index(ext[1:])
 				
-				# if mediafile is movies, use mediaionfo class method to get encoded date.
-				if self._ext_src[index] in EXT_MOVIES:
-					obj_media = MediaInfo(file_found, None)
+				#FIXME: issue#8
+				# if the found mediafile is movies, use mediaionfo class method to get encoded date.
+				if ext[1:] in EXT_MOVIES:
+					obj_media = mediainfo.MediaInfo(path_src_img, None)
 					
 					media_data = obj_media.info_video.get_encoded_date()
 					date_and_time = media_data.split()

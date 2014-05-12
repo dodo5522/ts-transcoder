@@ -32,6 +32,11 @@ class PhotoSort:
 	def get_src_ext(self):
 		return self._ext_src
 	
+	def get_date_of_file(self, path_file_src):
+		#FIXME: return some date of file.
+		date = ''
+		return date
+	
 	def sort_files(self):
 		for file_found in os.listdir(self._path_root_src):
 			path_src_img = os.path.join(self._path_root_src, file_found)
@@ -99,6 +104,38 @@ class PhotoSort:
 	
 	def __del__(self):
 		print "destructor is called."
+
+#class SortPhotoFiles(SortFiles):
+class SortPhotoFiles(object):
+	def get_date_of_file(self, path_file_src):
+		obj_img = open(path_src_img, "rb")
+		exif_data = process_file(obj_img, stop_tag=TAG_DATE_TIME)
+		obj_img.close()
+		
+		# thumbnail binary data is not used in this script.
+		tag_unused = 'JPEGThumbnail'
+		if tag_unused in exif_data:
+			del exif_data[tag_unused]
+		
+		# EXIF DateTimeOriginal is stored with this format "YYYY:MM:DD HH:MM:SS".
+		date_and_time = exif_data[TAG_DATE_TIME]
+		
+		# if date_and_time does not have attribute 'printable', enter to next loop.
+		# FIXME: issue #4: want to translate directory name with some optional character.
+		(date, time) = date_and_time.printable.split(' ')
+		date = date.translate(None, ':')
+		return date
+
+#class SortVideoFiles(SortFiles):
+class SortVideoFiles(object):
+	def get_date_of_file(self, path_file_src):
+		obj_media = mediainfo.MediaInfo(path_file_src, None)
+		media_data = obj_media.info_video.get_encoded_date()
+		
+		# FIXME: issue#4:  want to translate directory name with some optional character.
+		date_and_time = media_data.split()
+		date = date_and_time[1].replace('-', '')
+		return date
 
 # main routine for executed as python script
 if __name__ == '__main__':

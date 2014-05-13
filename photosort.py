@@ -49,7 +49,9 @@ class SortFiles(object):
 					(path_src_img_wo_ext, ext) = os.path.splitext(path_src_img)
 					
 					# get date directory name from specified file.
+					# FIXME: issue#4:  want to translate directory name with some optional character.
 					date = self.get_date_of_file(path_src_img)
+					date = date.replace('-', '')
 					
 					# if destination path is not set, destination is same as source.
 					if self._path_root_dst is not None:
@@ -89,10 +91,9 @@ class SortPhotoFiles(SortFiles):
 		# EXIF DateTimeOriginal is stored with this format "YYYY:MM:DD HH:MM:SS".
 		date_and_time = exif_data[TAG_DATE_TIME]
 		
-		# if date_and_time does not have attribute 'printable', enter to next loop.
-		# FIXME: issue #4: want to translate directory name with some optional character.
+		# return date with '-' like '2014-05-01'
 		(date, time) = date_and_time.printable.split(' ')
-		date = date.translate(None, ':')
+		date = date.replace(':', '-')
 		return date
 
 class SortVideoFiles(SortFiles):
@@ -100,9 +101,9 @@ class SortVideoFiles(SortFiles):
 		obj_media = mediainfo.MediaInfo(path_src_mov, None)
 		media_data = obj_media.info_video.get_encoded_date()
 		
-		# FIXME: issue#4:  want to translate directory name with some optional character.
+		# return date with '-' like '2014-05-01'
 		date_and_time = media_data.split()
-		date = date_and_time[1].replace('-', '')
+		date = date_and_time[1]
 		return date
 
 # main routine for executed as python script

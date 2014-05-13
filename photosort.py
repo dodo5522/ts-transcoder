@@ -43,9 +43,6 @@ class SortFiles(object):
 					continue
 				
 				try:
-					obj_img = None
-					(path_src_img_wo_ext, ext) = os.path.splitext(path_src_img)
-					
 					# get date directory name from specified file.
 					# FIXME: issue#4:  want to translate directory name with some optional character.
 					date = self.get_date_of_file(path_src_img)
@@ -69,8 +66,7 @@ class SortFiles(object):
 					continue
 				
 				finally:
-					if obj_img is not None:
-						obj_img.close()
+					pass
 	
 	def __del__(self):
 		print "destructor is called."

@@ -8,8 +8,6 @@ import mediainfo
 from exifread import process_file, __version__
 
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
-#FIXME: issue#8
-EXT_MOVIES = ('avi', 'AVI', 'mov', 'MOV', 'mp4', 'MP4')
 
 class SortFiles(object):
 	def __init__(self, path_root_src=None, path_root_dst=None, ext_src=None, debug=False):
@@ -128,14 +126,23 @@ if __name__ == '__main__':
 				choices=None, \
 				help='Directory path where you want to create date folder and locate photo files. (default: same as source directory)', \
 				metavar=None)
-		parser.add_argument('-e', '--sort-files-extentions', \
+		parser.add_argument('-p', '--sort-photo-extentions', \
 				action='store', \
 				nargs='+', \
 				const=None, \
 				default=['jpg'], \
 				type=str, \
 				choices=None, \
-				help='Extentions of file which you want to sort. (default: jpg)', \
+				help='Extentions of photo file which you want to sort. (default: jpg)', \
+				metavar=None)
+		parser.add_argument('-v', '--sort-video-extentions', \
+				action='store', \
+				nargs='+', \
+				const=None, \
+				default=['mov'], \
+				type=str, \
+				choices=None, \
+				help='Extentions of video file which you want to sort. (default: jpg)', \
 				metavar=None)
 		parser.add_argument('--debug', \
 				action='store_true', \
@@ -143,9 +150,9 @@ if __name__ == '__main__':
 				help='debug mode if this flag is set (default: False)')
 		args = parser.parse_args()
 		
-		obj_files = SortPhotoFiles(args.path_root_src, args.path_root_dst, args.sort_files_extentions, args.debug)
+		obj_files = SortPhotoFiles(args.path_root_src, args.path_root_dst, args.sort_photo_extentions, args.debug)
 		obj_files.sort_files()
-		obj_files = SortVideoFiles(args.path_root_src, args.path_root_dst, EXT_MOVIES, args.debug)
+		obj_files = SortVideoFiles(args.path_root_src, args.path_root_dst, args.sort_video_extentions, args.debug)
 		obj_files.sort_files()
 		
 	except Exception as err:

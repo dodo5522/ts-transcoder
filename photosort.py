@@ -135,7 +135,7 @@ if __name__ == '__main__':
 				action='store', \
 				nargs='+', \
 				const=None, \
-				default=['mov'], \
+				default=['mov', 'mp4'], \
 				type=str, \
 				choices=None, \
 				help='Extentions of video file which you want to sort. (default: jpg)', \

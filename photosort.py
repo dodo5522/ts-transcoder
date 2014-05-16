@@ -10,7 +10,7 @@ from exifread import process_file, __version__
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class SortFiles(object):
-	def __init__(self, path_root_src=None, path_root_dst=None, ext_src=None, debug=False):
+	def __init__(self, path_root_src=None, path_root_dst=None, ext_src=None, debug=False, delimiter=''):
 		extentions = []
 		for extention in ext_src:
 			extentions.append(extention.lower())
@@ -20,6 +20,7 @@ class SortFiles(object):
 		setattr(self, "_path_root_src", path_root_src)
 		setattr(self, "_path_root_dst", path_root_dst)
 		setattr(self, "_debug", debug)
+		setattr(self, "_delimiter", delimiter)
 	
 	def get_src_dir(self):
 		return self._path_root_src
@@ -29,6 +30,9 @@ class SortFiles(object):
 	
 	def get_src_ext(self):
 		return self._ext_src
+	
+	def get_delimiter(self):
+		return self._delimiter
 	
 	def get_date_of_file(self, path_file_src):
 		#FIXME: return some date of file.
@@ -44,9 +48,8 @@ class SortFiles(object):
 				
 				try:
 					# get date directory name from specified file.
-					# FIXME: issue#4:  want to translate directory name with some optional character.
 					date = self.get_date_of_file(path_src_img)
-					date = date.replace('-', '')
+					date = date.replace('-', self._delimiter)
 					
 					# if destination path is not set, destination is same as source.
 					if self._path_root_dst is not None:
@@ -140,15 +143,24 @@ if __name__ == '__main__':
 				choices=None, \
 				help='Extentions of video file which you want to sort. (default: jpg)', \
 				metavar=None)
+		parser.add_argument('-l', '--delimiter', \
+				action='store', \
+				nargs='?', \
+				const=None, \
+				default=None, \
+				type=str, \
+				choices=None, \
+				help='A character as delimiter which you want to set the name of date folder like "2014-05-01". (default: none)', \
+				metavar=None)
 		parser.add_argument('--debug', \
 				action='store_true', \
 				default=False, \
 				help='debug mode if this flag is set (default: False)')
 		args = parser.parse_args()
 		
-		obj_files = SortPhotoFiles(args.path_root_src, args.path_root_dst, args.sort_photo_extentions, args.debug)
+		obj_files = SortPhotoFiles(args.path_root_src, args.path_root_dst, args.sort_photo_extentions, args.debug, args.delimiter)
 		obj_files.sort_files()
-		obj_files = SortVideoFiles(args.path_root_src, args.path_root_dst, args.sort_video_extentions, args.debug)
+		obj_files = SortVideoFiles(args.path_root_src, args.path_root_dst, args.sort_video_extentions, args.debug, args.delimiter)
 		obj_files.sort_files()
 		
 	except Exception as err:

@@ -42,40 +42,37 @@ def FindMediaFileWithKeyword(RootDirectory="", KeyWord=""):
 	
 	return DictOfMediaFile
 
-###################
-# main routine
-###################
-
-try:
-	ARGVS = sys.argv
-	ARGC = len(ARGVS)
-	OWN = ARGVS[0]
-	
-	if ARGC != 3:
-		print("Error! Argument is not enough.")
-		print("{Own} dir_of_src dir_of_dst(includes key directories)".format(Own=OWN))
-		sys.exit()
-	
-	DIR_MEDIA = ARGVS[1]
-	DIR_TARGET = ARGVS[2]
-	DictOfDir = GetListOfDirectoryToMove(DIR_TARGET)
-	
-	for KeyToFind in DictOfDir:
-		print("Keyword : {Key}".format(Key=KeyToFind))
-		DictOfMediaFile = FindMediaFileWithKeyword(DIR_MEDIA, KeyToFind)
+if __name__ == '__main__':
+	try:
+		ARGVS = sys.argv
+		ARGC = len(ARGVS)
+		OWN = ARGVS[0]
 		
-		for FoundMediaFile in DictOfMediaFile:
-			SrcPathOfMediaFile = DictOfMediaFile[FoundMediaFile]
-			DstPathOfMediaFile = os.path.join(DictOfDir[KeyToFind],FoundMediaFile)
+		if ARGC != 3:
+			print("Error! Argument is not enough.")
+			print("{Own} dir_of_src dir_of_dst(includes key directories)".format(Own=OWN))
+			sys.exit()
+		
+		DIR_MEDIA = ARGVS[1]
+		DIR_TARGET = ARGVS[2]
+		DictOfDir = GetListOfDirectoryToMove(DIR_TARGET)
+		
+		for KeyToFind in DictOfDir:
+			print("Keyword : {Key}".format(Key=KeyToFind))
+			DictOfMediaFile = FindMediaFileWithKeyword(DIR_MEDIA, KeyToFind)
 			
-			if os.path.isfile(DstPathOfMediaFile):
-				print("{File} for destination already exists, so source file is removed.".format(File=DstPathOfMediaFile))
-				os.remove(SrcPathOfMediaFile)
-			else:
-				print("Found media file : {File}".format(File=SrcPathOfMediaFile)) 
-				print("Target to move : {Dir}".format(Dir=DictOfDir[KeyToFind]))
-				sh.move(SrcPathOfMediaFile, DstPathOfMediaFile)
-
-except Exception as err:
-	print("Error type is {ErrType}, {Args}.".format(ErrType=type(err),Args=err.args))
+			for FoundMediaFile in DictOfMediaFile:
+				SrcPathOfMediaFile = DictOfMediaFile[FoundMediaFile]
+				DstPathOfMediaFile = os.path.join(DictOfDir[KeyToFind],FoundMediaFile)
+				
+				if os.path.isfile(DstPathOfMediaFile):
+					print("{File} for destination already exists, so source file is removed.".format(File=DstPathOfMediaFile))
+					os.remove(SrcPathOfMediaFile)
+				else:
+					print("Found media file : {File}".format(File=SrcPathOfMediaFile)) 
+					print("Target to move : {Dir}".format(Dir=DictOfDir[KeyToFind]))
+					sh.move(SrcPathOfMediaFile, DstPathOfMediaFile)
+	
+	except Exception as err:
+		print("Error type is {ErrType}, {Args}.".format(ErrType=type(err),Args=err.args))
 

@@ -52,7 +52,7 @@ class SortFiles(object):
 					date = date.replace('-', self._delimiter)
 					
 					# if destination path is not set, destination is same as source.
-					if self._path_root_dst is not None:
+					if len(self._path_root_dst) is not 0:
 						path_dst_dir = os.path.join(self._path_root_dst, date)
 					else:
 						path_dst_dir = os.path.join(os.path.dirname(path_src_img), date)
@@ -120,7 +120,7 @@ if __name__ == '__main__':
 				action='store', \
 				nargs='?', \
 				const=None, \
-				default=None, \
+				default='', \
 				type=str, \
 				choices=None, \
 				help='Directory path where you want to create date folder and locate photo files. (default: same as source directory)', \

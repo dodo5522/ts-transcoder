@@ -129,7 +129,7 @@ if __name__ == '__main__':
 				action='store', \
 				nargs='+', \
 				const=None, \
-				default=None, \
+				default=(), \
 				type=str, \
 				choices=None, \
 				help='Extentions of photo file which you want to sort. (default: jpg)', \
@@ -138,7 +138,7 @@ if __name__ == '__main__':
 				action='store', \
 				nargs='+', \
 				const=None, \
-				default=None, \
+				default=(), \
 				type=str, \
 				choices=None, \
 				help='Extentions of video file which you want to sort. (default: jpg)', \
@@ -158,12 +158,10 @@ if __name__ == '__main__':
 				help='debug mode if this flag is set (default: False)')
 		args = parser.parse_args()
 		
-		if args.sort_photo_extentions is not None:
-			obj_files = SortPhotoFiles(args.path_root_src, args.path_root_dst, args.sort_photo_extentions, args.debug, args.delimiter)
-			obj_files.sort_files()
-		if args.sort_video_extentions is not None:
-			obj_files = SortVideoFiles(args.path_root_src, args.path_root_dst, args.sort_video_extentions, args.debug, args.delimiter)
-			obj_files.sort_files()
+		obj_files = SortPhotoFiles(args.path_root_src, args.path_root_dst, args.sort_photo_extentions, args.debug, args.delimiter)
+		obj_files.sort_files()
+		obj_files = SortVideoFiles(args.path_root_src, args.path_root_dst, args.sort_video_extentions, args.debug, args.delimiter)
+		obj_files.sort_files()
 		
 	except Exception as err:
 		if args.debug == True:

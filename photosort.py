@@ -10,7 +10,7 @@ from exifread import process_file, __version__
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class SortFiles(object):
-	def __init__(self, path_root_src=None, path_root_dst=None, ext_src=None, debug=False, delimiter=''):
+	def __init__(self, path_root_src='', path_root_dst='', ext_src=(), debug=False, delimiter=''):
 		extentions = []
 		for extention in ext_src:
 			extentions.append(extention.lower())

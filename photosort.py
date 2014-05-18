@@ -21,6 +21,9 @@ class SortFiles(object):
 		setattr(self, "_path_root_dst", path_root_dst)
 		setattr(self, "_debug", debug)
 		setattr(self, "_delimiter", delimiter)
+
+		if debug == True:
+			print dir(self)
 	
 	def get_src_dir(self):
 		return self._path_root_src
@@ -51,12 +54,19 @@ class SortFiles(object):
 					date = self.get_date_of_file(path_src_img)
 					date = date.replace('-', self._delimiter)
 					
+					if self._debug == True:
+						print "date is %s." % (date)
+					
 					# if destination path is not set, destination is same as source.
 					if len(self._path_root_dst) is not 0:
 						path_dst_dir = os.path.join(self._path_root_dst, date)
 					else:
 						path_dst_dir = os.path.join(os.path.dirname(path_src_img), date)
 					path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
+					
+					if self._debug == True:
+						print "path_src_img is %s." % (path_src_img)
+						print "path_dst_img is %s." % (path_dst_img)
 					
 					print "move \"%s\" to \"%s\"." % (path_src_img, path_dst_img)
 					

@@ -58,8 +58,7 @@ class SortFiles(object):
 						path_dst_dir = os.path.join(os.path.dirname(path_src_img), date)
 					path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
 					
-					if self._debug == True:
-						print "move \"%s\" to \"%s\"." % (path_src_img, path_dst_img)
+					print "move \"%s\" to \"%s\"." % (path_src_img, path_dst_img)
 					
 					# create directory to move.
 					if not os.path.isdir(path_dst_dir):

@@ -23,7 +23,10 @@ class SortFiles(object):
 		setattr(self, "_delimiter", delimiter)
 
 		if debug == True:
-			print dir(self)
+			print self._ext_src
+			print self._path_root_src
+			print self._path_root_dst
+			print self._delimiter
 	
 	def get_src_dir(self):
 		return self._path_root_src

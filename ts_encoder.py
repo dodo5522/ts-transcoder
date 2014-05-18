@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import os,sys,re
+import os,platform,sys,re
 import fcntl
 import time
 
@@ -22,12 +22,15 @@ class ExecTrashBox(ExecTool):
 
 if __name__ == '__main__':
 	
-	# only for test on posix system
-	fd = open('ts_encoder.lock', 'w')
-	fcntl.flock(fd, fcntl.LOCK_EX)
-	for count in range(0,5):
-		time.sleep(1)
-		print 'waiting... (%s)' % (count)
-	fd.close()
+	if platform.system() == 'Windows':
+		pass
+	else:
+		# only for test on posix system
+		fd = open('ts_encoder.lock', 'w')
+		fcntl.flock(fd, fcntl.LOCK_EX)
+		for count in range(0,5):
+			time.sleep(1)
+			print 'waiting... (%s)' % (count)
+		fd.close()
 	
 	pass

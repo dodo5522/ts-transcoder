@@ -173,10 +173,20 @@ if __name__ == '__main__':
 				help='debug mode if this flag is set (default: False)')
 		args = parser.parse_args()
 		
-		obj_files = SortPhotoFiles(args.path_root_src, args.path_root_dst, args.sort_photo_extentions, args.debug, args.delimiter)
-		obj_files.sort_files()
-		obj_files = SortVideoFiles(args.path_root_src, args.path_root_dst, args.sort_video_extentions, args.debug, args.delimiter)
-		obj_files.sort_files()
+		obj_sort = []
+		obj_sort.append(SortPhotoFiles(args.path_root_src, \
+				args.path_root_dst, \
+				args.sort_photo_extentions, \
+				args.debug, \
+				args.delimiter))
+		obj_sort.append(SortVideoFiles(args.path_root_src, \
+				args.path_root_dst, \
+				args.sort_video_extentions, \
+				args.debug, \
+				args.delimiter))
+		
+		for obj in obj_sort:
+			obj.sort_files()
 		
 	except Exception as err:
 		if args.debug == True:

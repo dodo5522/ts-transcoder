@@ -11,6 +11,9 @@ else:
 	import fcntl
 
 class ExecTool(object):
+	'''
+	This is parent class to execute some tool with exclusive.
+	'''
 	def __init__(self):
 		'''
 		Initialize ExecTool class object.
@@ -62,20 +65,29 @@ class ExecTool(object):
 		self._unlock()
 
 class ExecTsSplitter(ExecTool):
+	'''
+	This is child class to execute TsSplitter tool with exclusive.
+	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
 
 class ExecCciConv(ExecTool):
+	'''
+	This is child class to execute cciconv tool with exclusive.
+	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_cciconv.lock'
 
 class ExecMediaCoder(ExecTool):
+	'''
+	This is child class to execute MediaCoder tool with exclusive.
+	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
 
 class ExecTrashBox(ExecTool):
 	'''
-	This class's execute() method can be run without lock/unlock.
+	This is child class to execute trashbox tool without exclusive.
 	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_trashbox.lock'

@@ -3,6 +3,7 @@
 
 import os,platform,sys,re
 import time
+import argparse
 
 if platform.system() == 'Windows':
 	#FIXME:
@@ -99,14 +100,25 @@ class ExecTrashBox(ExecTool):
 		pass
 
 if __name__ == '__main__':
-	obj = []
-	obj.append(ExecTsSplitter())
-	obj.append(ExecCciConv())
-	if sys.argv[1] != 'aaa':
-		obj.append(ExecMediaCoder())
-	obj.append(ExecTrashBox())
-
-	for object in obj:
-		object.execute()
-
-	pass
+	# argument parsing process.
+	parser = argparse.ArgumentParser(description='This script is to encode TS file recorded by PT2.')
+	parser.add_argument('--skip', \
+			action='store_true', \
+			default=False, \
+			help='skip a process to test.')
+	parser.add_argument('--debug', \
+			action='store_true', \
+			default=False, \
+			help='debug mode.')
+	args = parser.parse_args()
+	
+	# run the main operation
+	objs = []
+	objs.append(ExecTsSplitter())
+	objs.append(ExecCciConv())
+	if args.skip == False:
+		objs.append(ExecMediaCoder())
+	objs.append(ExecTrashBox())
+	
+	for obj in objs:
+		obj.execute()

@@ -29,6 +29,7 @@ class ExecTool(object):
 		'''
 		self._fd.close()
 		self._fd = None
+		os.remove(self._get_lock_name())
 
 	def _get_lock_name(self):
 		return 'default'

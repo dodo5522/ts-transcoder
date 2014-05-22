@@ -4,6 +4,7 @@
 import os,platform,sys,re
 import time
 import argparse
+import subprocess
 
 if platform.system() == 'Windows':
 	#FIXME:
@@ -15,13 +16,14 @@ class ExecTool(object):
 	'''
 	This is parent class to execute some tool with exclusive.
 	'''
-	def __init__(self):
+	def __init__(self, cmd):
 		'''
 		Initialize ExecTool class object.
 		Create mutex like object, etc.
 		'''
 		fd = open(self._get_lock_name(), 'w')
 		setattr(self, '_fd', fd)
+		setattr(self, '_cmd', cmd)
 
 	def __del__(self):
 		'''
@@ -61,9 +63,14 @@ class ExecTool(object):
 		Execute program with lock.
 		'''
 		self._lock()
-		for count in range(0,5):
-			time.sleep(1)
-			print '%s ... (%s)' % (self._get_lock_name(), count)
+		
+		print '%s is running with lock %s...' % (self._cmd, self._get_lock_name())
+		subp = subprocess.Popen(self._cmd, \
+				shell=True, \
+				stdout=subprocess.PIPE, \
+				stderr=subprocess.PIPE)
+		(data_stdout, data_stderr) = subp.communicate()
+		
 		self._unlock()
 
 class ExecTsSplitter(ExecTool):
@@ -115,15 +122,14 @@ def main():
 	
 	# run the main operation
 	objs = []
-	objs.append(ExecTsSplitter())
-	objs.append(ExecCciConv())
+	objs.append(ExecTsSplitter('ls -al'))
+	objs.append(ExecCciConv('mount'))
 	if args.skip == False:
-		objs.append(ExecMediaCoder())
-	objs.append(ExecTrashBox())
+		objs.append(ExecMediaCoder('cat /etc/resolv.conf'))
+	objs.append(ExecTrashBox('cat /etc/bashrc'))
 	
 	for obj in objs:
 		obj.execute()
-	pass
 
 if __name__ == '__main__':
 	main()

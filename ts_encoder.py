@@ -100,7 +100,7 @@ class ExecTrashBox(ExecTool):
 	def _unlock(self):
 		pass
 
-if __name__ == '__main__':
+def main():
 	# argument parsing process.
 	parser = argparse.ArgumentParser(description='This script is to encode TS file recorded by PT2.')
 	parser.add_argument('--skip', \
@@ -123,3 +123,7 @@ if __name__ == '__main__':
 	
 	for obj in objs:
 		obj.execute()
+	pass
+
+if __name__ == '__main__':
+	main()

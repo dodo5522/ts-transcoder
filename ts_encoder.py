@@ -77,6 +77,9 @@ class ExecSplitTs(ExecTool):
 	'''
 	This is child class to execute TsSplitter tool with exclusive.
 	'''
+	def __init__(self):
+		ExecTool.__init__(self, 'ls -al')
+	
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
 
@@ -84,6 +87,9 @@ class ExecSyncAv(ExecTool):
 	'''
 	This is child class to execute cciconv tool with exclusive.
 	'''
+	def __init__(self):
+		ExecTool.__init__(self, 'mount')
+	
 	def _get_lock_name(self):
 		return 'ts_encoder_cciconv.lock'
 
@@ -91,6 +97,9 @@ class ExecTranscode(ExecTool):
 	'''
 	This is child class to execute MediaCoder tool with exclusive.
 	'''
+	def __init__(self):
+		ExecTool.__init__(self, 'cat /etc/resolv.conf')
+	
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
 
@@ -98,6 +107,9 @@ class ExecTrashBox(ExecTool):
 	'''
 	This is child class to execute trashbox tool without exclusive.
 	'''
+	def __init__(self):
+		ExecTool.__init__(self, 'cat /etc/bashrc')
+	
 	def _get_lock_name(self):
 		return 'ts_encoder_trashbox.lock'
 	
@@ -112,10 +124,14 @@ class ExecTrashBox(ExecTool):
 def main():
 	# argument parsing process.
 	parser = argparse.ArgumentParser(description='This script is to encode TS file recorded by PT2.')
-	parser.add_argument('--skip', \
-			action='store_true', \
-			default=False, \
-			help='skip a process to test.')
+	parser.add_argument('path_to_ts_file', \
+			action='store', \
+			default=None, \
+			help='path to TS file.')
+	parser.add_argument('--media-coder-config', \
+			action='store', \
+			default=None, \
+			help='configuration file for media coder.')
 	parser.add_argument('--debug', \
 			action='store_true', \
 			default=False, \
@@ -124,11 +140,10 @@ def main():
 	
 	# run the main operation
 	objs = []
-	objs.append(ExecSplitTs('ls -al'))
-	objs.append(ExecSyncAv('mount'))
-	if args.skip == False:
-		objs.append(ExecTranscode('cat /etc/resolv.conf'))
-	objs.append(ExecTrashBox('cat /etc/bashrc'))
+	objs.append(ExecSplitTs())
+	objs.append(ExecSyncAv())
+	objs.append(ExecTranscode())
+	objs.append(ExecTrashBox())
 	
 	for obj in objs:
 		obj.execute()

@@ -22,15 +22,15 @@ class ExecTool(object):
 		Create mutex like object, etc.
 		'''
 		fd = open(self._get_lock_name(), 'w')
-		setattr(self, '_fd', fd)
+		setattr(self, '_fd_lock', fd)
 		setattr(self, '_cmd', cmd)
 
 	def __del__(self):
 		'''
 		Remove ExecTool class object.
 		'''
-		self._fd.close()
-		self._fd = None
+		self._fd_lock.close()
+		self._fd_lock = None
 		os.remove(self._get_lock_name())
 
 	def _get_lock_name(self):
@@ -44,8 +44,8 @@ class ExecTool(object):
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			print self._fd
-			fcntl.flock(self._fd, fcntl.LOCK_EX)
+			print self._fd_lock
+			fcntl.flock(self._fd_lock, fcntl.LOCK_EX)
 
 	def _unlock(self):
 		'''
@@ -55,8 +55,8 @@ class ExecTool(object):
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			print self._fd
-			fcntl.flock(self._fd, fcntl.LOCK_UN)
+			print self._fd_lock
+			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
 
 	def execute(self):
 		'''

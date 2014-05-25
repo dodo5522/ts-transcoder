@@ -102,9 +102,11 @@ class ExecTrashBox(ExecTool):
 		return 'ts_encoder_trashbox.lock'
 	
 	def _lock(self):
+		''' Don't need to lock/unlock for trashing ts file. '''
 		pass
 	
 	def _unlock(self):
+		''' Don't need to lock/unlock for trashing ts file. '''
 		pass
 
 def main():

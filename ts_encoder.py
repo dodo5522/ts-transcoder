@@ -73,21 +73,21 @@ class ExecTool(object):
 		
 		self._unlock()
 
-class ExecTsSplitter(ExecTool):
+class ExecSplitTs(ExecTool):
 	'''
 	This is child class to execute TsSplitter tool with exclusive.
 	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
 
-class ExecCciConv(ExecTool):
+class ExecSyncAv(ExecTool):
 	'''
 	This is child class to execute cciconv tool with exclusive.
 	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_cciconv.lock'
 
-class ExecMediaCoder(ExecTool):
+class ExecTranscode(ExecTool):
 	'''
 	This is child class to execute MediaCoder tool with exclusive.
 	'''
@@ -122,10 +122,10 @@ def main():
 	
 	# run the main operation
 	objs = []
-	objs.append(ExecTsSplitter('ls -al'))
-	objs.append(ExecCciConv('mount'))
+	objs.append(ExecSplitTs('ls -al'))
+	objs.append(ExecSyncAv('mount'))
 	if args.skip == False:
-		objs.append(ExecMediaCoder('cat /etc/resolv.conf'))
+		objs.append(ExecTranscode('cat /etc/resolv.conf'))
 	objs.append(ExecTrashBox('cat /etc/bashrc'))
 	
 	for obj in objs:

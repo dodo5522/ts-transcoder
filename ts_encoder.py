@@ -63,6 +63,7 @@ class ExecTool(object):
 		Execute program with lock.
 		'''
 		self._lock()
+		self._prefix_execute()
 		
 		print '%s is running with lock %s...' % (self._cmd, self._get_lock_name())
 		subp = subprocess.Popen(self._cmd, \
@@ -71,7 +72,20 @@ class ExecTool(object):
 				stderr=subprocess.PIPE)
 		(data_stdout, data_stderr) = subp.communicate()
 		
+		self._suffix_execute()
 		self._unlock()
+	
+	def _prefix_execute(self):
+		'''
+		Execute program before running execure() method.
+		'''
+		pass
+	
+	def _suffix_execute(self):
+		'''
+		Execute program after running execure() method.
+		'''
+		pass
 
 class ExecSplitTs(ExecTool):
 	'''
@@ -82,6 +96,11 @@ class ExecSplitTs(ExecTool):
 	
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
+	
+	def _suffix_execute(self):
+		#FIXME:
+		print 'remove TS files which has 1SEG and so on.'
+		pass
 
 class ExecSyncAv(ExecTool):
 	'''
@@ -92,6 +111,11 @@ class ExecSyncAv(ExecTool):
 	
 	def _get_lock_name(self):
 		return 'ts_encoder_cciconv.lock'
+	
+	def _suffix_execute(self):
+		#FIXME:
+		print 'rename TS file which audio and video have been synched.'
+		pass
 
 class ExecTranscode(ExecTool):
 	'''
@@ -102,6 +126,16 @@ class ExecTranscode(ExecTool):
 	
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
+	
+	def _prefix_execute(self):
+		#FIXME:
+		print 'rename to some randomized TS file name for media coder.'
+		pass
+	
+	def _suffix_execute(self):
+		#FIXME:
+		print 'revert to original TS file name.'
+		pass
 
 class ExecTrashBox(ExecTool):
 	'''

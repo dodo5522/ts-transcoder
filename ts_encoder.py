@@ -24,7 +24,7 @@ class ExecTool(object):
 		fd = open(self._get_lock_name(), 'w')
 		setattr(self, '_fd_lock', fd)
 		setattr(self, '_cmd', cmd)
-
+	
 	def __del__(self):
 		'''
 		Remove ExecTool class object.
@@ -32,10 +32,10 @@ class ExecTool(object):
 		self._fd_lock.close()
 		self._fd_lock = None
 		os.remove(self._get_lock_name())
-
+	
 	def _get_lock_name(self):
 		pass
-
+	
 	def _lock(self):
 		'''
 		Lock mutex like object.
@@ -46,7 +46,7 @@ class ExecTool(object):
 		else:
 			print self._fd_lock
 			fcntl.flock(self._fd_lock, fcntl.LOCK_EX)
-
+	
 	def _unlock(self):
 		'''
 		Release mutex like object.
@@ -57,7 +57,7 @@ class ExecTool(object):
 		else:
 			print self._fd_lock
 			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
-
+	
 	def execute(self):
 		'''
 		Execute program with lock.
@@ -100,10 +100,10 @@ class ExecTrashBox(ExecTool):
 	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_trashbox.lock'
-
+	
 	def _lock(self):
 		pass
-
+	
 	def _unlock(self):
 		pass
 

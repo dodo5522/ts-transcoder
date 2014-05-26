@@ -59,92 +59,91 @@ class ExecTool(object):
 			print self._fd_lock
 			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
 	
-	def execute(self):
+	def execute(self, path_input='', path_output=''):
 		'''
 		Execute program with lock.
 		'''
 		self._lock()
-		self._prefix_execute()
+		cmd = self._generate_command(path_input, path_output)
 		
-		print '%s is running with lock %s...' % (self._cmd, self._get_lock_name())
-		subp = subprocess.Popen(self._cmd, \
+		print '"%s" runs with lock file "%s".' % (cmd, self._get_lock_name())
+		subp = subprocess.Popen(cmd, \
 				shell=True, \
 				stdout=subprocess.PIPE, \
 				stderr=subprocess.PIPE)
 		(data_stdout, data_stderr) = subp.communicate()
 		
-		self._suffix_execute()
+		path_output = self._suffix_execute(data_stdout, data_stderr)
 		self._unlock()
+		
+		return path_output
 	
-	def _prefix_execute(self):
+	def _generate_command(self, path_input, path_output):
 		'''
 		Execute program before running execure() method.
+		For example, generate command line string.
 		'''
-		pass
+		return ''
 	
-	def _suffix_execute(self):
+	def _suffix_execute(self, data_stdout, data_stderr):
 		'''
 		Execute program after running execure() method.
+		For example, generate path string to output target file.
 		'''
-		pass
+		return ''
 
 class ExecSplitTs(ExecTool):
 	'''
 	This is child class to execute TsSplitter tool with exclusive.
 	'''
-	def __init__(self):
-		ExecTool.__init__(self, 'ls -al')
-	
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
 	
-	def _suffix_execute(self):
+	def _generate_command(self, path_input, path_output):
+		cmd = '{path_to_command} {option} {path_input}'.format(path_to_command=self._path_to_command, option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', path_input=path_input)
+		return cmd
+	
+	def _suffix_execute(self, data_stdout, data_stderr):
 		#FIXME:
 		print 'remove TS files which has 1SEG and so on.'
-		pass
+		return ''
 
 class ExecSyncAv(ExecTool):
 	'''
 	This is child class to execute cciconv tool with exclusive.
 	'''
-	def __init__(self):
-		ExecTool.__init__(self, 'mount')
-	
 	def _get_lock_name(self):
 		return 'ts_encoder_cciconv.lock'
 	
-	def _suffix_execute(self):
+	def _generate_command(self, path_input, path_output):
+		cmd = '{path_to_command} {option} {path_input} {path_output}'.format(path_to_command=self._path_to_command, option='-er -c 0', path_input=path_input, path_output=path_output)
+		return cmd
+	
+	def _suffix_execute(self, data_stdout, data_stderr):
 		#FIXME:
-		print 'rename TS file which audio and video have been synched.'
-		pass
+		print 'rename and return the TS file which audio and video have been synched.'
+		return ''
 
 class ExecTranscode(ExecTool):
 	'''
 	This is child class to execute MediaCoder tool with exclusive.
 	'''
-	def __init__(self):
-		ExecTool.__init__(self, 'cat /etc/resolv.conf')
-	
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
 	
-	def _prefix_execute(self):
-		#FIXME:
-		print 'rename to some randomized TS file name for media coder.'
-		pass
+	def _generate_command(self, path_input, path_output):
+		cmd = '{path_to_command} {option} {preset} {path_input}'.format(path_to_command=self._path_to_command, option='-start -exit -preset', preset=self._path_to_config, path_input=path_input)
+		return cmd
 	
-	def _suffix_execute(self):
+	def _suffix_execute(self, data_stdout, data_stderr):
 		#FIXME:
-		print 'revert to original TS file name.'
-		pass
+		print 'revert to original TS file name and return the output TS file path.'
+		return ''
 
 class ExecTrashBox(ExecTool):
 	'''
 	This is child class to execute trashbox tool without exclusive.
 	'''
-	def __init__(self):
-		ExecTool.__init__(self, 'cat /etc/bashrc')
-	
 	def _get_lock_name(self):
 		return 'ts_encoder_trashbox.lock'
 	
@@ -155,6 +154,10 @@ class ExecTrashBox(ExecTool):
 	def _unlock(self):
 		''' Don't need to lock/unlock for trashing ts file. '''
 		pass
+	
+	def _generate_command(self, path_input, path_output):
+		cmd = '{path_to_command} {path_input}'.format(path_to_command=self._path_to_command, path_input=path_input)
+		return cmd
 
 def main():
 	# argument parsing process.
@@ -195,9 +198,10 @@ def main():
 	objs.append(ExecSyncAv(args.cciconv_path))
 	objs.append(ExecTranscode(args.mediacoder_path, args.mediacoder_conf_path))
 	objs.append(ExecTrashBox(args.trashbox_path))
+	pass_to_next = args.path_to_ts_file
 	
 	for obj in objs:
-		obj.execute()
+		pass_to_next = obj.execute(pass_to_next)
 
 if __name__ == '__main__':
 	main()

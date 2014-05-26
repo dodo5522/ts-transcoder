@@ -16,14 +16,15 @@ class ExecTool(object):
 	'''
 	This is parent class to execute some tool with exclusive.
 	'''
-	def __init__(self, cmd):
+	def __init__(self, path_to_command='', path_to_config=''):
 		'''
 		Initialize ExecTool class object.
 		Create mutex like object, etc.
 		'''
 		fd = open(self._get_lock_name(), 'w')
 		setattr(self, '_fd_lock', fd)
-		setattr(self, '_cmd', cmd)
+		setattr(self, '_path_to_command', path_to_command)
+		setattr(self, '_path_to_config', path_to_config)
 	
 	def __del__(self):
 		'''
@@ -190,10 +191,10 @@ def main():
 	
 	# run the main operation
 	objs = []
-	objs.append(ExecSplitTs())
-	objs.append(ExecSyncAv())
-	objs.append(ExecTranscode())
-	objs.append(ExecTrashBox())
+	objs.append(ExecSplitTs(args.tssplitter_path))
+	objs.append(ExecSyncAv(args.cciconv_path))
+	objs.append(ExecTranscode(args.mediacoder_path, args.mediacoder_conf_path))
+	objs.append(ExecTrashBox(args.trashbox_path))
 	
 	for obj in objs:
 		obj.execute()

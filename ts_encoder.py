@@ -162,7 +162,23 @@ def main():
 			action='store', \
 			default=None, \
 			help='path to TS file.')
-	parser.add_argument('--media-coder-config', \
+	parser.add_argument('--tssplitter-path', \
+			action='store', \
+			default=None, \
+			help='command path to tssplitter.')
+	parser.add_argument('--cciconv-path', \
+			action='store', \
+			default=None, \
+			help='command path to cciconv.')
+	parser.add_argument('--trashbox-path', \
+			action='store', \
+			default=None, \
+			help='command path to trashbox.')
+	parser.add_argument('--mediacoder-path', \
+			action='store', \
+			default=None, \
+			help='command path to media coder.')
+	parser.add_argument('--mediacoder-conf-path', \
 			action='store', \
 			default=None, \
 			help='configuration file for media coder.')

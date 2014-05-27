@@ -63,8 +63,9 @@ class ExecTool(object):
 		'''
 		Execute program with lock.
 		'''
-		self._lock()
 		cmd = self._generate_command(path_input, path_output)
+		
+		self._lock()
 		
 		print '"%s" runs with lock file "%s".' % (cmd, self._get_lock_name())
 		subp = subprocess.Popen(cmd, \
@@ -72,8 +73,8 @@ class ExecTool(object):
 				stdout=subprocess.PIPE, \
 				stderr=subprocess.PIPE)
 		(data_stdout, data_stderr) = subp.communicate()
-		
 		path_output = self._suffix_execute(data_stdout, data_stderr)
+		
 		self._unlock()
 		
 		return path_output

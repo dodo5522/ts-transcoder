@@ -180,23 +180,23 @@ def main():
 			action='store', \
 			default=None, \
 			help='path to TS file.')
-	parser.add_argument('--tssplitter-path', \
+	parser.add_argument('-ts', '--tssplitter-path', \
 			action='store', \
 			default=None, \
 			help='command path to tssplitter.')
-	parser.add_argument('--cciconv-path', \
+	parser.add_argument('-cc', '--cciconv-path', \
 			action='store', \
 			default=None, \
 			help='command path to cciconv.')
-	parser.add_argument('--trashbox-path', \
+	parser.add_argument('-tb', '--trashbox-path', \
 			action='store', \
 			default=None, \
 			help='command path to trashbox.')
-	parser.add_argument('--mediacoder-path', \
+	parser.add_argument('-mc', '--mediacoder-path', \
 			action='store', \
 			default=None, \
 			help='command path to media coder.')
-	parser.add_argument('--mediacoder-conf-path', \
+	parser.add_argument('-mf', '--mediacoder-conf-path', \
 			action='store', \
 			default=None, \
 			help='configuration file for media coder.')

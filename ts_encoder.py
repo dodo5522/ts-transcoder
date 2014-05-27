@@ -63,6 +63,7 @@ class ExecTool(object):
 		'''
 		Execute program with lock.
 		'''
+		
 		cmd = self._generate_command(path_input, path_output)
 		
 		self._lock()
@@ -73,7 +74,7 @@ class ExecTool(object):
 				stdout=subprocess.PIPE, \
 				stderr=subprocess.PIPE)
 		(data_stdout, data_stderr) = subp.communicate()
-		path_output = self._suffix_execute(data_stdout, data_stderr)
+		path_output = self._execute_after(data_stdout, data_stderr)
 		
 		self._unlock()
 		
@@ -86,7 +87,7 @@ class ExecTool(object):
 		'''
 		return ''
 	
-	def _suffix_execute(self, data_stdout, data_stderr):
+	def _execute_after(self, data_stdout, data_stderr):
 		'''
 		Execute program after running execure() method.
 		For example, generate path string to output target file.
@@ -104,7 +105,7 @@ class ExecSplitTs(ExecTool):
 		cmd = '{path_to_command} {option} {path_input}'.format(path_to_command=self._path_to_command, option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', path_input=path_input)
 		return cmd
 	
-	def _suffix_execute(self, data_stdout, data_stderr):
+	def _execute_after(self, data_stdout, data_stderr):
 		#FIXME:
 		print 'remove TS files which has 1SEG and so on.'
 		return ''
@@ -120,7 +121,7 @@ class ExecSyncAv(ExecTool):
 		cmd = '{path_to_command} {option} {path_input} {path_output}'.format(path_to_command=self._path_to_command, option='-er -c 0', path_input=path_input, path_output=path_output)
 		return cmd
 	
-	def _suffix_execute(self, data_stdout, data_stderr):
+	def _execute_after(self, data_stdout, data_stderr):
 		#FIXME:
 		print 'rename and return the TS file which audio and video have been synched.'
 		return ''
@@ -136,7 +137,7 @@ class ExecTranscode(ExecTool):
 		cmd = '{path_to_command} {option} {preset} {path_input}'.format(path_to_command=self._path_to_command, option='-start -exit -preset', preset=self._path_to_config, path_input=path_input)
 		return cmd
 	
-	def _suffix_execute(self, data_stdout, data_stderr):
+	def _execute_after(self, data_stdout, data_stderr):
 		#FIXME:
 		print 'revert to original TS file name and return the output TS file path.'
 		return ''

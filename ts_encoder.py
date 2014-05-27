@@ -69,6 +69,7 @@ class ExecTool(object):
 		self._lock()
 		
 		print '"%s" runs with lock file "%s".' % (cmd, self._get_lock_name())
+		self._execute_before()
 		subp = subprocess.Popen(cmd, \
 				shell=True, \
 				stdout=subprocess.PIPE, \
@@ -86,6 +87,12 @@ class ExecTool(object):
 		For example, generate command line string.
 		'''
 		return ''
+	
+	def _execute_before(self):
+		'''
+		Execute program before running execure() method.
+		'''
+		pass
 	
 	def _execute_after(self, data_stdout, data_stderr):
 		'''
@@ -136,6 +143,11 @@ class ExecTranscode(ExecTool):
 	def _generate_command(self, path_input, path_output):
 		cmd = '{path_to_command} {option} {preset} {path_input}'.format(path_to_command=self._path_to_command, option='-start -exit -preset', preset=self._path_to_config, path_input=path_input)
 		return cmd
+	
+	def _execute_before(self):
+		#FIXME:
+		print 'rename TS file to randomized file name to be used by media coder.'
+		pass
 	
 	def _execute_after(self, data_stdout, data_stderr):
 		#FIXME:

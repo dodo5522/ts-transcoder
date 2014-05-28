@@ -85,8 +85,8 @@ class ExecTool(object):
 				stderr=subprocess.PIPE)
 		(self._data_stdout, self._data_stderr) = subp.communicate()
 		self._returncode = subp.returncode
-		self._execute_after()
 		
+		self._execute_after()
 		self._unlock()
 		
 		return path_output

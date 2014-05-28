@@ -25,6 +25,10 @@ class ExecTool(object):
 		setattr(self, '_fd_lock', fd)
 		setattr(self, '_path_to_command', path_to_command)
 		setattr(self, '_path_to_config', path_to_config)
+		# belows are set by another method.
+		setattr(self, '_path_to_file_input', '')
+		setattr(self, '_path_to_file_output', '')
+		setattr(self, '_cmdline', '')
 	
 	def __del__(self):
 		'''
@@ -64,42 +68,38 @@ class ExecTool(object):
 		Execute program with lock.
 		'''
 		
-		cmd = self._generate_command(path_input, path_output)
+		self._path_to_file_input = path_input
+		self._path_to_file_output = path_output
 		
 		self._lock()
-		
-		print '"%s" runs with lock file "%s".' % (cmd, self._get_lock_name())
 		self._execute_before()
-		subp = subprocess.Popen(cmd, \
+		
+		print '"%s" runs with lock file "%s".' % (self._cmdline, self._get_lock_name())
+		
+		subp = subprocess.Popen(self._cmdline, \
 				shell=True, \
 				stdout=subprocess.PIPE, \
 				stderr=subprocess.PIPE)
 		(data_stdout, data_stderr) = subp.communicate()
-		path_output = self._execute_after(data_stdout, data_stderr)
+		self._execute_after()
 		
 		self._unlock()
 		
 		return path_output
 	
-	def _generate_command(self, path_input, path_output):
+	def _execute_before(self):
 		'''
 		Execute program before running execure() method.
 		For example, generate command line string.
 		'''
-		return ''
-	
-	def _execute_before(self):
-		'''
-		Execute program before running execure() method.
-		'''
 		pass
 	
-	def _execute_after(self, data_stdout, data_stderr):
+	def _execute_after(self):
 		'''
 		Execute program after running execure() method.
 		For example, generate path string to output target file.
 		'''
-		return ''
+		pass
 
 class ExecSplitTs(ExecTool):
 	'''
@@ -108,14 +108,14 @@ class ExecSplitTs(ExecTool):
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
 	
-	def _generate_command(self, path_input, path_output):
-		cmd = '{path_to_command} {option} {path_input}'.format(path_to_command=self._path_to_command, option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', path_input=path_input)
-		return cmd
+	def _execute_before(self):
+		self._cmdline = '{path_to_command} {option} {path_input}'.format(path_to_command=self._path_to_command, option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', path_input=self._path_to_file_input)
+		pass
 	
-	def _execute_after(self, data_stdout, data_stderr):
+	def _execute_after(self):
 		#FIXME:
 		print 'remove TS files which has 1SEG and so on.'
-		return ''
+		pass
 
 class ExecSyncAv(ExecTool):
 	'''
@@ -124,14 +124,14 @@ class ExecSyncAv(ExecTool):
 	def _get_lock_name(self):
 		return 'ts_encoder_cciconv.lock'
 	
-	def _generate_command(self, path_input, path_output):
-		cmd = '{path_to_command} {option} {path_input} {path_output}'.format(path_to_command=self._path_to_command, option='-er -c 0', path_input=path_input, path_output=path_output)
-		return cmd
+	def _execute_before(self):
+		self._cmdline = '{path_to_command} {option} {path_input} {path_output}'.format(path_to_command=self._path_to_command, option='-er -c 0', path_input=self._path_to_file_input, path_output=self._path_to_file_output)
+		pass
 	
-	def _execute_after(self, data_stdout, data_stderr):
+	def _execute_after(self):
 		#FIXME:
 		print 'rename and return the TS file which audio and video have been synched.'
-		return ''
+		pass
 
 class ExecTranscode(ExecTool):
 	'''
@@ -140,19 +140,17 @@ class ExecTranscode(ExecTool):
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
 	
-	def _generate_command(self, path_input, path_output):
-		cmd = '{path_to_command} {option} {preset} {path_input}'.format(path_to_command=self._path_to_command, option='-start -exit -preset', preset=self._path_to_config, path_input=path_input)
-		return cmd
-	
 	def _execute_before(self):
 		#FIXME:
 		print 'rename TS file to randomized file name to be used by media coder.'
+		
+		self._cmdline = '{path_to_command} {option} -preset {preset} {path_input}'.format(path_to_command=self._path_to_command, option='-start -exit', preset=self._path_to_config, path_input=self._path_to_file_input)
 		pass
 	
-	def _execute_after(self, data_stdout, data_stderr):
+	def _execute_after(self):
 		#FIXME:
 		print 'revert to original TS file name and return the output TS file path.'
-		return ''
+		pass
 
 class ExecTrashBox(ExecTool):
 	'''
@@ -169,9 +167,8 @@ class ExecTrashBox(ExecTool):
 		''' Don't need to lock/unlock for trashing ts file. '''
 		pass
 	
-	def _generate_command(self, path_input, path_output):
-		cmd = '{path_to_command} {path_input}'.format(path_to_command=self._path_to_command, path_input=path_input)
-		return cmd
+	def _execute_before(self):
+		self._cmdline = '{path_to_command} {path_input}'.format(path_to_command=self._path_to_command, path_input=self._path_to_file_input)
 
 def main():
 	# argument parsing process.

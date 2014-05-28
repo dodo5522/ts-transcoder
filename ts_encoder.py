@@ -45,26 +45,22 @@ class ExecTool(object):
 		pass
 	
 	def _lock(self):
-		'''
-		Lock mutex like object.
-		'''
+		print 'locking with ' + self._get_lock_name()
+		
 		if platform.system() == 'Windows':
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			print self._fd_lock
 			fcntl.flock(self._fd_lock, fcntl.LOCK_EX)
 	
 	def _unlock(self):
-		'''
-		Release mutex like object.
-		'''
 		if platform.system() == 'Windows':
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			print self._fd_lock
 			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
+		
+		print 'unlocked with ' + self._get_lock_name()
 	
 	def execute(self, path_input='', path_output=''):
 		'''

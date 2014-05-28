@@ -29,6 +29,9 @@ class ExecTool(object):
 		setattr(self, '_path_to_file_input', '')
 		setattr(self, '_path_to_file_output', '')
 		setattr(self, '_cmdline', '')
+		setattr(self, '_data_stdout', '')
+		setattr(self, '_data_stderr', '')
+		setattr(self, '_returncode', 0)
 	
 	def __del__(self):
 		'''
@@ -80,7 +83,8 @@ class ExecTool(object):
 				shell=True, \
 				stdout=subprocess.PIPE, \
 				stderr=subprocess.PIPE)
-		(data_stdout, data_stderr) = subp.communicate()
+		(self._data_stdout, self._data_stderr) = subp.communicate()
+		self._returncode = subp.returncode
 		self._execute_after()
 		
 		self._unlock()
@@ -110,12 +114,12 @@ class ExecSplitTs(ExecTool):
 	
 	def _execute_before(self):
 		self._cmdline = '{path_to_command} {option} {path_input}'.format(path_to_command=self._path_to_command, option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', path_input=self._path_to_file_input)
-		pass
 	
 	def _execute_after(self):
 		#FIXME:
 		print 'remove TS files which has 1SEG and so on.'
-		pass
+		if self._returncode != 0:
+			print self._data_stderr
 
 class ExecSyncAv(ExecTool):
 	'''
@@ -126,12 +130,12 @@ class ExecSyncAv(ExecTool):
 	
 	def _execute_before(self):
 		self._cmdline = '{path_to_command} {option} {path_input} {path_output}'.format(path_to_command=self._path_to_command, option='-er -c 0', path_input=self._path_to_file_input, path_output=self._path_to_file_output)
-		pass
 	
 	def _execute_after(self):
 		#FIXME:
 		print 'rename and return the TS file which audio and video have been synched.'
-		pass
+		if self._returncode != 0:
+			print self._data_stderr
 
 class ExecTranscode(ExecTool):
 	'''
@@ -145,12 +149,12 @@ class ExecTranscode(ExecTool):
 		print 'rename TS file to randomized file name to be used by media coder.'
 		
 		self._cmdline = '{path_to_command} {option} -preset {preset} {path_input}'.format(path_to_command=self._path_to_command, option='-start -exit', preset=self._path_to_config, path_input=self._path_to_file_input)
-		pass
 	
 	def _execute_after(self):
 		#FIXME:
 		print 'revert to original TS file name and return the output TS file path.'
-		pass
+		if self._returncode != 0:
+			print self._data_stderr
 
 class ExecTrashBox(ExecTool):
 	'''
@@ -169,6 +173,10 @@ class ExecTrashBox(ExecTool):
 	
 	def _execute_before(self):
 		self._cmdline = '{path_to_command} {path_input}'.format(path_to_command=self._path_to_command, path_input=self._path_to_file_input)
+	
+	def _execute_after(self):
+		if self._returncode != 0:
+			print self._data_stderr
 
 def main():
 	# argument parsing process.

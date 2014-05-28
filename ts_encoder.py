@@ -214,10 +214,13 @@ def main():
 	objs.append(ExecSyncAv(args.cciconv_path))
 	objs.append(ExecTranscode(args.mediacoder_path, args.mediacoder_conf_path))
 	objs.append(ExecTrashBox(args.trashbox_path))
-	pass_to_next = args.path_to_ts_file
+	path_input = args.path_to_ts_file
 	
 	for obj in objs:
-		pass_to_next = obj.execute(pass_to_next)
+		(base, ext) = os.path.splitext(path_input)
+		path_output = base + '_' + ext
+		obj.execute(path_input, path_output)
+		path_input = path_output
 
 if __name__ == '__main__':
 	main()

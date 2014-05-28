@@ -52,7 +52,7 @@ class ExecTool(object):
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			print self._fd_lock
+			print 'lock with ' + self._get_lock_name()
 			fcntl.flock(self._fd_lock, fcntl.LOCK_EX)
 	
 	def _unlock(self):
@@ -63,8 +63,8 @@ class ExecTool(object):
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			print self._fd_lock
 			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
+			print 'unlock with ' + self._get_lock_name()
 	
 	def execute(self, path_input='', path_output=''):
 		'''

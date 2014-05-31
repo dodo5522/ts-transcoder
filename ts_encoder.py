@@ -13,14 +13,7 @@ else:
 	import fcntl
 
 class ExecTool(object):
-	'''
-	This is parent class to execute some tool with exclusive.
-	'''
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
-		'''
-		Initialize ExecTool class object.
-		Create mutex like object, etc.
-		'''
 		fd = open(self._get_lock_name(), 'w')
 		setattr(self, '_fd_lock', fd)
 		setattr(self, '_path_to_command', path_to_command)
@@ -35,9 +28,6 @@ class ExecTool(object):
 		setattr(self, '_debug', debug)
 	
 	def __del__(self):
-		'''
-		Remove ExecTool class object.
-		'''
 		self._fd_lock.close()
 		self._fd_lock = None
 		os.remove(self._get_lock_name())
@@ -66,10 +56,6 @@ class ExecTool(object):
 			print 'unlocked with ' + self._get_lock_name()
 	
 	def execute(self, path_input='', path_output=''):
-		'''
-		Execute program with lock.
-		'''
-		
 		self._path_to_file_input = path_input
 		self._path_to_file_output = path_output
 		
@@ -92,23 +78,12 @@ class ExecTool(object):
 		return path_output
 	
 	def _execute_before(self):
-		'''
-		Execute program before running execure() method.
-		For example, generate command line string.
-		'''
 		pass
 	
 	def _execute_after(self):
-		'''
-		Execute program after running execure() method.
-		For example, generate path string to output target file.
-		'''
 		pass
 
 class ExecSplitTs(ExecTool):
-	'''
-	This is child class to execute TsSplitter tool with exclusive.
-	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
 	
@@ -138,9 +113,6 @@ class ExecSyncAv(ExecTool):
 			print self._data_stderr
 
 class ExecTranscode(ExecTool):
-	'''
-	This is child class to execute MediaCoder tool with exclusive.
-	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
 	
@@ -157,19 +129,16 @@ class ExecTranscode(ExecTool):
 			print self._data_stderr
 
 class ExecTrashBox(ExecTool):
-	'''
-	This is child class to execute trashbox tool without exclusive.
-	'''
 	def _get_lock_name(self):
 		return 'ts_encoder_trashbox.lock'
 	
 	def _lock(self):
-		''' Don't need to lock/unlock for trashing ts file. '''
-		pass
+		if self._debug == True:
+			print "Don't need to lock/unlock for trashing ts file."
 	
 	def _unlock(self):
-		''' Don't need to lock/unlock for trashing ts file. '''
-		pass
+		if self._debug == True:
+			print "Don't need to lock/unlock for trashing ts file."
 	
 	def _execute_before(self):
 		self._cmdline = '{path_to_command} {path_input}'.format(path_to_command=self._path_to_command, path_input=self._path_to_file_input)

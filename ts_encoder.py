@@ -88,7 +88,11 @@ class ExecSplitTs(ExecTool):
 		return 'ts_encoder_tssplitter.lock'
 	
 	def _execute_before(self):
-		self._cmdline = '{path_to_command} {option} {path_input}'.format(path_to_command=self._path_to_command, option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', path_input=self._path_to_file_input)
+		pattern = '{path_to_command} {option} {path_input}'
+		self._cmdline = pattern.format(\
+				path_to_command=self._path_to_command, \
+				option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
+				path_input=self._path_to_file_input)
 	
 	def _execute_after(self):
 		#FIXME:
@@ -104,7 +108,12 @@ class ExecSyncAv(ExecTool):
 		return 'ts_encoder_cciconv.lock'
 	
 	def _execute_before(self):
-		self._cmdline = '{path_to_command} {option} {path_input} {path_output}'.format(path_to_command=self._path_to_command, option='-er -c 0', path_input=self._path_to_file_input, path_output=self._path_to_file_output)
+		pattern = '{path_to_command} {option} {path_input} {path_output}'
+		self._cmdline = pattern.format(\
+				path_to_command=self._path_to_command, \
+				option='-er -c 0', \
+				path_input=self._path_to_file_input, \
+				path_output=self._path_to_file_output)
 	
 	def _execute_after(self):
 		#FIXME:
@@ -120,7 +129,12 @@ class ExecTranscode(ExecTool):
 		#FIXME:
 		print 'rename TS file to randomized file name to be used by media coder.'
 		
-		self._cmdline = '{path_to_command} {option} -preset {preset} {path_input}'.format(path_to_command=self._path_to_command, option='-start -exit', preset=self._path_to_config, path_input=self._path_to_file_input)
+		pattern = '{path_to_command} {option} -preset {preset} {path_input}'
+		self._cmdline = pattern.format(\
+				path_to_command=self._path_to_command, \
+				option='-start -exit', \
+				preset=self._path_to_config, \
+				path_input=self._path_to_file_input)
 	
 	def _execute_after(self):
 		#FIXME:
@@ -141,7 +155,10 @@ class ExecTrashBox(ExecTool):
 			print "Don't need to lock/unlock for trashing ts file."
 	
 	def _execute_before(self):
-		self._cmdline = '{path_to_command} {path_input}'.format(path_to_command=self._path_to_command, path_input=self._path_to_file_input)
+		pattern = '{path_to_command} {path_input}'
+		self._cmdline = pattern.format(\
+				path_to_command=self._path_to_command, \
+				path_input=self._path_to_file_input)
 	
 	def _execute_after(self):
 		if self._returncode != 0:

@@ -138,16 +138,21 @@ class ExecSyncAv(ExecTool):
 		return 'ts_encoder_cciconv.lock'
 	
 	def _execute_before(self):
-		pattern = '{path_to_command} {option} {path_input} {path_output}'
-		self._cmdline = pattern.format(\
-				path_to_command=self._path_to_command, \
-				option='-er -c 0', \
-				path_input=self._path_to_file_input, \
-				path_output=self._path_to_file_output)
+		if self._debug == True:
+			pattern = 'cp {file_input} {file_output}'
+			self._cmdline = pattern.format(\
+					file_input = self._path_to_file_input, \
+					file_output = self._path_to_file_output)
+		else:
+			pattern = '{path_to_command} {option} {path_input} {path_output}'
+			self._cmdline = pattern.format(\
+					path_to_command=self._path_to_command, \
+					option='-er -c 0', \
+					path_input=self._path_to_file_input, \
+					path_output=self._path_to_file_output)
 	
 	def _execute_after(self):
-		#FIXME:
-		print 'rename and return the TS file which audio and video have been synched.'
+		os.remove(self._path_to_file_input)
 		if self._returncode != 0:
 			print self._data_stderr
 

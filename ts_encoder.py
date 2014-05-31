@@ -18,6 +18,7 @@ class ExecTool(object):
 		setattr(self, '_fd_lock', fd)
 		setattr(self, '_path_to_command', path_to_command)
 		setattr(self, '_path_to_config', path_to_config)
+		setattr(self, '_debug', debug)
 		# belows are set by another method.
 		setattr(self, '_path_to_file_input', '')
 		setattr(self, '_path_to_file_output', '')
@@ -25,7 +26,6 @@ class ExecTool(object):
 		setattr(self, '_data_stdout', '')
 		setattr(self, '_data_stderr', '')
 		setattr(self, '_returncode', 0)
-		setattr(self, '_debug', debug)
 	
 	def __del__(self):
 		self._fd_lock.close()

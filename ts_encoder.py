@@ -89,14 +89,19 @@ class ExecSplitTs(ExecTool):
 		return 'ts_encoder_tssplitter.lock'
 	
 	def _execute_before(self):
-		pattern = '{path_to_command} {option} {path_input}'
-		self._cmdline = pattern.format(\
-				path_to_command=self._path_to_command, \
-				option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
-				path_input=self._path_to_file_input)
-		
 		if self._debug == True:
-			self._debug_create_dummy_ts_files()
+			(base, ext) = os.path.splitext(self._path_to_file_input)
+			pattern = '{cmd1}; {cmd2}; {cmd3}'
+			self._cmdline = pattern.format(\
+					cmd1 = 'echo "a" > ' + base + '_HD' + ext, \
+					cmd2 = 'echo "cccccc" > ' + base + '_HD1' + ext, \
+					cmd3 = 'echo "bbb" > ' + base + '_HD2' + ext)
+		else:
+			pattern = '{path_to_command} {option} {path_input}'
+			self._cmdline = pattern.format(\
+					path_to_command=self._path_to_command, \
+					option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
+					path_input=self._path_to_file_input)
 	
 	def _execute_after(self):
 		dir_name = os.path.dirname(self._path_to_file_input)
@@ -124,20 +129,6 @@ class ExecSplitTs(ExecTool):
 		
 		if self._returncode != 0:
 			print self._data_stderr
-	
-	def _debug_create_dummy_ts_files(self):
-		(base, ext) = os.path.splitext(self._path_to_file_input)
-		fp = open(base + ext, 'w')
-		fp.close()
-		fp = open(base + '_HD' + ext, 'w')
-		fp.write('a')
-		fp.close()
-		fp = open(base + '_HD1' + ext, 'w')
-		fp.write('cccccc')
-		fp.close()
-		fp = open(base + '_HD2' + ext, 'w')
-		fp.write('bbb')
-		fp.close()
 
 class ExecSyncAv(ExecTool):
 	'''

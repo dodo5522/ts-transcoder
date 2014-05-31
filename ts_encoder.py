@@ -16,7 +16,7 @@ class ExecTool(object):
 	'''
 	This is parent class to execute some tool with exclusive.
 	'''
-	def __init__(self, path_to_command='', path_to_config=''):
+	def __init__(self, debug=False, path_to_command='', path_to_config=''):
 		'''
 		Initialize ExecTool class object.
 		Create mutex like object, etc.
@@ -32,6 +32,7 @@ class ExecTool(object):
 		setattr(self, '_data_stdout', '')
 		setattr(self, '_data_stderr', '')
 		setattr(self, '_returncode', 0)
+		setattr(self, '_debug', debug)
 	
 	def __del__(self):
 		'''
@@ -45,7 +46,8 @@ class ExecTool(object):
 		pass
 	
 	def _lock(self):
-		print 'locking with ' + self._get_lock_name()
+		if self._debug == True:
+			print 'locking with ' + self._get_lock_name()
 		
 		if platform.system() == 'Windows':
 			#FIXME:CreateMutex is needed on windows platform.
@@ -60,7 +62,8 @@ class ExecTool(object):
 		else:
 			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
 		
-		print 'unlocked with ' + self._get_lock_name()
+		if self._debug == True:
+			print 'unlocked with ' + self._get_lock_name()
 	
 	def execute(self, path_input='', path_output=''):
 		'''
@@ -73,7 +76,8 @@ class ExecTool(object):
 		self._lock()
 		self._execute_before()
 		
-		print '"%s" runs with lock file "%s".' % (self._cmdline, self._get_lock_name())
+		if self._debug == True:
+			print '"%s" runs with lock file "%s".' % (self._cmdline, self._get_lock_name())
 		
 		subp = subprocess.Popen(self._cmdline, \
 				shell=True, \
@@ -214,10 +218,10 @@ def main():
 	
 	# run the main operation
 	objs = []
-	objs.append(ExecSplitTs(args.tssplitter_path))
-	objs.append(ExecSyncAv(args.cciconv_path))
-	objs.append(ExecTranscode(args.mediacoder_path, args.mediacoder_conf_path))
-	objs.append(ExecTrashBox(args.trashbox_path))
+	objs.append(ExecSplitTs(args.debug, args.tssplitter_path))
+	objs.append(ExecSyncAv(args.debug, args.cciconv_path))
+	objs.append(ExecTranscode(args.debug, args.mediacoder_path, args.mediacoder_conf_path))
+	objs.append(ExecTrashBox(args.debug, args.trashbox_path))
 	path_input = args.path_to_ts_file
 	
 	for obj in objs:

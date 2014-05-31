@@ -1,7 +1,8 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import os,platform,sys,re
+import os,platform,sys,re,glob
+import shutil
 import time
 import argparse
 import subprocess
@@ -93,12 +94,50 @@ class ExecSplitTs(ExecTool):
 				path_to_command=self._path_to_command, \
 				option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
 				path_input=self._path_to_file_input)
+		
+		if self._debug == True:
+			self._debug_create_dummy_ts_files()
 	
 	def _execute_after(self):
-		#FIXME:
-		print 'remove TS files which has 1SEG and so on.'
+		dir_name = os.path.dirname(self._path_to_file_input)
+		(base, ext) = os.path.splitext(os.path.basename(self._path_to_file_input))
+		
+		pattern = os.path.join(dir_name, base + '_HD*' + ext)
+		files = glob.glob(pattern)
+		
+		size_max = 0
+		index_size_max = 0
+		for file_found in files:
+			if size_max < os.path.getsize(file_found):
+				size_max = os.path.getsize(file_found)
+				index_size_max = files.index(file_found)
+				if index_size_max > 0:
+					file_remove = files[index_size_max - 1]
+					os.remove(file_remove)
+			else:
+				os.remove(file_found)
+		
+		if self._debug == True:
+			print 'max size file is {file_max} with {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max)
+		
+		shutil.move(files[index_size_max], self._path_to_file_output)
+		
 		if self._returncode != 0:
 			print self._data_stderr
+	
+	def _debug_create_dummy_ts_files(self):
+		(base, ext) = os.path.splitext(self._path_to_file_input)
+		fp = open(base + ext, 'w')
+		fp.close()
+		fp = open(base + '_HD' + ext, 'w')
+		fp.write('a')
+		fp.close()
+		fp = open(base + '_HD1' + ext, 'w')
+		fp.write('cccccc')
+		fp.close()
+		fp = open(base + '_HD2' + ext, 'w')
+		fp.write('bbb')
+		fp.close()
 
 class ExecSyncAv(ExecTool):
 	'''

@@ -192,7 +192,8 @@ if __name__ == '__main__':
 				args.delimiter))
 		
 		for obj in obj_sort:
-			obj.sort_files()
+			if len(obj.get_src_ext()) > 0:
+				obj.sort_files()
 		
 	except Exception as err:
 		if args.debug == True:

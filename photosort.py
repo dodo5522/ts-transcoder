@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import os,glob,sys,string,re
+import os,glob,sys,string,re,time
 import shutil
 import argparse
 import mediainfo
@@ -41,8 +41,11 @@ class SortFiles(object):
 		return self._delimiter
 	
 	def get_date_of_file(self, path_file_src):
-		#FIXME: return some date of file.
-		date = ''
+		epoc_time = os.stat(path_file_src)
+		mtime = time.gmtime(epoc_time.st_mtime)
+		date = '{year:04d}-{month:02d}-{day:02d}'.format(year=mtime.tm_year, month=mtime.tm_mon, day=mtime.tm_mday)
+		if self._debug == True:
+			print '{file_src} has {mtime}.'.format(file_src=path_file_src, mtime=mtime)
 		return date
 	
 	def sort_files(self):
@@ -113,9 +116,12 @@ class SortVideoFiles(SortFiles):
 		obj_media = mediainfo.MediaInfo(path_src_mov, None)
 		media_data = obj_media.info_video.get_encoded_date()
 		
-		# return date with '-' like '2014-05-01'
-		date_and_time = media_data.split()
-		date = date_and_time[1]
+		if media_data is not None:
+			# return date with '-' like '2014-05-01'
+			date_and_time = media_data.split()
+			date = date_and_time[1]
+		else:
+			date = SortFiles.get_date_of_file(self, path_src_mov)
 		return date
 
 # main routine for executed as python script

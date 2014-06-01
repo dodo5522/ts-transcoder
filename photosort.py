@@ -90,7 +90,7 @@ class SortFiles(object):
 					pass
 	
 	def __del__(self):
-		print "destructor is called."
+		pass
 
 class SortPhotoFiles(SortFiles):
 	def get_date_of_file(self, path_src_img):

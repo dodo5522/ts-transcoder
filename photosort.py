@@ -180,20 +180,21 @@ if __name__ == '__main__':
 		args = parser.parse_args()
 		
 		obj_sort = []
-		obj_sort.append(SortPhotoFiles(args.path_root_src, \
-				args.path_root_dst, \
-				args.sort_photo_extentions, \
-				args.debug, \
-				args.delimiter))
-		obj_sort.append(SortVideoFiles(args.path_root_src, \
-				args.path_root_dst, \
-				args.sort_video_extentions, \
-				args.debug, \
-				args.delimiter))
+		if len(args.sort_photo_extentions) > 0:
+			obj_sort.append(SortPhotoFiles(args.path_root_src, \
+					args.path_root_dst, \
+					args.sort_photo_extentions, \
+					args.debug, \
+					args.delimiter))
+		if len(args.sort_video_extentions) > 0:
+			obj_sort.append(SortVideoFiles(args.path_root_src, \
+					args.path_root_dst, \
+					args.sort_video_extentions, \
+					args.debug, \
+					args.delimiter))
 		
 		for obj in obj_sort:
-			if len(obj.get_src_ext()) > 0:
-				obj.sort_files()
+			obj.sort_files()
 		
 	except Exception as err:
 		if args.debug == True:

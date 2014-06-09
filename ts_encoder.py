@@ -6,6 +6,7 @@ import shutil
 import time
 import argparse
 import subprocess
+import string,random
 
 if platform.system() == 'Windows':
 	#FIXME:
@@ -157,23 +158,38 @@ class ExecSyncAv(ExecTool):
 			print self._data_stderr
 
 class ExecTranscode(ExecTool):
+	def __init__(self, debug=False, path_to_command='', path_to_config=''):
+		ExecTool.__init__(self, debug, path_to_command, path_to_config)
+		setattr(self, '_path_to_file_rand', '')
+	
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
 	
 	def _execute_before(self):
-		#FIXME:
-		print 'rename TS file to randomized file name to be used by media coder.'
+		seed = string.digits + string.letters
+		file_rand = 'rand'
+		for i in range(0,9):
+			file_rand += random.choice(seed)
 		
-		pattern = '{path_to_command} {option} -preset {preset} {path_input}'
-		self._cmdline = pattern.format(\
-				path_to_command=self._path_to_command, \
-				option='-start -exit', \
-				preset=self._path_to_config, \
-				path_input=self._path_to_file_input)
+		self._path_to_file_rand = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.ts')
+		shutil.move(self._path_to_file_input, self._path_to_file_rand)
+		
+		if self._debug == True:
+			pattern = 'cp {file_input} {file_output}'
+			self._cmdline = pattern.format(\
+					file_input = self._path_to_file_rand, \
+					file_output = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.mp4'))
+		else:
+			pattern = '{path_to_command} {option} -preset {preset} {path_input}'
+			self._cmdline = pattern.format(\
+					path_to_command=self._path_to_command, \
+					option='-start -exit', \
+					preset=self._path_to_config, \
+					path_input=self._path_to_file_rand)
 	
 	def _execute_after(self):
 		#FIXME:
-		print 'revert to original TS file name and return the output TS file path.'
+		print 'revert to mp4 file name and return the output TS file path.'
 		if self._returncode != 0:
 			print self._data_stderr
 

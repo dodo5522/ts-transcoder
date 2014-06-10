@@ -57,9 +57,8 @@ class ExecTool(object):
 		if self._debug == True:
 			print 'unlocked with ' + self._get_lock_name()
 	
-	def execute(self, path_input='', path_output=''):
+	def execute(self, path_input=''):
 		self._path_to_file_input = path_input
-		self._path_to_file_output = path_output
 		
 		self._lock()
 		self._execute_before()
@@ -77,21 +76,27 @@ class ExecTool(object):
 		self._execute_after()
 		self._unlock()
 		
-		return path_output
+		return self._path_to_file_output
 	
 	def _execute_before(self):
-		pass
+		# just for example
+		(base, ext) = os.path.splitext(self._path_to_file_input)
+		self._path_to_file_output = base + '_' + ext
 	
 	def _execute_after(self):
-		pass
+		# just for example
+		(base, ext) = os.path.splitext(self._path_to_file_input)
+		self._path_to_file_output = base + '_' + '.mp4'
 
 class ExecSplitTs(ExecTool):
 	def _get_lock_name(self):
 		return 'ts_encoder_tssplitter.lock'
 	
 	def _execute_before(self):
+		(base, ext) = os.path.splitext(self._path_to_file_input)
+		self._path_to_file_output = base + '_' + ext
+		
 		if self._debug == True:
-			(base, ext) = os.path.splitext(self._path_to_file_input)
 			pattern = '{cmd1}; {cmd2}; {cmd3}'
 			self._cmdline = pattern.format(\
 					cmd1 = 'echo "a" > ' + base + '_HD' + ext, \
@@ -139,6 +144,9 @@ class ExecSyncAv(ExecTool):
 		return 'ts_encoder_cciconv.lock'
 	
 	def _execute_before(self):
+		(base, ext) = os.path.splitext(self._path_to_file_input)
+		self._path_to_file_output = base + '_' + ext
+		
 		if self._debug == True:
 			pattern = 'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
@@ -160,24 +168,27 @@ class ExecSyncAv(ExecTool):
 class ExecTranscode(ExecTool):
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
 		ExecTool.__init__(self, debug, path_to_command, path_to_config)
-		setattr(self, '_path_to_file_rand', '')
+		setattr(self, '_path_to_file_rand_ts', '')
 	
 	def _get_lock_name(self):
 		return 'ts_encoder_mediacoder.lock'
 	
 	def _execute_before(self):
+		(base, ext) = os.path.splitext(self._path_to_file_input)
+		self._path_to_file_output = base + '.mp4'
+		
 		seed = string.digits + string.letters
 		file_rand = 'rand'
 		for i in range(0,9):
 			file_rand += random.choice(seed)
 		
-		self._path_to_file_rand = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.ts')
-		shutil.move(self._path_to_file_input, self._path_to_file_rand)
+		self._path_to_file_rand_ts = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.ts')
+		shutil.move(self._path_to_file_input, self._path_to_file_rand_ts)
 		
 		if self._debug == True:
 			pattern = 'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
-					file_input = self._path_to_file_rand, \
+					file_input = self._path_to_file_rand_ts, \
 					file_output = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.mp4'))
 		else:
 			pattern = '{path_to_command} {option} -preset {preset} {path_input}'
@@ -185,11 +196,14 @@ class ExecTranscode(ExecTool):
 					path_to_command=self._path_to_command, \
 					option='-start -exit', \
 					preset=self._path_to_config, \
-					path_input=self._path_to_file_rand)
+					path_input=self._path_to_file_rand_ts)
 	
 	def _execute_after(self):
-		#FIXME:
-		print 'revert to mp4 file name and return the output TS file path.'
+		dirname = os.path.dirname(self._path_to_file_rand_ts)
+		(base, ext) = os.path.splitext(self._path_to_file_rand_ts)
+		shutil.move(base + '.mp4', self._path_to_file_output)
+		os.remove(self._path_to_file_rand_ts)
+		
 		if self._returncode != 0:
 			print self._data_stderr
 
@@ -262,9 +276,7 @@ def main():
 	path_input = args.path_to_ts_file
 	
 	for obj in objs:
-		(base, ext) = os.path.splitext(path_input)
-		path_output = base + '_' + ext
-		obj.execute(path_input, path_output)
+		path_output = obj.execute(path_input)
 		path_input = path_output
 
 if __name__ == '__main__':

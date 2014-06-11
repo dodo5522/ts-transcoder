@@ -98,11 +98,12 @@ class ExecSplitTs(ExecTool):
 		self._path_to_file_output = base + '_' + ext
 		
 		if self._debug == True:
-			pattern = '{cmd1}; {cmd2}; {cmd3}'
+			pattern = '{cmd1}; {cmd2}; {cmd3}; {cmd4}'
 			self._cmdline = pattern.format(\
 					cmd1 = 'echo "a" > ' + base + '_HD' + ext, \
 					cmd2 = 'echo "cccccc" > ' + base + '_HD1' + ext, \
-					cmd3 = 'echo "bbb" > ' + base + '_HD2' + ext)
+					cmd3 = 'echo "bbb" > ' + base + '_HD2' + ext, \
+					cmd4 = 'echo "acccccbbb" > ' + ExecTool._path_to_file_origin)
 		else:
 			pattern = '{path_to_command} {option} {path_input}'
 			self._cmdline = pattern.format(\

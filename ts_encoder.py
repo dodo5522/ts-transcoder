@@ -7,6 +7,7 @@ import time
 import argparse
 import subprocess
 import string,random
+import traceback
 
 if platform.system() == 'Windows':
 	#FIXME:
@@ -267,17 +268,21 @@ def main():
 			help='debug mode.')
 	args = parser.parse_args()
 	
-	# run the main operation
-	objs = []
-	objs.append(ExecSplitTs(args.debug, args.tssplitter_path))
-	objs.append(ExecSyncAv(args.debug, args.cciconv_path))
-	objs.append(ExecTranscode(args.debug, args.mediacoder_path, args.mediacoder_conf_path))
-	objs.append(ExecTrashBox(args.debug, args.trashbox_path))
-	path_input = args.path_to_ts_file
-	
-	for obj in objs:
-		path_output = obj.execute(path_input)
-		path_input = path_output
+	try:
+		# run the main operation
+		objs = []
+		objs.append(ExecSplitTs(args.debug, args.tssplitter_path))
+		objs.append(ExecSyncAv(args.debug, args.cciconv_path))
+		objs.append(ExecTranscode(args.debug, args.mediacoder_path, args.mediacoder_conf_path))
+		objs.append(ExecTrashBox(args.debug, args.trashbox_path))
+		path_input = args.path_to_ts_file
+		
+		for obj in objs:
+			path_output = obj.execute(path_input)
+			path_input = path_output
+		
+	except Exception as err:
+		traceback.print_exc()
 
 if __name__ == '__main__':
 	main()

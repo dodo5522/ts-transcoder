@@ -16,6 +16,8 @@ else:
 	import fcntl
 
 class ExecTool(object):
+	_path_to_file_origin = ''
+	
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
 		fd = open(self._get_lock_name(), 'w')
 		setattr(self, '_fd_lock', fd)
@@ -94,6 +96,7 @@ class ExecSplitTs(ExecTool):
 		return 'ts_encoder_tssplitter.lock'
 	
 	def _execute_before(self):
+		ExecTool._path_to_file_origin = self._path_to_file_input
 		(base, ext) = os.path.splitext(self._path_to_file_input)
 		self._path_to_file_output = base + '_' + ext
 		
@@ -222,10 +225,15 @@ class ExecTrashBox(ExecTool):
 			print "Don't need to lock/unlock for trashing ts file."
 	
 	def _execute_before(self):
-		pattern = '{path_to_command} {path_input}'
-		self._cmdline = pattern.format(\
-				path_to_command=self._path_to_command, \
-				path_input=self._path_to_file_input)
+		if self._debug == True:
+			pattern = 'rm -f {path_input}'
+			self._cmdline = pattern.format(\
+					path_input = ExecTool._path_to_file_origin)
+		else:
+			pattern = '{path_to_command} {path_input}'
+			self._cmdline = pattern.format(\
+					path_to_command=self._path_to_command, \
+					path_input = ExecTool._path_to_file_origin)
 	
 	def _execute_after(self):
 		if self._returncode != 0:

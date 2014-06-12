@@ -192,7 +192,7 @@ class ExecTranscode(ExecTool):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _execute_before(self):
-		(base, ext) = os.path.splitext(self._path_to_file_input)
+		(base, ext) = os.path.splitext(self._path_to_file_origin)
 		self._path_to_file_output = base + '.mp4'
 		
 		seed = string.digits + string.letters

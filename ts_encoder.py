@@ -19,7 +19,11 @@ class ExecTool(object):
 	_path_to_file_origin = ''
 	
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
-		fd = open(self._get_lock_name(), 'w')
+		if platform.system() == 'Windows':
+			#FIXME:CreateMutex is needed on windows platform.
+			pass
+		else:
+			fd = open(self._get_lock_name(), 'w')
 		setattr(self, '_fd_lock', fd)
 		setattr(self, '_path_to_command', path_to_command)
 		setattr(self, '_path_to_config', path_to_config)

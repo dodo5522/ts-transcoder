@@ -37,8 +37,11 @@ class ExecTool(object):
 		self._fd_lock = None
 		os.remove(self._get_lock_name())
 	
+	def _get_class_name(self):
+		return 'tool'
+	
 	def _get_lock_name(self):
-		pass
+		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
 		if self._debug == True:
@@ -92,13 +95,16 @@ class ExecTool(object):
 		self._path_to_file_output = base + '_' + '.mp4'
 
 class ExecSplitTs(ExecTool):
+	def _get_class_name(self):
+		return 'splitts'
+	
 	def _get_lock_name(self):
-		return 'ts_encoder_tssplitter.lock'
+		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _execute_before(self):
 		ExecTool._path_to_file_origin = self._path_to_file_input
 		(base, ext) = os.path.splitext(self._path_to_file_input)
-		self._path_to_file_output = base + '_' + ext
+		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
 		if self._debug == True:
 			pattern = '{cmd1}; {cmd2}; {cmd3}; {cmd4}'
@@ -142,15 +148,15 @@ class ExecSplitTs(ExecTool):
 			print self._data_stderr
 
 class ExecSyncAv(ExecTool):
-	'''
-	This is child class to execute cciconv tool with exclusive.
-	'''
+	def _get_class_name(self):
+		return 'syncav'
+	
 	def _get_lock_name(self):
-		return 'ts_encoder_cciconv.lock'
+		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _execute_before(self):
 		(base, ext) = os.path.splitext(self._path_to_file_input)
-		self._path_to_file_output = base + '_' + ext
+		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
 		if self._debug == True:
 			pattern = 'cp {file_input} {file_output}'
@@ -175,8 +181,11 @@ class ExecTranscode(ExecTool):
 		ExecTool.__init__(self, debug, path_to_command, path_to_config)
 		setattr(self, '_path_to_file_rand_ts', '')
 	
+	def _get_class_name(self):
+		return 'transcode'
+	
 	def _get_lock_name(self):
-		return 'ts_encoder_mediacoder.lock'
+		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _execute_before(self):
 		(base, ext) = os.path.splitext(self._path_to_file_input)
@@ -213,8 +222,11 @@ class ExecTranscode(ExecTool):
 			print self._data_stderr
 
 class ExecTrashBox(ExecTool):
+	def _get_class_name(self):
+		return 'trash'
+	
 	def _get_lock_name(self):
-		return 'ts_encoder_trashbox.lock'
+		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
 		if self._debug == True:

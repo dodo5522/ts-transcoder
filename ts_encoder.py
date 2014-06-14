@@ -22,10 +22,10 @@ class ExecTool(object):
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
 		if platform.system() == 'Windows':
 			#FIXME:CreateMutex is needed on windows platform.
-			pass
+			mutex = None
 		else:
-			fd = open(self._get_lock_name(), 'w')
-		setattr(self, '_fd_lock', fd)
+			mutex = open(self._get_lock_name(), 'w')
+		setattr(self, '_mutex', mutex)
 		setattr(self, '_path_to_command', path_to_command)
 		setattr(self, '_path_to_config', path_to_config)
 		setattr(self, '_debug', debug)
@@ -38,8 +38,8 @@ class ExecTool(object):
 		setattr(self, '_returncode', 0)
 	
 	def __del__(self):
-		self._fd_lock.close()
-		self._fd_lock = None
+		self._mutex.close()
+		self._mutex = None
 		os.remove(self._get_lock_name())
 	
 	def _get_class_name(self):
@@ -56,14 +56,14 @@ class ExecTool(object):
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			fcntl.flock(self._fd_lock, fcntl.LOCK_EX)
+			fcntl.flock(self._mutex, fcntl.LOCK_EX)
 	
 	def _unlock(self):
 		if platform.system() == 'Windows':
 			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
+			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		
 		if self._debug == True:
 			print 'unlocked with {lock_name}'.format(lock_name=self._get_lock_name())

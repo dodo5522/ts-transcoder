@@ -38,9 +38,13 @@ class ExecTool(object):
 		setattr(self, '_returncode', 0)
 	
 	def __del__(self):
-		self._mutex.close()
+		if platform.system() == 'Windows':
+			#FIXME:CreateMutex is needed on windows platform.
+			pass
+		else:
+			self._mutex.close()
+			os.remove(self._get_lock_name())
 		self._mutex = None
-		os.remove(self._get_lock_name())
 	
 	def _get_class_name(self):
 		return 'tool'

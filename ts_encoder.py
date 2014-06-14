@@ -125,10 +125,8 @@ class ExecSplitTs(ExecTool):
 					path_input=self._path_to_file_input)
 	
 	def _execute_after(self):
-		dir_name = os.path.dirname(self._path_to_file_input)
-		(base, ext) = os.path.splitext(os.path.basename(self._path_to_file_input))
-		
-		pattern = os.path.join(dir_name, base + '_HD*' + ext)
+		(base, ext) = os.path.splitext(self._path_to_file_input)
+		pattern = base + '_HD*' + ext
 		files = glob.glob(pattern)
 		
 		size_max = 0

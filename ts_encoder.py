@@ -49,7 +49,7 @@ class ExecTool(object):
 	
 	def _lock(self):
 		if self._debug == True:
-			print 'locking with ' + self._get_lock_name()
+			print 'locking with {lock_name}'.format(lock_name=self._get_lock_name())
 		
 		if platform.system() == 'Windows':
 			#FIXME:CreateMutex is needed on windows platform.
@@ -65,7 +65,7 @@ class ExecTool(object):
 			fcntl.flock(self._fd_lock, fcntl.LOCK_UN)
 		
 		if self._debug == True:
-			print 'unlocked with ' + self._get_lock_name()
+			print 'unlocked with {lock_name}'.format(lock_name=self._get_lock_name())
 	
 	def execute(self, path_input=''):
 		self._path_to_file_input = path_input
@@ -74,7 +74,7 @@ class ExecTool(object):
 		self._execute_before()
 		
 		if self._debug == True:
-			print '"%s" runs with lock file "%s".' % (self._cmdline, self._get_lock_name())
+			print '{cmd} runs.'.format(cmd=self._cmdline)
 		
 		subp = subprocess.Popen(self._cmdline, \
 				shell=True, \
@@ -200,6 +200,7 @@ class ExecTranscode(ExecTool):
 		for i in range(0,9):
 			file_rand += random.choice(seed)
 		
+		# mediacoder can handle ASCII code file name, so move original TS file to randamized one.
 		self._path_to_file_rand_ts = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.ts')
 		shutil.move(self._path_to_file_input, self._path_to_file_rand_ts)
 		
@@ -217,7 +218,6 @@ class ExecTranscode(ExecTool):
 					path_input=self._path_to_file_rand_ts)
 	
 	def _execute_after(self):
-		dirname = os.path.dirname(self._path_to_file_rand_ts)
 		(base, ext) = os.path.splitext(self._path_to_file_rand_ts)
 		shutil.move(base + '.mp4', self._path_to_file_output)
 		os.remove(self._path_to_file_rand_ts)

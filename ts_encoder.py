@@ -123,7 +123,7 @@ class ExecSplitTs(ExecTool):
 					cmd3 = 'echo "bbb" > ' + base + '_HD2' + ext, \
 					cmd4 = 'echo "acccccbbb" > ' + ExecTool._path_to_file_origin)
 		else:
-			pattern = '{path_to_command} {option} {path_input}'
+			pattern = '"{path_to_command}" {option} "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
 					option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
@@ -171,7 +171,7 @@ class ExecSyncAv(ExecTool):
 					file_input = self._path_to_file_input, \
 					file_output = self._path_to_file_output)
 		else:
-			pattern = '{path_to_command} {option} {path_input} {path_output}'
+			pattern = '"{path_to_command}" {option} "{path_input}" "{path_output}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
 					option='-er -c 0', \
@@ -213,7 +213,7 @@ class ExecTranscode(ExecTool):
 					file_input = self._path_to_file_rand_ts, \
 					file_output = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.mp4'))
 		else:
-			pattern = '{path_to_command} {option} -preset {preset} {path_input}'
+			pattern = '"{path_to_command}" {option} -preset "{preset}" "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
 					option='-start -exit', \
@@ -249,7 +249,7 @@ class ExecTrashBox(ExecTool):
 			self._cmdline = pattern.format(\
 					path_input = ExecTool._path_to_file_origin)
 		else:
-			pattern = '{path_to_command} {path_input}'
+			pattern = '"{path_to_command}" "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
 					path_input = ExecTool._path_to_file_origin)

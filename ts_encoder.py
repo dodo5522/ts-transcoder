@@ -1,14 +1,13 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import unittest
 import os,platform,sys,re,glob
 import shutil
 import time
 import argparse
 import subprocess
 import string,random
-import traceback
+import unittest,logging,traceback
 
 if platform.system() == 'Windows':
 	import win32mutex
@@ -50,8 +49,7 @@ class ExecTool(object):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		if self._debug == True:
-			print 'locking with {lock_name}'.format(lock_name=self._get_lock_name())
+		logging.debug('locking with {lock_name}'.format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
 			print "entering mutex {lock_name}".format(lock_name=self._get_lock_name())
@@ -68,8 +66,7 @@ class ExecTool(object):
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		
-		if self._debug == True:
-			print 'unlocked with {lock_name}'.format(lock_name=self._get_lock_name())
+		logging.debug('unlocked with {lock_name}'.format(lock_name=self._get_lock_name()))
 	
 	def execute(self, path_input=''):
 		self._path_to_file_input = path_input
@@ -77,8 +74,7 @@ class ExecTool(object):
 		self._lock()
 		self._execute_before()
 		
-		if self._debug == True:
-			print '{cmd} runs.'.format(cmd=self._cmdline)
+		logging.info('{cmd}'.format(cmd=self._cmdline))
 		
 		subp = subprocess.Popen(self._cmdline, \
 				shell=True, \
@@ -145,8 +141,7 @@ class ExecSplitTs(ExecTool):
 			else:
 				os.remove(file_found)
 		
-		if self._debug == True:
-			print 'max size file is {file_max} with {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max)
+		logging.debug('max size file is {file_max} with {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
 		
 		shutil.move(files[index_size_max], self._path_to_file_output)
 		
@@ -235,12 +230,10 @@ class ExecTrashBox(ExecTool):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		if self._debug == True:
-			print "Don't need to lock/unlock for trashing ts file."
+		logging.debug("Don't need to lock/unlock for trashing ts file.")
 	
 	def _unlock(self):
-		if self._debug == True:
-			print "Don't need to lock/unlock for trashing ts file."
+		logging.debug("Don't need to lock/unlock for trashing ts file.")
 	
 	def _execute_before(self):
 		if self._debug == True:
@@ -293,9 +286,27 @@ def main():
 			action='store_true', \
 			default=False, \
 			help='debug mode.')
+	parser.add_argument('--log-level', \
+			action='store', \
+			default='info', \
+			required=False, \
+			help='log level should be set as debug, info, warning, error, or critical.')
+	parser.add_argument('--log-store-file', \
+			action='store', \
+			nargs='?', \
+			default=None, \
+			const='ts_encoder.log', \
+			required=False, \
+			help='if this option is set, log data is stored into the specified file.')
 	args = parser.parse_args()
 	
 	try:
+		# set logging level at first
+		numeric_level = getattr(logging, args.log_level.upper(), None)
+		if not isinstance(numeric_level, int):
+			raise ValueError('Invalid log level {log_level}'.format(log_level=args.log_level))
+		logging.basicConfig(level=numeric_level)
+		
 		# run the main operation
 		objs = []
 		objs.append(ExecSplitTs(args.debug, args.tssplitter_path))

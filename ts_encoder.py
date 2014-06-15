@@ -52,17 +52,17 @@ class ExecTool(object):
 		logging.debug('locking with {lock_name}'.format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
-			print "entering mutex {lock_name}".format(lock_name=self._get_lock_name())
+			logging.debug("entering mutex {lock_name}".format(lock_name=self._get_lock_name()))
 			self._mutex.acquire()
-			print "entered mutex {lock_name}".format(lock_name=self._get_lock_name())
+			logging.debug("entered mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_EX)
 	
 	def _unlock(self):
 		if platform.system() == 'Windows':
-			print "exiting mutex {lock_name}".format(lock_name=self._get_lock_name())
+			logging.debug("exiting mutex {lock_name}".format(lock_name=self._get_lock_name()))
 			self._mutex.release()
-			print "exited mutex {lock_name}".format(lock_name=self._get_lock_name())
+			logging.debug("exited mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		
@@ -146,7 +146,7 @@ class ExecSplitTs(ExecTool):
 		shutil.move(files[index_size_max], self._path_to_file_output)
 		
 		if self._returncode != 0:
-			print self._data_stderr
+			logging.error(self._data_stderr)
 
 class ExecSyncAv(ExecTool):
 	def _get_class_name(self):
@@ -175,7 +175,7 @@ class ExecSyncAv(ExecTool):
 	def _execute_after(self):
 		os.remove(self._path_to_file_input)
 		if self._returncode != 0:
-			print self._data_stderr
+			logging.error(self._data_stderr)
 
 class ExecTranscode(ExecTool):
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
@@ -220,7 +220,7 @@ class ExecTranscode(ExecTool):
 		os.remove(self._path_to_file_rand_ts)
 		
 		if self._returncode != 0:
-			print self._data_stderr
+			logging.error(self._data_stderr)
 
 class ExecTrashBox(ExecTool):
 	def _get_class_name(self):
@@ -248,7 +248,7 @@ class ExecTrashBox(ExecTool):
 	
 	def _execute_after(self):
 		if self._returncode != 0:
-			print self._data_stderr
+			logging.error(self._data_stderr)
 
 def main():
 	# argument parsing process.

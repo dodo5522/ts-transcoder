@@ -268,17 +268,17 @@ def main():
 	parser.add_argument('-ts', '--tssplitter-path', \
 			action='store', \
 			default=None, \
-			required=True, \
+			required=False, \
 			help='command path to tssplitter.')
 	parser.add_argument('-cc', '--cciconv-path', \
 			action='store', \
 			default=None, \
-			required=True, \
+			required=False, \
 			help='command path to cciconv.')
 	parser.add_argument('-tb', '--trashbox-path', \
 			action='store', \
 			default=None, \
-			required=True, \
+			required=False, \
 			help='command path to trashbox.')
 	parser.add_argument('-mc', '--mediacoder-path', \
 			action='store', \

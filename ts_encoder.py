@@ -1,14 +1,13 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import unittest
 import os,platform,sys,re,glob
 import shutil
 import time
 import argparse
 import subprocess
 import string,random
-import traceback
+import unittest,logging,traceback
 
 if platform.system() == 'Windows':
 	#FIXME:
@@ -294,6 +293,18 @@ def main():
 			action='store_true', \
 			default=False, \
 			help='debug mode.')
+	parser.add_argument('--log-level', \
+			action='store', \
+			default='info', \
+			required=False, \
+			help='log level should be set as debug, info, warning, error, or critical.')
+	parser.add_argument('--log-store-file', \
+			action='store', \
+			nargs='?', \
+			default=None, \
+			const='ts_encoder.log', \
+			required=False, \
+			help='if this option is set, log data is stored into the specified file.')
 	args = parser.parse_args()
 	
 	try:

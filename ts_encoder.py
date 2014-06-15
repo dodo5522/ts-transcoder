@@ -266,23 +266,23 @@ def main():
 			help='path to TS file.')
 	parser.add_argument('-ts', '--tssplitter-path', \
 			action='store', \
-			default=None, \
+			default='C:\Program Files2\PT2\\taskenc\\3rdparty\TsSplitter\TsSplitter.exe', \
 			required=False, \
 			help='command path to tssplitter.')
 	parser.add_argument('-cc', '--cciconv-path', \
 			action='store', \
-			default=None, \
+			default='C:\Program Files2\PT2\\taskenc\\3rdparty\cciconv\\release\win_x64\cciconv188.exe', \
 			required=False, \
 			help='command path to cciconv.')
 	parser.add_argument('-tb', '--trashbox-path', \
 			action='store', \
-			default=None, \
+			default='C:\Program Files2\PT2\\taskenc\\3rdparty\GB\GB.exe', \
 			required=False, \
 			help='command path to trashbox.')
 	parser.add_argument('-mc', '--mediacoder-path', \
 			action='store', \
-			default=None, \
-			required=True, \
+			default='C:\Program Files\MediaCoder\MediaCoder.exe', \
+			required=False, \
 			help='command path to media coder.')
 	parser.add_argument('-mf', '--mediacoder-conf-path', \
 			action='store', \

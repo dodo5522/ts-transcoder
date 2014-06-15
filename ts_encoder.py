@@ -308,6 +308,12 @@ def main():
 	args = parser.parse_args()
 	
 	try:
+		# set logging level at first
+		numeric_level = getattr(logging, args.log_level.upper(), None)
+		if not isinstance(numeric_level, int):
+			raise ValueError('Invalid log level {log_level}'.format(log_level=args.log_level))
+		logging.basicConfig(level=numeric_level)
+		
 		# run the main operation
 		objs = []
 		objs.append(ExecSplitTs(args.debug, args.tssplitter_path))

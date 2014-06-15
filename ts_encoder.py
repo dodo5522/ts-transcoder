@@ -52,8 +52,7 @@ class ExecTool(object):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		if self._debug == True:
-			print 'locking with {lock_name}'.format(lock_name=self._get_lock_name())
+		logging.debug('locking with {lock_name}'.format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
 			#FIXME:CreateMutex is needed on windows platform.
@@ -68,8 +67,7 @@ class ExecTool(object):
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		
-		if self._debug == True:
-			print 'unlocked with {lock_name}'.format(lock_name=self._get_lock_name())
+		logging.debug('unlocked with {lock_name}'.format(lock_name=self._get_lock_name()))
 	
 	def execute(self, path_input=''):
 		self._path_to_file_input = path_input
@@ -77,8 +75,7 @@ class ExecTool(object):
 		self._lock()
 		self._execute_before()
 		
-		if self._debug == True:
-			print '{cmd} runs.'.format(cmd=self._cmdline)
+		logging.info('{cmd}'.format(cmd=self._cmdline))
 		
 		subp = subprocess.Popen(self._cmdline, \
 				shell=True, \
@@ -145,8 +142,7 @@ class ExecSplitTs(ExecTool):
 			else:
 				os.remove(file_found)
 		
-		if self._debug == True:
-			print 'max size file is {file_max} with {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max)
+		logging.debug('max size file is {file_max} with {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
 		
 		shutil.move(files[index_size_max], self._path_to_file_output)
 		
@@ -235,12 +231,10 @@ class ExecTrashBox(ExecTool):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		if self._debug == True:
-			print "Don't need to lock/unlock for trashing ts file."
+		logging.debug("Don't need to lock/unlock for trashing ts file.")
 	
 	def _unlock(self):
-		if self._debug == True:
-			print "Don't need to lock/unlock for trashing ts file."
+		logging.debug("Don't need to lock/unlock for trashing ts file.")
 	
 	def _execute_before(self):
 		if self._debug == True:

@@ -11,8 +11,7 @@ import string,random
 import traceback
 
 if platform.system() == 'Windows':
-	#FIXME:
-	pass
+	import win32mutex
 else:
 	import fcntl
 
@@ -21,8 +20,7 @@ class ExecTool(object):
 	
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
 		if platform.system() == 'Windows':
-			#FIXME:CreateMutex is needed on windows platform.
-			mutex = None
+			mutex = win32mutex.NamedMutex(self._get_lock_name(), False)
 		else:
 			mutex = open(self._get_lock_name(), 'w')
 		setattr(self, '_mutex', mutex)
@@ -38,11 +36,10 @@ class ExecTool(object):
 		setattr(self, '_returncode', 0)
 	
 	def __del__(self):
+		self._mutex.close()
 		if platform.system() == 'Windows':
-			#FIXME:CreateMutex is needed on windows platform.
 			pass
 		else:
-			self._mutex.close()
 			os.remove(self._get_lock_name())
 		self._mutex = None
 	
@@ -57,15 +54,17 @@ class ExecTool(object):
 			print 'locking with {lock_name}'.format(lock_name=self._get_lock_name())
 		
 		if platform.system() == 'Windows':
-			#FIXME:CreateMutex is needed on windows platform.
-			pass
+			print "entering mutex {lock_name}".format(lock_name=self._get_lock_name())
+			self._mutex.acquire()
+			print "entered mutex {lock_name}".format(lock_name=self._get_lock_name())
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_EX)
 	
 	def _unlock(self):
 		if platform.system() == 'Windows':
-			#FIXME:CreateMutex is needed on windows platform.
-			pass
+			print "exiting mutex {lock_name}".format(lock_name=self._get_lock_name())
+			self._mutex.release()
+			print "exited mutex {lock_name}".format(lock_name=self._get_lock_name())
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		

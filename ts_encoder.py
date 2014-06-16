@@ -141,7 +141,7 @@ class ExecSplitTs(ExecTool):
 			else:
 				os.remove(file_found)
 		
-		logging.debug('max size file is {file_max} with {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
+		logging.debug('max is {file_max} {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
 		
 		shutil.move(files[index_size_max], self._path_to_file_output)
 		

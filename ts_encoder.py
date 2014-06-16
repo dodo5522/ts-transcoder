@@ -17,7 +17,7 @@ else:
 class ExecTool(object):
 	_path_to_file_origin = ''
 	
-	def __init__(self, debug=False, path_to_command='', path_to_config=''):
+	def __init__(self, stub=False, path_to_command='', path_to_config=''):
 		if platform.system() == 'Windows':
 			mutex = win32mutex.NamedMutex(self._get_lock_name(), False)
 		else:
@@ -25,7 +25,7 @@ class ExecTool(object):
 		setattr(self, '_mutex', mutex)
 		setattr(self, '_path_to_command', path_to_command)
 		setattr(self, '_path_to_config', path_to_config)
-		setattr(self, '_debug', debug)
+		setattr(self, '_stub', stub)
 		# belows are set by another method.
 		setattr(self, '_path_to_file_input', '')
 		setattr(self, '_path_to_file_output', '')
@@ -110,7 +110,7 @@ class ExecSplitTs(ExecTool):
 		(base, ext) = os.path.splitext(self._path_to_file_input)
 		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
-		if self._debug == True:
+		if self._stub == True:
 			pattern = '{cmd1}; {cmd2}; {cmd3}; {cmd4}'
 			self._cmdline = pattern.format(\
 					cmd1 = 'echo "a" > ' + base + '_HD' + ext, \
@@ -159,7 +159,7 @@ class ExecSyncAv(ExecTool):
 		(base, ext) = os.path.splitext(self._path_to_file_input)
 		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
-		if self._debug == True:
+		if self._stub == True:
 			pattern = 'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
 					file_input = self._path_to_file_input, \
@@ -201,7 +201,7 @@ class ExecTranscode(ExecTool):
 		self._path_to_file_rand_ts = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.ts')
 		shutil.move(self._path_to_file_input, self._path_to_file_rand_ts)
 		
-		if self._debug == True:
+		if self._stub == True:
 			pattern = 'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
 					file_input = self._path_to_file_rand_ts, \
@@ -236,7 +236,7 @@ class ExecTrashBox(ExecTool):
 		logging.debug("Don't need to lock/unlock for trashing ts file.")
 	
 	def _execute_before(self):
-		if self._debug == True:
+		if self._stub == True:
 			pattern = 'rm -f {path_input}'
 			self._cmdline = pattern.format(\
 					path_input = ExecTool._path_to_file_origin)
@@ -282,10 +282,10 @@ def main():
 			default=None, \
 			required=True, \
 			help='configuration file for media coder.')
-	parser.add_argument('--debug', \
+	parser.add_argument('--stub', \
 			action='store_true', \
 			default=False, \
-			help='debug mode.')
+			help='stub mode.')
 	parser.add_argument('--log-level', \
 			action='store', \
 			default='info', \
@@ -309,10 +309,10 @@ def main():
 		
 		# run the main operation
 		objs = []
-		objs.append(ExecSplitTs(args.debug, args.tssplitter_path))
-		objs.append(ExecSyncAv(args.debug, args.cciconv_path))
-		objs.append(ExecTranscode(args.debug, args.mediacoder_path, args.mediacoder_conf_path))
-		objs.append(ExecTrashBox(args.debug, args.trashbox_path))
+		objs.append(ExecSplitTs(args.stub, args.tssplitter_path))
+		objs.append(ExecSyncAv(args.stub, args.cciconv_path))
+		objs.append(ExecTranscode(args.stub, args.mediacoder_path, args.mediacoder_conf_path))
+		objs.append(ExecTrashBox(args.stub, args.trashbox_path))
 		path_input = args.path_to_ts_file
 		
 		for obj in objs:

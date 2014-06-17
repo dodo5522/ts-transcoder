@@ -43,30 +43,32 @@ class ExecTool(object):
 		self._mutex = None
 	
 	def _get_class_name(self):
+		''' This method should be overrideddn by inherited class. '''
 		return 'tool'
 	
 	def _get_lock_name(self):
+		''' This method should be overrideddn by inherited class. '''
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		logging.debug('locking with {lock_name}'.format(lock_name=self._get_lock_name()))
+		logging.debug("entering mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
-			logging.debug("entering mutex {lock_name}".format(lock_name=self._get_lock_name()))
 			self._mutex.acquire()
-			logging.debug("entered mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_EX)
+		
+		logging.debug("entered mutex {lock_name}".format(lock_name=self._get_lock_name()))
 	
 	def _unlock(self):
+		logging.debug("exiting mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		
 		if platform.system() == 'Windows':
-			logging.debug("exiting mutex {lock_name}".format(lock_name=self._get_lock_name()))
 			self._mutex.release()
-			logging.debug("exited mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		
-		logging.debug('unlocked with {lock_name}'.format(lock_name=self._get_lock_name()))
+		logging.debug("exited mutex {lock_name}".format(lock_name=self._get_lock_name()))
 	
 	def execute(self, path_input=''):
 		self._path_to_file_input = path_input
@@ -89,14 +91,12 @@ class ExecTool(object):
 		return self._path_to_file_output
 	
 	def _execute_before(self):
-		# just for example
-		(base, ext) = os.path.splitext(self._path_to_file_input)
-		self._path_to_file_output = base + '_' + ext
+		''' This method should be overrideddn by inherited class. '''
+		pass
 	
 	def _execute_after(self):
-		# just for example
-		(base, ext) = os.path.splitext(self._path_to_file_input)
-		self._path_to_file_output = base + '_' + '.mp4'
+		''' This method should be overrideddn by inherited class. '''
+		pass
 
 class ExecSplitTs(ExecTool):
 	def _get_class_name(self):

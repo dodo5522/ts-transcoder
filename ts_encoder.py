@@ -296,7 +296,7 @@ def main():
 			action='store', \
 			nargs='?', \
 			default=None, \
-			const='ts_encoder.log', \
+			const=os.path.join(os.getcwd(), 'ts_encoder.log'), \
 			required=False, \
 			help='if this option is set, log data is stored into the specified file.')
 	args = parser.parse_args()

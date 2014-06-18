@@ -295,7 +295,7 @@ def main():
 			action='store', \
 			nargs='?', \
 			default=None, \
-			const='ts_encoder.log', \
+			const=os.path.join(os.getcwd(), 'ts_encoder.log'), \
 			required=False, \
 			help='if this option is set, log data is stored into the specified file.')
 	args = parser.parse_args()
@@ -303,9 +303,8 @@ def main():
 	try:
 		# set logging level at first
 		numeric_level = getattr(logging, args.log_level.upper(), None)
-		if not isinstance(numeric_level, int):
-			raise ValueError('Invalid log level {log_level}'.format(log_level=args.log_level))
-		logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=numeric_level)
+		if isinstance(numeric_level, int):
+			logging.basicConfig(filename=args.log_store_file, level=numeric_level)
 		
 		# run the main operation
 		objs = []

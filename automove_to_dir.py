@@ -46,11 +46,9 @@ if __name__ == '__main__':
 	try:
 		ARGVS = sys.argv
 		ARGC = len(ARGVS)
-		OWN = ARGVS[0]
 		
 		if ARGC != 3:
 			print("Error! Argument is not enough.")
-			print("{Own} dir_of_src dir_of_dst(includes key directories)".format(Own=OWN))
 			sys.exit()
 		
 		DIR_MEDIA = ARGVS[1]

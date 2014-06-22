@@ -22,8 +22,8 @@ class AutoMove(object):
 		dict_mediafiles = {}
 		for file_found in os.listdir(path_root):
 			if os.path.isfile(os.path.join(path_root, file_found)):
-				ReObj = re.search('.*' + keyword + '.*\.mp4', file_found)
-				if ReObj != None:
+				objre = re.search('.*' + keyword + '.*\.mp4', file_found)
+				if objre != None:
 					dict_mediafiles[file_found] = os.path.join(path_root, file_found)
 		
 		logging.debug("Found media:{FOUND_MEDIA}".format(FOUND_MEDIA=dict_mediafiles.keys()))

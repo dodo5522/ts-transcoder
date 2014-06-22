@@ -9,7 +9,7 @@ DESCRIPTION
 	The target directories' name is the keyword to find media files.
 '''
 class AutoMove(object):
-	def get_dict_dirs(self, path_root=""):
+	def get_dict_dirs(self, path_root):
 		dict_dirs = {}
 		for dir_found in os.listdir(path_root):
 			if os.path.isdir(os.path.join(path_root, dir_found)):
@@ -18,7 +18,7 @@ class AutoMove(object):
 		logging.debug("Found directory:{FOUND_KEYS}".format(FOUND_KEYS=dict_dirs.keys()))
 		return dict_dirs
 	
-	def get_dict_mediafiles(self, path_root="", keyword=""):
+	def get_dict_mediafiles(self, path_root, keyword):
 		dict_mediafiles = {}
 		for file_found in os.listdir(path_root):
 			if os.path.isfile(os.path.join(path_root, file_found)):

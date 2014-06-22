@@ -1,45 +1,33 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python2.7
 
-import os,sys,string,re
-import shutil as sh
-debug = False
+import os,sys,re,glob,shutil
+import logging,traceback
 
 '''
 DESCRIPTION
 	To find all target directories to move media files.
 	The target directories' name is the keyword to find media files.
 '''
-def get_dict_dirs(path_root=""):
-	dict_dirs = {}
-	for dir_found in os.listdir(path_root):
-		if os.path.isdir(os.path.join(path_root, dir_found)):
-			dict_dirs[dir_found] = os.path.join(path_root, dir_found)
+class AutoMove(object):
+	def get_dict_dirs(self, path_root=""):
+		dict_dirs = {}
+		for dir_found in os.listdir(path_root):
+			if os.path.isdir(os.path.join(path_root, dir_found)):
+				dict_dirs[dir_found] = os.path.join(path_root, dir_found)
+		
+		logging.debug("Found directory:{FOUND_KEYS}".format(FOUND_KEYS=dict_dirs.keys()))
+		return dict_dirs
 	
-	if debug == True:
-		print("Found directory:")
-		for key_found in dict_dirs:
-			print(" {key_found}".format(key_found=key_found))
-	
-	return dict_dirs
-
-'''
-DESCRIPTION
-	To find all media files to be moved.
-'''
-def get_dict_mediafiles(path_root="", keyword=""):
-	dict_mediafiles = {}
-	for file_found in os.listdir(path_root):
-		if os.path.isfile(os.path.join(path_root, file_found)):
-			ReObj = re.search('.*' + keyword + '.*\.mp4', file_found)
-			if ReObj != None:
-				dict_mediafiles[file_found] = os.path.join(path_root, file_found)
-	
-	if debug == True:
-		print("Found media file:")
-		for key in dict_mediafiles:
-			print(" {mediafile_found}".format(mediafile_found=key))
-	
-	return dict_mediafiles
+	def get_dict_mediafiles(self, path_root="", keyword=""):
+		dict_mediafiles = {}
+		for file_found in os.listdir(path_root):
+			if os.path.isfile(os.path.join(path_root, file_found)):
+				ReObj = re.search('.*' + keyword + '.*\.mp4', file_found)
+				if ReObj != None:
+					dict_mediafiles[file_found] = os.path.join(path_root, file_found)
+		
+		logging.debug("Found media:{FOUND_MEDIA}".format(FOUND_MEDIA=dict_mediafiles.keys()))
+		return dict_mediafiles
 
 if __name__ == '__main__':
 	try:
@@ -47,29 +35,32 @@ if __name__ == '__main__':
 		argc = len(argvs)
 		
 		if argc != 3:
-			print("Error! Argument is not enough.")
+			logging.error("Argument is not enough.")
 			sys.exit()
 		
 		path_mediafiles_located = argvs[1]
 		path_root_moving = argvs[2]
-		dict_dirs_moving = get_dict_dirs(path_root_moving)
+		
+		logging.basicConfig(level=logging.DEBUG)
+		obj = AutoMove()
+		dict_dirs_moving = obj.get_dict_dirs(path_root_moving)
 		
 		for dir_found in dict_dirs_moving:
-			print("Keyword : {keyword}".format(keyword=dir_found))
-			dict_mediafiles = get_dict_mediafiles(path_mediafiles_located, dir_found)
+			logging.debug("Target dir:{DIR_TARGET}".format(DIR_TARGET=dir_found))
+			dict_mediafiles = obj.get_dict_mediafiles(path_mediafiles_located, dir_found)
 			
 			for file_media in dict_mediafiles:
+				logging.debug("Found media:{FILE_MEDIA}".format(FILE_MEDIA=file_media)) 
 				path_media_src = dict_mediafiles[file_media]
 				path_media_dst = os.path.join(dict_dirs_moving[dir_found],file_media)
 				
 				if os.path.isfile(path_media_dst):
-					print("{mediafile} for destination already exists, so source file is removed.".format(mediafile=path_media_dst))
+					logging.warn("{FILE_MEDIA} already exists so remove it.".format(FILE_MEDIA=path_media_dst))
 					os.remove(path_media_src)
 				else:
-					print("Found media file : {mediafile}".format(mediafile=path_media_src)) 
-					print("Target to move : {dir_moving}".format(dir_moving=dict_dirs_moving[dir_found]))
-					sh.move(path_media_src, path_media_dst)
+					logging.info("Move {FILE_MEDIA} to {DIR_TARGET}".format(FILE_MEDIA=file_media, DIR_TARGET=dir_found))
+					shutil.move(path_media_src, path_media_dst)
 	
 	except Exception as err:
-		print("Error type is {ErrType}, {Args}.".format(ErrType=type(err),Args=err.args))
+		traceback.print_exc()
 

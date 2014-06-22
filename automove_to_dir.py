@@ -2,74 +2,73 @@
 
 import os,sys,string,re
 import shutil as sh
-DEBUG_PYTHON = False
+debug = False
 
 '''
 DESCRIPTION
 	To find all target directories to move media files.
 	The target directories' name is the keyword to find media files.
 '''
-def GetListOfDirectoryToMove(RootDirectory=""):
-	DictOfDirectoryToMove = {}
-	for FileOrDir in os.listdir(RootDirectory):
-		if os.path.isdir(os.path.join(RootDirectory, FileOrDir)):
-			DictOfDirectoryToMove[FileOrDir] = os.path.join(RootDirectory, FileOrDir)
+def get_dict_dirs(path_root=""):
+	dict_dirs = {}
+	for dir_found in os.listdir(path_root):
+		if os.path.isdir(os.path.join(path_root, dir_found)):
+			dict_dirs[dir_found] = os.path.join(path_root, dir_found)
 	
-	if DEBUG_PYTHON == True:
+	if debug == True:
 		print("Found directory:")
-		for FoundKey in DictOfDirectoryToMove:
-			print(" {FoundKey}".format(FoundKey=FoundKey))
+		for key_found in dict_dirs:
+			print(" {key_found}".format(key_found=key_found))
 	
-	return DictOfDirectoryToMove
+	return dict_dirs
 
 '''
 DESCRIPTION
 	To find all media files to be moved.
 '''
-def FindMediaFileWithKeyword(RootDirectory="", KeyWord=""):
-	DictOfMediaFile = {}
-	for FileOrDir in os.listdir(RootDirectory):
-		if os.path.isfile(os.path.join(RootDirectory, FileOrDir)):
-			MediaFile = FileOrDir
-			ReObj = re.search('.*' + KeyWord + '.*\.mp4', MediaFile)
+def get_dict_mediafiles(path_root="", keyword=""):
+	dict_mediafiles = {}
+	for file_found in os.listdir(path_root):
+		if os.path.isfile(os.path.join(path_root, file_found)):
+			ReObj = re.search('.*' + keyword + '.*\.mp4', file_found)
 			if ReObj != None:
-				DictOfMediaFile[MediaFile] = os.path.join(RootDirectory, MediaFile)
+				dict_mediafiles[file_found] = os.path.join(path_root, file_found)
 	
-	if DEBUG_PYTHON == True:
+	if debug == True:
 		print("Found media file:")
-		for FoundMediaFile in DictOfMediaFile:
-			print(" {FoundMediaFile}".format(FoundMediaFile=FoundMediaFile))
+		for key in dict_mediafiles:
+			print(" {mediafile_found}".format(mediafile_found=key))
 	
-	return DictOfMediaFile
+	return dict_mediafiles
 
 if __name__ == '__main__':
 	try:
-		ARGVS = sys.argv
-		ARGC = len(ARGVS)
+		argvs = sys.argv
+		argc = len(argvs)
 		
-		if ARGC != 3:
+		if argc != 3:
 			print("Error! Argument is not enough.")
 			sys.exit()
 		
-		DIR_MEDIA = ARGVS[1]
-		DIR_TARGET = ARGVS[2]
-		DictOfDir = GetListOfDirectoryToMove(DIR_TARGET)
+		path_mediafiles_located = argvs[1]
+		path_root_moving = argvs[2]
+		dict_dirs_moving = get_dict_dirs(path_root_moving)
 		
-		for KeyToFind in DictOfDir:
-			print("Keyword : {Key}".format(Key=KeyToFind))
-			DictOfMediaFile = FindMediaFileWithKeyword(DIR_MEDIA, KeyToFind)
+		for dir_found in dict_dirs_moving:
+			print("Keyword : {keyword}".format(keyword=dir_found))
+			dict_mediafiles = get_dict_mediafiles(path_mediafiles_located, dir_found)
 			
-			for FoundMediaFile in DictOfMediaFile:
-				SrcPathOfMediaFile = DictOfMediaFile[FoundMediaFile]
-				DstPathOfMediaFile = os.path.join(DictOfDir[KeyToFind],FoundMediaFile)
+			for file_media in dict_mediafiles:
+				path_media_src = dict_mediafiles[file_media]
+				path_media_dst = os.path.join(dict_dirs_moving[dir_found],file_media)
 				
-				if os.path.isfile(DstPathOfMediaFile):
-					print("{File} for destination already exists, so source file is removed.".format(File=DstPathOfMediaFile))
-					os.remove(SrcPathOfMediaFile)
+				if os.path.isfile(path_media_dst):
+					print("{mediafile} for destination already exists, so source file is removed.".format(mediafile=path_media_dst))
+					os.remove(path_media_src)
 				else:
-					print("Found media file : {File}".format(File=SrcPathOfMediaFile)) 
-					print("Target to move : {Dir}".format(Dir=DictOfDir[KeyToFind]))
-					sh.move(SrcPathOfMediaFile, DstPathOfMediaFile)
+					print("Found media file : {mediafile}".format(mediafile=path_media_src)) 
+					print("Target to move : {dir_moving}".format(dir_moving=dict_dirs_moving[dir_found]))
+					sh.move(path_media_src, path_media_dst)
 	
 	except Exception as err:
 		print("Error type is {ErrType}, {Args}.".format(ErrType=type(err),Args=err.args))

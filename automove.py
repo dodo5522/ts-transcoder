@@ -76,9 +76,23 @@ if __name__ == '__main__':
 				default=None, \
 				required=True, \
 				help='Path of destination directory path which has child directories named with keyword.')
+		parser.add_argument('--stub', \
+				action='store', \
+				default=False, \
+				required=False, \
+				help='Use stub to debug if this flag is set.')
+		parser.add_argument('--log-level', \
+				action='store', \
+				default='info', \
+				required=False, \
+				help='Set log level.')
 		args = parser.parse_args()
 		
-		logging.basicConfig(level=logging.DEBUG)
+		numeric_level = getattr(logging, args.log_level.upper(), None)
+		if isinstance(numeric_level, int):
+			logging.basicConfig(level=numeric_level)
+		else:
+			logging.basicConfig(level=logging.INFO)
 		
 		obj = AutoMove(args.path_source_dir, args.path_destination_dir)
 		obj.move_mediafiles()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 import os,sys,re,glob,shutil
+import argparse
 import platform,unicodedata
 import logging,traceback
 
@@ -64,19 +65,22 @@ class AutoMove(object):
 
 if __name__ == '__main__':
 	try:
-		argvs = sys.argv
-		argc = len(argvs)
-		
-		if argc != 3:
-			logging.error("Argument is not enough.")
-			sys.exit()
-		
-		path_mediafiles_located = argvs[1]
-		path_root_moving = argvs[2]
+		parser = argparse.ArgumentParser(description='This script to move media files into the directory path named with keyword.')
+		parser.add_argument('-s', '--path-source-dir', \
+				action='store', \
+				default=None, \
+				required=True, \
+				help='Path of media files which are going to be moved.')
+		parser.add_argument('-d', '--path-destination-dir', \
+				action='store', \
+				default=None, \
+				required=True, \
+				help='Path of destination directory path which has child directories named with keyword.')
+		args = parser.parse_args()
 		
 		logging.basicConfig(level=logging.DEBUG)
 		
-		obj = AutoMove(path_mediafiles_located, path_root_moving)
+		obj = AutoMove(args.path_source_dir, args.path_destination_dir)
 		obj.move_mediafiles()
 		
 	except Exception as err:

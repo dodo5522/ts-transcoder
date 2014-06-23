@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 import os,sys,re,glob,shutil
+import platform,unicodedata
 import logging,traceback
 
 '''
@@ -59,7 +60,14 @@ if __name__ == '__main__':
 					logging.warn("{FILE_MEDIA} already exists so remove it.".format(FILE_MEDIA=path_media_dst))
 					os.remove(path_media_src)
 				else:
-					logging.info("Move {FILE_MEDIA} to {DIR_TARGET}".format(FILE_MEDIA=file_media, DIR_TARGET=dir_found))
+					tmp_file_media = file_media
+					tmp_dir_found = dir_found
+					if platform.system() == 'Darwin':
+						file_media_unicode = tmp_file_media.decode('utf-8')
+						dir_found_unicode = tmp_dir_found.decode('utf-8')
+						tmp_file_media = unicodedata.normalize('NFC', file_media_unicode).encode('utf-8')
+						tmp_dir_found = unicodedata.normalize('NFC', dir_found_unicode).encode('utf-8')
+					logging.info("Move {FILE_MEDIA} to {DIR_TARGET}".format(FILE_MEDIA=tmp_file_media, DIR_TARGET=tmp_dir_found))
 					shutil.move(path_media_src, path_media_dst)
 	
 	except Exception as err:

@@ -11,16 +11,27 @@ DESCRIPTION
 	The target directories' name is the keyword to find media files.
 '''
 class AutoMove(object):
-	def __init__(self, path_src_root, path_dest_root):
-		list_dest_paths = []
+	def __init__(self, path_dest_root, path_src_file):
+		setattr(self, '_list_dest_paths', None)
+		self._get_dest_dirs(path_dest_root)
+	
+	def _get_dest_dirs(self, path_dest_root):
+		self._list_dest_paths = []
 		for dir_found in os.listdir(path_dest_root):
 			if os.path.isdir(os.path.join(path_dest_root, dir_found)):
-				list_dest_paths.append(os.path.join(path_dest_root, dir_found))
+				self._list_dest_paths.append(os.path.join(path_dest_root, dir_found))
 		
-		logging.debug("Found directory:{FOUND_KEYS}".format(FOUND_KEYS=list_dest_paths))
-		setattr(self, "_list_dest_paths", list_dest_paths)
-		
-		dict_mediafiles = {}
+		logging.debug("Found directory:{FOUND_KEYS}".format(FOUND_KEYS=self._list_dest_paths))
+		return self._list_dest_paths
+
+class AutoSearchMove(AutoMove):
+	def __init__(self, path_dest_root, path_src_root):
+		AutoMove.__init__(self, path_dest_root, None)
+		setattr(self, '_dict_mediafiles', None)
+		self._get_dict_mediafiles(path_src_root)
+	
+	def _get_dict_mediafiles(self, path_src_root):
+		self._dict_mediafiles = {}
 		for path_dest in self._list_dest_paths:
 			list_mediafiles = []
 			keyword = os.path.basename(path_dest)
@@ -28,15 +39,9 @@ class AutoMove(object):
 				if not os.path.isfile(file_found):
 					continue
 				list_mediafiles.append(file_found)
-			dict_mediafiles[keyword] = list_mediafiles
+			self._dict_mediafiles[keyword] = list_mediafiles
 		
-		logging.debug("Found media:{FOUND_MEDIA}".format(FOUND_MEDIA=dict_mediafiles.items()))
-		setattr(self, "_dict_mediafiles", dict_mediafiles)
-	
-	def get_dest_dirs(self):
-		return self._list_dest_paths
-	
-	def get_dict_mediafiles(self):
+		logging.debug("Found media:{FOUND_MEDIA}".format(FOUND_MEDIA=self._dict_mediafiles.items()))
 		return self._dict_mediafiles
 	
 	def move_mediafiles(self):
@@ -94,7 +99,7 @@ if __name__ == '__main__':
 		else:
 			logging.basicConfig(level=logging.INFO)
 		
-		obj = AutoMove(args.path_source_dir, args.path_destination_dir)
+		obj = AutoSearchMove(args.path_destination_dir, args.path_source_dir)
 		obj.move_mediafiles()
 		
 	except Exception as err:

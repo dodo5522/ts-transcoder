@@ -8,10 +8,11 @@ from ts_encoder import *
 if __name__ == '__main__':
 	# argument parsing process.
 	parser = argparse.ArgumentParser(description='This script is to encode TS file recorded by PT2.')
-	parser.add_argument('path_to_ts_file', \
+	parser.add_argument('paths_to_ts_file', \
+			nargs='+', \
 			action='store', \
 			default=None, \
-			help='path to TS file.')
+			help='path to TS files.')
 	parser.add_argument('-ts', '--tssplitter-path', \
 			action='store', \
 			default='C:\Program Files2\PT2\\taskenc\\3rdparty\TsSplitter\TsSplitter.exe', \
@@ -67,11 +68,11 @@ if __name__ == '__main__':
 		objs.append(ExecSyncAv(args.stub, args.cciconv_path))
 		objs.append(ExecTranscode(args.stub, args.mediacoder_path, args.mediacoder_conf_path))
 		objs.append(ExecTrashBox(args.stub, args.trashbox_path))
-		path_input = args.path_to_ts_file
 		
-		for obj in objs:
-			path_output = obj.execute(path_input)
-			path_input = path_output
+		for path_input in args.paths_to_ts_file:
+			for obj in objs:
+				path_output = obj.execute(path_input)
+				path_input = path_output
 		
 	except Exception as err:
 		traceback.print_exc()

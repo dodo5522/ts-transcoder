@@ -129,24 +129,26 @@ class ExecSplitTs(ExecTool):
 		pattern = base + '_HD*' + ext
 		files = glob.glob(pattern)
 		
-		size_max = 0
-		index_size_max = 0
-		for file_found in files:
-			if size_max < os.path.getsize(file_found):
-				size_max = os.path.getsize(file_found)
-				index_size_max = files.index(file_found)
-				if index_size_max > 0:
-					file_remove = files[index_size_max - 1]
-					os.remove(file_remove)
-			else:
-				os.remove(file_found)
-		
-		logging.debug('max is {file_max} {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
-		
-		shutil.move(files[index_size_max], self._path_to_file_output)
-		
-		if self._returncode != 0:
+		if self._returncode >= 0 and len(files) > 0:
+			size_max = 0
+			index_size_max = 0
+			for file_found in files:
+				if size_max < os.path.getsize(file_found):
+					size_max = os.path.getsize(file_found)
+					index_size_max = files.index(file_found)
+					if index_size_max > 0:
+						file_remove = files[index_size_max - 1]
+						os.remove(file_remove)
+				else:
+					os.remove(file_found)
+			
+			logging.debug('max is {file_max} {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
+			shutil.move(files[index_size_max], self._path_to_file_output)
+			
+			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+		else:
 			logging.error(self._data_stderr)
+			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
 
 class ExecSyncAv(ExecTool):
 	def _get_class_name(self):
@@ -174,8 +176,11 @@ class ExecSyncAv(ExecTool):
 	
 	def _execute_after(self):
 		os.remove(self._path_to_file_input)
-		if self._returncode != 0:
+		if self._returncode >= 0:
+			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+		else:
 			logging.error(self._data_stderr)
+			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
 
 class ExecTranscode(ExecTool):
 	def __init__(self, debug=False, path_to_command='', path_to_config=''):
@@ -216,11 +221,13 @@ class ExecTranscode(ExecTool):
 	
 	def _execute_after(self):
 		(base, ext) = os.path.splitext(self._path_to_file_rand_ts)
-		shutil.move(base + '.mp4', self._path_to_file_output)
 		os.remove(self._path_to_file_rand_ts)
-		
-		if self._returncode != 0:
+		if os.path.isfile(base + '.mp4'):
+			shutil.move(base + '.mp4', self._path_to_file_output)
+			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+		else:
 			logging.error(self._data_stderr)
+			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
 
 class ExecTrashBox(ExecTool):
 	def _get_class_name(self):
@@ -247,8 +254,11 @@ class ExecTrashBox(ExecTool):
 					path_input = ExecTool._path_to_file_origin)
 	
 	def _execute_after(self):
-		if self._returncode != 0:
+		if self._returncode >= 0:
+			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+		else:
 			logging.error(self._data_stderr)
+			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
 
 def unittest():
 	try:

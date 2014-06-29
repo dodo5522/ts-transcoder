@@ -56,24 +56,23 @@ if __name__ == '__main__':
 			help='if this option is set, log data is stored into the specified file.')
 	args = parser.parse_args()
 	
-	try:
-		# set logging level at first
-		numeric_level = getattr(logging, args.log_level.upper(), None)
-		if isinstance(numeric_level, int):
-			logging.basicConfig(filename=args.log_store_file, level=numeric_level)
-		
-		# run the main operation
-		objs = []
-		objs.append(ExecSplitTs(args.stub, args.tssplitter_path))
-		objs.append(ExecSyncAv(args.stub, args.cciconv_path))
-		objs.append(ExecTranscode(args.stub, args.mediacoder_path, args.mediacoder_conf_path))
-		objs.append(ExecTrashBox(args.stub, args.trashbox_path))
-		
-		for path_input in args.paths_to_ts_file:
+	# set logging level at first
+	numeric_level = getattr(logging, args.log_level.upper(), None)
+	if isinstance(numeric_level, int):
+		logging.basicConfig(filename=args.log_store_file, level=numeric_level)
+	
+	# run the main operation
+	objs = []
+	objs.append(ExecSplitTs(args.stub, args.tssplitter_path))
+	objs.append(ExecSyncAv(args.stub, args.cciconv_path))
+	objs.append(ExecTranscode(args.stub, args.mediacoder_path, args.mediacoder_conf_path))
+	objs.append(ExecTrashBox(args.stub, args.trashbox_path))
+	
+	for path_input in args.paths_to_ts_file:
+		try:
 			for obj in objs:
 				path_output = obj.execute(path_input)
 				path_input = path_output
-		
-	except Exception as err:
-		traceback.print_exc()
+		except Exception as err:
+			traceback.print_exc()
 

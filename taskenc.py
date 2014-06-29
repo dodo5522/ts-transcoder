@@ -7,7 +7,6 @@ import logging,traceback
 from ts_encoder import *
 
 def str_to_unicode(strings):
-	unicode_strings = []
 	system_encoding = ''
 	target_form = 'NFC'
 	
@@ -22,9 +21,7 @@ def str_to_unicode(strings):
 	
 	for string in strings:
 		unicode_string = string.decode(system_encoding)
-		unicode_strings.append(unicodedata.normalize(target_form, unicode_string))
-	
-	return unicode_strings
+		yield unicodedata.normalize(target_form, unicode_string)
 
 if __name__ == '__main__':
 	# argument parsing process.

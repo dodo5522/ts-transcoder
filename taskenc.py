@@ -2,8 +2,29 @@
 # -*- coding: utf-8 -*-
 
 import os,sys,argparse
+import unicodedata,platform
 import logging,traceback
 from ts_encoder import *
+
+def str_to_unicode(strings):
+	unicode_strings = []
+	system_encoding = ''
+	target_form = 'NFC'
+	
+	if platform.system() == 'Windows':
+		system_encoding = 'shift-jis'
+	elif platform.system() == 'Darwin':
+		system_encoding = 'utf-8'
+	elif platform.system() == 'Linux':
+		system_encoding = 'utf-8'
+	else:
+		raise SystemError('System platform is not defined.')
+	
+	for string in strings:
+		unicode_string = string.decode(system_encoding)
+		unicode_strings.append(unicodedata.normalize(target_form, unicode_string))
+	
+	return unicode_strings
 
 if __name__ == '__main__':
 	# argument parsing process.

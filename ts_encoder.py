@@ -111,22 +111,22 @@ class ExecSplitTs(ExecTool):
 		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
 		if self._stub == True:
-			pattern = '{cmd1}; {cmd2}; {cmd3}; {cmd4}'
+			pattern = u'{cmd1}; {cmd2}; {cmd3}; {cmd4}'
 			self._cmdline = pattern.format(\
-					cmd1 = 'echo "a" > ' + base + '_HD' + ext, \
-					cmd2 = 'echo "cccccc" > ' + base + '_HD1' + ext, \
-					cmd3 = 'echo "bbb" > ' + base + '_HD2' + ext, \
-					cmd4 = 'echo "acccccbbb" > ' + ExecTool._path_to_file_origin)
+					cmd1 = u'echo "a" > ' + base + u'_HD' + ext, \
+					cmd2 = u'echo "cccccc" > ' + base + u'_HD1' + ext, \
+					cmd3 = u'echo "bbb" > ' + base + u'_HD2' + ext, \
+					cmd4 = u'echo "acccccbbb" > ' + ExecTool._path_to_file_origin)
 		else:
-			pattern = '"{path_to_command}" {option} "{path_input}"'
+			pattern = u'"{path_to_command}" {option} "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
-					option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
+					option=u'-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
 					path_input=self._path_to_file_input)
 	
 	def _execute_after(self):
 		(base, ext) = os.path.splitext(self._path_to_file_input)
-		pattern = base + '_HD*' + ext
+		pattern = base + u'_HD*' + ext
 		files = glob.glob(pattern)
 		
 		if self._returncode >= 0 and len(files) > 0:

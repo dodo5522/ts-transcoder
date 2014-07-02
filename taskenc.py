@@ -7,15 +7,15 @@ import logging,traceback
 from ts_encoder import *
 
 def str_to_unicode(strings):
-	system_encoding = ''
-	target_form = 'NFC'
-	
 	if platform.system() == 'Windows':
 		system_encoding = 'shift-jis'
+		target_form = 'NFC'
 	elif platform.system() == 'Darwin':
 		system_encoding = 'utf-8'
+		target_form = 'NFD'
 	elif platform.system() == 'Linux':
 		system_encoding = 'utf-8'
+		target_form = 'NFC'
 	else:
 		raise SystemError('System platform is not defined.')
 	

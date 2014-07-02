@@ -51,24 +51,24 @@ class ExecTool(object):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		logging.debug("entering mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"entering mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
 			self._mutex.acquire()
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_EX)
 		
-		logging.debug("entered mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"entered mutex {lock_name}".format(lock_name=self._get_lock_name()))
 	
 	def _unlock(self):
-		logging.debug("exiting mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"exiting mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
 			self._mutex.release()
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		
-		logging.debug("exited mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"exited mutex {lock_name}".format(lock_name=self._get_lock_name()))
 	
 	def execute(self, path_input=''):
 		self._path_to_file_input = path_input
@@ -76,7 +76,7 @@ class ExecTool(object):
 		self._lock()
 		self._execute_before()
 		
-		logging.info('{cmd}'.format(cmd=self._cmdline))
+		logging.info(u'{cmd}'.format(cmd=self._cmdline))
 		
 		subp = subprocess.Popen(self._cmdline, \
 				shell=True, \
@@ -142,13 +142,13 @@ class ExecSplitTs(ExecTool):
 				else:
 					os.remove(file_found)
 			
-			logging.debug('max is {file_max} {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
+			logging.debug(u'max is {file_max} {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
 			shutil.move(files[index_size_max], self._path_to_file_output)
 			
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
-			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
+			raise IOError('{CLASS} failed with return code {CODE} and length {LEN}!'.format(CLASS=self._get_class_name(), CODE=self._returncode, LEN=len(files)))
 
 class ExecSyncAv(ExecTool):
 	def _get_class_name(self):
@@ -177,7 +177,7 @@ class ExecSyncAv(ExecTool):
 	def _execute_after(self):
 		os.remove(self._path_to_file_input)
 		if self._returncode >= 0:
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
 			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
@@ -224,7 +224,7 @@ class ExecTranscode(ExecTool):
 		os.remove(self._path_to_file_rand_ts)
 		if os.path.isfile(base + '.mp4'):
 			shutil.move(base + '.mp4', self._path_to_file_output)
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
 			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
@@ -237,10 +237,10 @@ class ExecTrashBox(ExecTool):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		logging.debug("Don't need to lock/unlock for trashing ts file.")
+		logging.debug(u"Don't need to lock/unlock for trashing ts file.")
 	
 	def _unlock(self):
-		logging.debug("Don't need to lock/unlock for trashing ts file.")
+		logging.debug(u"Don't need to lock/unlock for trashing ts file.")
 	
 	def _execute_before(self):
 		if self._stub == True:
@@ -255,7 +255,7 @@ class ExecTrashBox(ExecTool):
 	
 	def _execute_after(self):
 		if self._returncode >= 0:
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
 			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))

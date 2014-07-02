@@ -162,15 +162,15 @@ class ExecSyncAv(ExecTool):
 		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
 		if self._stub == True:
-			pattern = 'cp {file_input} {file_output}'
+			pattern = u'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
 					file_input = self._path_to_file_input, \
 					file_output = self._path_to_file_output)
 		else:
-			pattern = '"{path_to_command}" {option} "{path_input}" "{path_output}"'
+			pattern = u'"{path_to_command}" {option} "{path_input}" "{path_output}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
-					option='-er -c 0', \
+					option=u'-er -c 0', \
 					path_input=self._path_to_file_input, \
 					path_output=self._path_to_file_output)
 	
@@ -195,10 +195,10 @@ class ExecTranscode(ExecTool):
 	
 	def _execute_before(self):
 		(base, ext) = os.path.splitext(self._path_to_file_origin)
-		self._path_to_file_output = base + '.mp4'
+		self._path_to_file_output = base + u'.mp4'
 		
 		seed = string.digits + string.letters
-		file_rand = 'rand'
+		file_rand = u'rand'
 		for i in range(0,9):
 			file_rand += random.choice(seed)
 		
@@ -207,23 +207,23 @@ class ExecTranscode(ExecTool):
 		shutil.move(self._path_to_file_input, self._path_to_file_rand_ts)
 		
 		if self._stub == True:
-			pattern = 'cp {file_input} {file_output}'
+			pattern = u'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
 					file_input = self._path_to_file_rand_ts, \
 					file_output = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.mp4'))
 		else:
-			pattern = '"{path_to_command}" {option} -preset "{preset}" "{path_input}"'
+			pattern = u'"{path_to_command}" {option} -preset "{preset}" "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
-					option='-start -exit', \
+					option=u'-start -exit', \
 					preset=self._path_to_config, \
 					path_input=self._path_to_file_rand_ts)
 	
 	def _execute_after(self):
 		(base, ext) = os.path.splitext(self._path_to_file_rand_ts)
 		os.remove(self._path_to_file_rand_ts)
-		if os.path.isfile(base + '.mp4'):
-			shutil.move(base + '.mp4', self._path_to_file_output)
+		if os.path.isfile(base + u'.mp4'):
+			shutil.move(base + u'.mp4', self._path_to_file_output)
 			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
@@ -244,11 +244,11 @@ class ExecTrashBox(ExecTool):
 	
 	def _execute_before(self):
 		if self._stub == True:
-			pattern = 'rm -f {path_input}'
+			pattern = u'rm -f {path_input}'
 			self._cmdline = pattern.format(\
 					path_input = ExecTool._path_to_file_origin)
 		else:
-			pattern = '"{path_to_command}" "{path_input}"'
+			pattern = u'"{path_to_command}" "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
 					path_input = ExecTool._path_to_file_origin)

@@ -86,7 +86,7 @@ if __name__ == '__main__':
 	objs.append(ExecTranscode(args.stub, args.mediacoder_path, args.mediacoder_conf_path))
 	objs.append(ExecTrashBox(args.stub, args.trashbox_path))
 	
-	for path_input in args.paths_to_ts_file:
+	for path_input in str_to_unicode(args.paths_to_ts_file):
 		try:
 			for obj in objs:
 				path_output = obj.execute(path_input)

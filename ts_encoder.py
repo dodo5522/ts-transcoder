@@ -7,7 +7,7 @@ import time
 import argparse
 import subprocess
 import string,random
-import unittest,logging,traceback
+import logging,traceback
 
 if platform.system() == 'Windows':
 	import win32mutex
@@ -260,11 +260,3 @@ class ExecTrashBox(ExecTool):
 			logging.error(self._data_stderr)
 			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
 
-def unittest():
-	try:
-		print "run unittest."
-	except Exception as err:
-		traceback.print_exc()
-
-if __name__ != '__main__':
-	unittest()

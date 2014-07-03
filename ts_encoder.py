@@ -1,13 +1,13 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import os,platform,sys,re,glob
+import os, platform, sys, re, glob, locale
 import shutil
 import time
 import argparse
 import subprocess
 import string,random
-import unittest,logging,traceback
+import logging,traceback
 
 if platform.system() == 'Windows':
 	import win32mutex
@@ -51,24 +51,24 @@ class ExecTool(object):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		logging.debug("entering mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"entering mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
 			self._mutex.acquire()
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_EX)
 		
-		logging.debug("entered mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"entered mutex {lock_name}".format(lock_name=self._get_lock_name()))
 	
 	def _unlock(self):
-		logging.debug("exiting mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"exiting mutex {lock_name}".format(lock_name=self._get_lock_name()))
 		
 		if platform.system() == 'Windows':
 			self._mutex.release()
 		else:
 			fcntl.flock(self._mutex, fcntl.LOCK_UN)
 		
-		logging.debug("exited mutex {lock_name}".format(lock_name=self._get_lock_name()))
+		logging.debug(u"exited mutex {lock_name}".format(lock_name=self._get_lock_name()))
 	
 	def execute(self, path_input=''):
 		self._path_to_file_input = path_input
@@ -76,9 +76,10 @@ class ExecTool(object):
 		self._lock()
 		self._execute_before()
 		
-		logging.info('{cmd}'.format(cmd=self._cmdline))
+		logging.info(u'{cmd}'.format(cmd=self._cmdline))
 		
-		subp = subprocess.Popen(self._cmdline, \
+		encoding = locale.getpreferredencoding()
+		subp = subprocess.Popen(self._cmdline.encode(encoding), \
 				shell=True, \
 				stdout=subprocess.PIPE, \
 				stderr=subprocess.PIPE)
@@ -111,22 +112,22 @@ class ExecSplitTs(ExecTool):
 		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
 		if self._stub == True:
-			pattern = '{cmd1}; {cmd2}; {cmd3}; {cmd4}'
+			pattern = u'{cmd1}; {cmd2}; {cmd3}; {cmd4}'
 			self._cmdline = pattern.format(\
-					cmd1 = 'echo "a" > ' + base + '_HD' + ext, \
-					cmd2 = 'echo "cccccc" > ' + base + '_HD1' + ext, \
-					cmd3 = 'echo "bbb" > ' + base + '_HD2' + ext, \
-					cmd4 = 'echo "acccccbbb" > ' + ExecTool._path_to_file_origin)
+					cmd1 = u'echo "a" > ' + base + u'_HD' + ext, \
+					cmd2 = u'echo "cccccc" > ' + base + u'_HD1' + ext, \
+					cmd3 = u'echo "bbb" > ' + base + u'_HD2' + ext, \
+					cmd4 = u'echo "acccccbbb" > ' + ExecTool._path_to_file_origin)
 		else:
-			pattern = '"{path_to_command}" {option} "{path_input}"'
+			pattern = u'"{path_to_command}" {option} "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
-					option='-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
+					option=u'-SD -1SEG -WAIT2 -SEP3 -OVL5,7,0', \
 					path_input=self._path_to_file_input)
 	
 	def _execute_after(self):
 		(base, ext) = os.path.splitext(self._path_to_file_input)
-		pattern = base + '_HD*' + ext
+		pattern = base + u'_HD*' + ext
 		files = glob.glob(pattern)
 		
 		if self._returncode >= 0 and len(files) > 0:
@@ -142,13 +143,13 @@ class ExecSplitTs(ExecTool):
 				else:
 					os.remove(file_found)
 			
-			logging.debug('max is {file_max} {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
+			logging.debug(u'max is {file_max} {size_max} bytes.'.format(file_max=files[index_size_max], size_max=size_max))
 			shutil.move(files[index_size_max], self._path_to_file_output)
 			
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
-			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
+			raise IOError('{CLASS} failed with return code {CODE} and length {LEN}!'.format(CLASS=self._get_class_name(), CODE=self._returncode, LEN=len(files)))
 
 class ExecSyncAv(ExecTool):
 	def _get_class_name(self):
@@ -162,22 +163,22 @@ class ExecSyncAv(ExecTool):
 		self._path_to_file_output = base + '_' + self._get_class_name() + ext
 		
 		if self._stub == True:
-			pattern = 'cp {file_input} {file_output}'
+			pattern = u'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
 					file_input = self._path_to_file_input, \
 					file_output = self._path_to_file_output)
 		else:
-			pattern = '"{path_to_command}" {option} "{path_input}" "{path_output}"'
+			pattern = u'"{path_to_command}" {option} "{path_input}" "{path_output}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
-					option='-er -c 0', \
+					option=u'-er -c 0', \
 					path_input=self._path_to_file_input, \
 					path_output=self._path_to_file_output)
 	
 	def _execute_after(self):
 		os.remove(self._path_to_file_input)
 		if self._returncode >= 0:
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
 			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
@@ -195,10 +196,10 @@ class ExecTranscode(ExecTool):
 	
 	def _execute_before(self):
 		(base, ext) = os.path.splitext(self._path_to_file_origin)
-		self._path_to_file_output = base + '.mp4'
+		self._path_to_file_output = base + u'.mp4'
 		
 		seed = string.digits + string.letters
-		file_rand = 'rand'
+		file_rand = u'rand'
 		for i in range(0,9):
 			file_rand += random.choice(seed)
 		
@@ -207,24 +208,24 @@ class ExecTranscode(ExecTool):
 		shutil.move(self._path_to_file_input, self._path_to_file_rand_ts)
 		
 		if self._stub == True:
-			pattern = 'cp {file_input} {file_output}'
+			pattern = u'cp {file_input} {file_output}'
 			self._cmdline = pattern.format(\
 					file_input = self._path_to_file_rand_ts, \
 					file_output = os.path.join(os.path.dirname(self._path_to_file_input), file_rand + '.mp4'))
 		else:
-			pattern = '"{path_to_command}" {option} -preset "{preset}" "{path_input}"'
+			pattern = u'"{path_to_command}" {option} -preset "{preset}" "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
-					option='-start -exit', \
+					option=u'-start -exit', \
 					preset=self._path_to_config, \
 					path_input=self._path_to_file_rand_ts)
 	
 	def _execute_after(self):
 		(base, ext) = os.path.splitext(self._path_to_file_rand_ts)
 		os.remove(self._path_to_file_rand_ts)
-		if os.path.isfile(base + '.mp4'):
-			shutil.move(base + '.mp4', self._path_to_file_output)
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+		if os.path.isfile(base + u'.mp4'):
+			shutil.move(base + u'.mp4', self._path_to_file_output)
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
 			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
@@ -237,34 +238,26 @@ class ExecTrashBox(ExecTool):
 		return 'ts_encoder_' + self._get_class_name() + '.lock'
 	
 	def _lock(self):
-		logging.debug("Don't need to lock/unlock for trashing ts file.")
+		logging.debug(u"Don't need to lock/unlock for trashing ts file.")
 	
 	def _unlock(self):
-		logging.debug("Don't need to lock/unlock for trashing ts file.")
+		logging.debug(u"Don't need to lock/unlock for trashing ts file.")
 	
 	def _execute_before(self):
 		if self._stub == True:
-			pattern = 'rm -f {path_input}'
+			pattern = u'rm -f {path_input}'
 			self._cmdline = pattern.format(\
 					path_input = ExecTool._path_to_file_origin)
 		else:
-			pattern = '"{path_to_command}" "{path_input}"'
+			pattern = u'"{path_to_command}" "{path_input}"'
 			self._cmdline = pattern.format(\
 					path_to_command=self._path_to_command, \
 					path_input = ExecTool._path_to_file_origin)
 	
 	def _execute_after(self):
 		if self._returncode >= 0:
-			logging.info('{CLASS} success.'.format(CLASS=self._get_class_name()))
+			logging.info(u'{CLASS} success.'.format(CLASS=self._get_class_name()))
 		else:
 			logging.error(self._data_stderr)
 			raise IOError('{CLASS} failed!'.format(CLASS=self._get_class_name()))
 
-def unittest():
-	try:
-		print "run unittest."
-	except Exception as err:
-		traceback.print_exc()
-
-if __name__ != '__main__':
-	unittest()

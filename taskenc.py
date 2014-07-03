@@ -2,8 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import os,sys,argparse
+import unicodedata,platform
 import logging,traceback
 from ts_encoder import *
+
+def str_to_unicode(strings):
+	if platform.system() == 'Windows':
+		system_encoding = 'shift-jis'
+		target_form = 'NFC'
+	elif platform.system() == 'Darwin':
+		system_encoding = 'utf-8'
+		target_form = 'NFD'
+	elif platform.system() == 'Linux':
+		system_encoding = 'utf-8'
+		target_form = 'NFC'
+	else:
+		raise SystemError('System platform is not defined.')
+	
+	for string in strings:
+		unicode_string = string.decode(system_encoding)
+		yield unicodedata.normalize(target_form, unicode_string)
 
 if __name__ == '__main__':
 	# argument parsing process.
@@ -68,7 +86,7 @@ if __name__ == '__main__':
 	objs.append(ExecTranscode(args.stub, args.mediacoder_path, args.mediacoder_conf_path))
 	objs.append(ExecTrashBox(args.stub, args.trashbox_path))
 	
-	for path_input in args.paths_to_ts_file:
+	for path_input in str_to_unicode(args.paths_to_ts_file):
 		try:
 			for obj in objs:
 				path_output = obj.execute(path_input)

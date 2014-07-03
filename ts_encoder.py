@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-import os,platform,sys,re,glob
+import os, platform, sys, re, glob, locale
 import shutil
 import time
 import argparse
@@ -78,7 +78,8 @@ class ExecTool(object):
 		
 		logging.info(u'{cmd}'.format(cmd=self._cmdline))
 		
-		subp = subprocess.Popen(self._cmdline, \
+		encoding = locale.getpreferredencoding()
+		subp = subprocess.Popen(self._cmdline.encode(encoding), \
 				shell=True, \
 				stdout=subprocess.PIPE, \
 				stderr=subprocess.PIPE)

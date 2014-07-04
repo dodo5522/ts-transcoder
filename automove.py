@@ -27,11 +27,10 @@ class AutoMove(object):
 class AutoSearchMove(AutoMove):
     def __init__(self, path_dest_root, path_src_root):
         AutoMove.__init__(self, path_dest_root, None)
-        setattr(self, '_dict_mediafiles', None)
+        self._dict_mediafiles = {}
         self._get_dict_mediafiles(path_src_root)
 
     def _get_dict_mediafiles(self, path_src_root):
-        self._dict_mediafiles = {}
         for path_dest in self._list_dest_paths:
             list_mediafiles = []
             keyword = os.path.basename(path_dest)

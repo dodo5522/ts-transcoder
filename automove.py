@@ -70,6 +70,11 @@ class AutoSearchMove(AutoMove):
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser(description='This script to move media files into the directory path named with keyword.')
+        parser.add_argument('-f', '--path-source-file', \
+                action='store', \
+                default=None, \
+                required=False, \
+                help='Path of media file which is going to be moved.')
         parser.add_argument('-s', '--path-source-dir', \
                 action='store', \
                 default=None, \

@@ -12,17 +12,17 @@ DESCRIPTION
 '''
 class AutoMove(object):
     def __init__(self, path_dest_root, path_src_file):
-        setattr(self, '_list_dest_paths', None)
-        self._get_dest_dirs(path_dest_root)
-
-    def _get_dest_dirs(self, path_dest_root):
+        self._path_dest_root = path_dest_root
+        self._path_src_file = path_src_file
         self._list_dest_paths = []
-        for dir_found in os.listdir(path_dest_root):
-            if os.path.isdir(os.path.join(path_dest_root, dir_found)):
-                self._list_dest_paths.append(os.path.join(path_dest_root, dir_found))
+        for dir_found in os.listdir(self._path_dest_root):
+            path_found = os.path.join(self._path_dest_root, dir_found)
+            if os.path.isdir(path_found):
+                self._list_dest_paths.append(path_found)
+        logging.debug("Found dirs:{DIRS}".format(DIRS=','.join(self._list_dest_paths)))
 
-        logging.debug("Found directory:{FOUND_KEYS}".format(FOUND_KEYS=self._list_dest_paths))
-        return self._list_dest_paths
+    def move(self):
+        pass
 
 class AutoSearchMove(AutoMove):
     def __init__(self, path_dest_root, path_src_root):

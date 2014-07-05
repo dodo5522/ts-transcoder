@@ -51,14 +51,14 @@ class AutoSearchMove(AutoMove):
 
             for path_media_src in self._dict_mediafiles[keyword]:
                 logging.debug("Found media:{PATH_MEDIA}".format(PATH_MEDIA=path_media_src)) 
-                path_media_dst = os.path.join(_dict_paths_dest[keyword], os.path.basename(path_media_src))
+                path_media_dst = os.path.join(self._dict_paths_dest[keyword], os.path.basename(path_media_src))
 
                 if os.path.isfile(path_media_dst):
                     logging.warn("{PATH_MEDIA} already exists so remove it.".format(PATH_MEDIA=path_media_dst))
                     os.remove(path_media_src)
                 else:
                     tmp_path_media = path_media_src
-                    tmp_path_target = _dict_paths_dest[keyword]
+                    tmp_path_target = self._dict_paths_dest[keyword]
                     if platform.system() == 'Darwin':
                         file_media_unicode = tmp_path_media.decode('utf-8')
                         dir_found_unicode = tmp_path_target.decode('utf-8')

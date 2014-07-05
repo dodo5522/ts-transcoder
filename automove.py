@@ -23,7 +23,9 @@ class AutoMove(object):
     def move(self, path_src_file):
         for dir_target in self._dict_paths_dest:
             if dir_target in path_src_file:
-                shutil.move(path_src_file, self._dict_paths_dest[dir_target])
+                path_dst = self._dict_paths_dest[dir_target]
+                shutil.move(path_src_file, path_dst)
+                logging.info(u"Move {MEDIA} to {TARGET}".format(MEDIA=path_src_file, TARGET=path_dst))
                 return True
         return False
 

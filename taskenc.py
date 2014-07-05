@@ -3,6 +3,7 @@
 
 import os, argparse
 import conv_uni
+import automove
 import logging, traceback
 from ts_encoder import *
 
@@ -39,6 +40,11 @@ if __name__ == '__main__':
             default=None, \
             required=True, \
             help='configuration file for media coder.')
+    parser.add_argument('-mv', '--path-target-to-move', \
+            action='store', \
+            default='F:\\videos\TV', \
+            required=False, \
+            help='path to move transcoded media file.')
     parser.add_argument('--stub', \
             action='store_true', \
             default=False, \
@@ -62,11 +68,17 @@ if __name__ == '__main__':
     if isinstance(numeric_level, int):
         logging.basicConfig(filename=args.log_store_file, level=numeric_level)
     
+    # init object for media coder
+    obj_execmc = ExecTranscode(\
+            args.stub, \
+            args.mediacoder_path, \
+            args.mediacoder_conf_path)
+
     # run the main operation
     objs = []
     objs.append(ExecSplitTs(args.stub, args.tssplitter_path))
     objs.append(ExecSyncAv(args.stub, args.cciconv_path))
-    objs.append(ExecTranscode(args.stub, args.mediacoder_path, args.mediacoder_conf_path))
+    objs.append(obj_execmc)
     objs.append(ExecTrashBox(args.stub, args.trashbox_path))
     
     for path_input in conv_uni.strs_to_unis(args.paths_to_ts_file):
@@ -76,4 +88,8 @@ if __name__ == '__main__':
                 path_input = path_output
         except Exception as err:
             traceback.print_exc()
+
+    if args.path_target_to_move is not None:
+        obj_automv = automove.AutoMove(conv_uni.str_to_uni(args.path_target_to_move))
+        obj_automv.move(obj_execmc._path_to_file_output)
 

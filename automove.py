@@ -74,8 +74,8 @@ if __name__ == '__main__':
         parser.add_argument('-s', '--path-source-dir', \
                 action='store', \
                 default=None, \
-                required=True, \
-                help='Path of media files which are going to be moved.')
+                required=False, \
+                help='Path of root directory having media files.')
         parser.add_argument('-d', '--path-destination-dir', \
                 action='store', \
                 default=None, \
@@ -99,8 +99,13 @@ if __name__ == '__main__':
         else:
             logging.basicConfig(level=logging.INFO)
 
-        obj = AutoSearchMove(args.path_destination_dir, args.path_source_dir)
-        obj.move_mediafiles()
+        if args.path_source_file is not None:
+            obj_automv = AutoMove(args.path_destination_dir)
+            obj_automv.move(args.path_source_file)
+
+        if args.path_source_dir is not None:
+            obj_automv = AutoSearchMove(args.path_destination_dir, args.path_source_dir)
+            obj_automv.move_mediafiles()
 
     except Exception as err:
         traceback.print_exc()

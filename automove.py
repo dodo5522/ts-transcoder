@@ -99,10 +99,10 @@ if __name__ == '__main__':
             obj_automv.move(str_to_uni(args.path_source_file))
 
         if args.path_source_dir is not None:
-            obj_automv = AutoSearchMove(\
+            obj_searchmv = AutoSearchMove(\
                     str_to_uni(args.path_destination_dir), \
                     str_to_uni(args.path_source_dir))
-            obj_automv.move()
+            obj_searchmv.move()
 
     except Exception as err:
         traceback.print_exc()

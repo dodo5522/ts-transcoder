@@ -31,9 +31,6 @@ class AutoSearchMove(AutoMove):
     def __init__(self, path_dest_root, path_src_root):
         AutoMove.__init__(self, path_dest_root)
         self._dict_mediafiles = {}
-        self._get_dict_mediafiles(path_src_root)
-
-    def _get_dict_mediafiles(self, path_src_root):
         for keyword in self._dict_paths_dest:
             list_mediafiles = []
             for file_found in glob.glob(os.path.join(path_src_root, '*' + keyword + '*.mp4')):
@@ -41,9 +38,7 @@ class AutoSearchMove(AutoMove):
                     continue
                 list_mediafiles.append(file_found)
             self._dict_mediafiles[keyword] = list_mediafiles
-
-        logging.debug("Found media:{FOUND_MEDIA}".format(FOUND_MEDIA=self._dict_mediafiles.items()))
-        return self._dict_mediafiles
+        logging.debug("Found media:{MEDIA}".format(MEDIA=','.join(self._dict_mediafiles.keys())))
 
     def move_mediafiles(self):
         for keyword in self._dict_paths_dest:

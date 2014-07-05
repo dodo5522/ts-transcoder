@@ -11,29 +11,31 @@ DESCRIPTION
     The target directories' name is the keyword to find media files.
 '''
 class AutoMove(object):
-    def __init__(self, path_dest_root, path_src_file):
+    def __init__(self, path_dest_root):
         self._path_dest_root = path_dest_root
-        self._path_src_file = path_src_file
-        self._list_dest_paths = []
+        self._dict_paths_dest = {}
         for dir_found in os.listdir(self._path_dest_root):
             path_found = os.path.join(self._path_dest_root, dir_found)
             if os.path.isdir(path_found):
-                self._list_dest_paths.append(path_found)
-        logging.debug("Found dirs:{DIRS}".format(DIRS=','.join(self._list_dest_paths)))
+                self._dict_paths_dest[dir_found] = path_found
+        logging.debug("Found dirs:{DIRS}".format(DIRS=','.join(self._dict_paths_dest.keys())))
 
-    def move(self):
-        pass
+    def move(self, path_src_file):
+        for dir_target in self._dict_paths_dest:
+            if dir_target in path_src_file:
+                shutil.move(path_src_file, self._dict_paths_dest[dir_target])
+                return True
+        return False
 
 class AutoSearchMove(AutoMove):
     def __init__(self, path_dest_root, path_src_root):
-        AutoMove.__init__(self, path_dest_root, None)
+        AutoMove.__init__(self, path_dest_root)
         self._dict_mediafiles = {}
         self._get_dict_mediafiles(path_src_root)
 
     def _get_dict_mediafiles(self, path_src_root):
-        for path_dest in self._list_dest_paths:
+        for keyword in self._dict_paths_dest:
             list_mediafiles = []
-            keyword = os.path.basename(path_dest)
             for file_found in glob.glob(os.path.join(path_src_root, '*' + keyword + '*.mp4')):
                 if not os.path.isfile(file_found):
                     continue
@@ -44,20 +46,19 @@ class AutoSearchMove(AutoMove):
         return self._dict_mediafiles
 
     def move_mediafiles(self):
-        for path_dest in self._list_dest_paths:
-            keyword = os.path.basename(path_dest)
-            logging.debug("Target dir:{PATH_TARGET}".format(PATH_TARGET=path_dest))
+        for keyword in self._dict_paths_dest:
+            logging.debug("Target dir:{PATH_TARGET}".format(PATH_TARGET=self._dict_paths_dest[keyword]))
 
             for path_media_src in self._dict_mediafiles[keyword]:
                 logging.debug("Found media:{PATH_MEDIA}".format(PATH_MEDIA=path_media_src)) 
-                path_media_dst = os.path.join(path_dest, os.path.basename(path_media_src))
+                path_media_dst = os.path.join(_dict_paths_dest[keyword], os.path.basename(path_media_src))
 
                 if os.path.isfile(path_media_dst):
                     logging.warn("{PATH_MEDIA} already exists so remove it.".format(PATH_MEDIA=path_media_dst))
                     os.remove(path_media_src)
                 else:
                     tmp_path_media = path_media_src
-                    tmp_path_target = path_dest
+                    tmp_path_target = _dict_paths_dest[keyword]
                     if platform.system() == 'Darwin':
                         file_media_unicode = tmp_path_media.decode('utf-8')
                         dir_found_unicode = tmp_path_target.decode('utf-8')

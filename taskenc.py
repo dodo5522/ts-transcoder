@@ -17,17 +17,17 @@ if __name__ == '__main__':
             help='path to TS files.')
     parser.add_argument('-ts', '--tssplitter-path', \
             action='store', \
-            default='C:\Program Files2\PT2\\taskenc\\3rdparty\TsSplitter\TsSplitter.exe', \
+            default='C:\Program Files2\TsSplitter\TsSplitter.exe', \
             required=False, \
             help='command path to tssplitter.')
     parser.add_argument('-cc', '--cciconv-path', \
             action='store', \
-            default='C:\Program Files2\PT2\\taskenc\\3rdparty\cciconv\\release\win_x64\cciconv188.exe', \
+            default='C:\Program Files2\cciconv\\release\win_x64\cciconv188.exe', \
             required=False, \
             help='command path to cciconv.')
     parser.add_argument('-tb', '--trashbox-path', \
             action='store', \
-            default='C:\Program Files2\PT2\\taskenc\\3rdparty\GB\GB.exe', \
+            default='C:\Program Files2\GB\GB.exe', \
             required=False, \
             help='command path to trashbox.')
     parser.add_argument('-mc', '--mediacoder-path', \

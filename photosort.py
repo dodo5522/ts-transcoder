@@ -175,6 +175,11 @@ if __name__ == '__main__':
                 help='debug mode if this flag is set (default: info)')
         args = parser.parse_args()
 
+        if hasattr(logging, args.debug.upper()):
+            numeric_level = getattr(logging, args.debug.upper())
+            if isinstance(numeric_level, int):
+                logging.basicConfig(level=numeric_level)
+
         obj_sort = []
         if len(args.sort_photo_extentions) > 0:
             obj_sort.append(SortPhotoFiles(args.path_root_src, \

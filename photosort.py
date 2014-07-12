@@ -11,16 +11,16 @@ from exifread import process_file, __version__
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class SortFiles(object):
-    def __init__(self, path_root_src='', path_root_dst='', ext_src=(), delimiter=''):
+    def __init__(self, **kwargs):
         extentions = []
-        for extention in ext_src:
+        for extention in kwargs['ext_src']:
             extentions.append(extention.lower())
             extentions.append(extention.upper())
-        
-        setattr(self, "_ext_src", extentions)
-        setattr(self, "_path_root_src", path_root_src)
-        setattr(self, "_path_root_dst", path_root_dst)
-        setattr(self, "_delimiter", delimiter)
+
+        self._ext_src = extentions
+        self._path_root_src = kwargs['path_root_src']
+        self._path_root_dst = kwargs['path_root_dst']
+        self._delimiter = kwargs['delimiter']
 
         logging.debug("_ext_src : " + ','.join(self._ext_src))
         logging.debug("_path_root_src : " + self._path_root_src)
@@ -180,16 +180,18 @@ if __name__ == '__main__':
 
         obj_sort = []
         if len(args.sort_photo_extentions) > 0:
-            obj_sort.append(SortPhotoFiles(args.path_root_src, \
-                    args.path_root_dst, \
-                    args.sort_photo_extentions, \
-                    args.delimiter))
+            obj_sort.append(SortPhotoFiles(\
+                    path_root_src=args.path_root_src, \
+                    path_root_dst=args.path_root_dst, \
+                    ext_src=args.sort_photo_extentions, \
+                    delimiter=args.delimiter))
         if len(args.sort_video_extentions) > 0:
-            obj_sort.append(SortVideoFiles(args.path_root_src, \
-                    args.path_root_dst, \
-                    args.sort_video_extentions, \
-                    args.delimiter))
-        
+            obj_sort.append(SortVideoFiles(\
+                    path_root_src=args.path_root_src, \
+                    path_root_dst=args.path_root_dst, \
+                    ext_src=args.sort_video_extentions, \
+                    delimiter=args.delimiter))
+
         for obj in obj_sort:
             obj.sort_files()
 

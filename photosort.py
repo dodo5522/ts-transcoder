@@ -5,12 +5,13 @@ import os,glob,sys,string,re,time
 import shutil
 import argparse
 import mediainfo
+import traceback, logging
 from exifread import process_file, __version__
 
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 class SortFiles(object):
-	def __init__(self, path_root_src='', path_root_dst='', ext_src=(), debug=False, delimiter=''):
+	def __init__(self, path_root_src='', path_root_dst='', ext_src=(), delimiter=''):
 		extentions = []
 		for extention in ext_src:
 			extentions.append(extention.lower())
@@ -19,14 +20,12 @@ class SortFiles(object):
 		setattr(self, "_ext_src", extentions)
 		setattr(self, "_path_root_src", path_root_src)
 		setattr(self, "_path_root_dst", path_root_dst)
-		setattr(self, "_debug", debug)
 		setattr(self, "_delimiter", delimiter)
 
-		if debug == True:
-			print self._ext_src
-			print self._path_root_src
-			print self._path_root_dst
-			print self._delimiter
+		logging.debug(self._ext_src)
+		logging.debug(self._path_root_src)
+		logging.debug(self._path_root_dst)
+		logging.debug(self._delimiter)
 	
 	def get_src_dir(self):
 		return self._path_root_src
@@ -44,8 +43,7 @@ class SortFiles(object):
 		epoc_time = os.stat(path_file_src)
 		mtime = time.gmtime(epoc_time.st_mtime)
 		date = '{year:04d}-{month:02d}-{day:02d}'.format(year=mtime.tm_year, month=mtime.tm_mon, day=mtime.tm_mday)
-		if self._debug == True:
-			print '{file_src} has {mtime}.'.format(file_src=path_file_src, mtime=mtime)
+		logging.debug('{file_src} has {mtime}.'.format(file_src=path_file_src, mtime=mtime))
 		return date
 	
 	def sort_files(self):
@@ -60,8 +58,7 @@ class SortFiles(object):
 					date = self.get_date_of_file(path_src_img)
 					date = date.replace('-', self._delimiter)
 					
-					if self._debug == True:
-						print "date is %s." % (date)
+					logging.debug("date is %s." + date)
 					
 					# if destination path is not set, destination is same as source.
 					if len(self._path_root_dst) is not 0:
@@ -70,11 +67,10 @@ class SortFiles(object):
 						path_dst_dir = os.path.join(os.path.dirname(path_src_img), date)
 					path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
 					
-					if self._debug == True:
-						print "path_src_img is %s." % (path_src_img)
-						print "path_dst_img is %s." % (path_dst_img)
+					logging.debug("path_src_img is %s." % (path_src_img))
+					logging.debug("path_dst_img is %s." % (path_dst_img))
 					
-					print "move \"%s\" to \"%s\"." % (path_src_img, path_dst_img)
+					logging.info("move \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
 					
 					# create directory to move.
 					if not os.path.isdir(path_dst_dir):
@@ -82,8 +78,7 @@ class SortFiles(object):
 					shutil.move(path_src_img, path_dst_img)
 					
 				except Exception as err:
-					if self._debug == True:
-						print str(type(err)) + " occurs with message \"" + err.message + "\"."
+					logging.debug(str(type(err)) + " occurs with message \"" + err.message + "\".")
 					continue
 				
 				finally:
@@ -174,33 +169,31 @@ if __name__ == '__main__':
 				help='A character as delimiter which you want to set the name of date folder like "2014-05-01". (default: none)', \
 				metavar=None)
 		parser.add_argument('--debug', \
-				action='store_true', \
-				default=False, \
-				help='debug mode if this flag is set (default: False)')
+				action='store', \
+				default='info', \
+				required=False, \
+				help='debug mode if this flag is set (default: info)')
 		args = parser.parse_args()
-		
+
 		obj_sort = []
 		if len(args.sort_photo_extentions) > 0:
 			obj_sort.append(SortPhotoFiles(args.path_root_src, \
 					args.path_root_dst, \
 					args.sort_photo_extentions, \
-					args.debug, \
 					args.delimiter))
 		if len(args.sort_video_extentions) > 0:
 			obj_sort.append(SortVideoFiles(args.path_root_src, \
 					args.path_root_dst, \
 					args.sort_video_extentions, \
-					args.debug, \
 					args.delimiter))
 		
 		for obj in obj_sort:
 			obj.sort_files()
 		
 	except Exception as err:
-		if args.debug == True:
-			print "Exception type is ",type(err)
-			print "Exception arg is ",err.args
-			print "Exception is ",err
+		logging.debug("Exception type is " + type(err))
+		logging.debug("Exception arg is " + err.args)
+		logging.debug("Exception is " + err)
 		
 	finally:
 		pass

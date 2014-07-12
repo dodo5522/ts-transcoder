@@ -161,11 +161,10 @@ if __name__ == '__main__':
                 metavar=None)
         parser.add_argument('-l', '--delimiter', \
                 action='store', \
-                nargs='?', \
-                const='', \
                 default='', \
                 type=str, \
                 choices=None, \
+                required=False, \
                 help='A character as delimiter which you want to set the name of date folder like "2014-05-01". (default: none)', \
                 metavar=None)
         parser.add_argument('--debug', \

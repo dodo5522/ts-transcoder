@@ -21,11 +21,13 @@ class SortFiles(object):
         self._path_root_src = kwargs['path_root_src']
         self._path_root_dst = kwargs['path_root_dst']
         self._delimiter = kwargs['delimiter']
+        self._subdir = kwargs['subdir']
 
         logging.debug("_ext_src : " + ','.join(self._ext_src))
         logging.debug("_path_root_src : " + self._path_root_src)
         logging.debug("_path_root_dst : " + self._path_root_dst)
         logging.debug("_delimiter : " + self._delimiter)
+        logging.debug("_subdir : " + ','.join([str(subdir) for subdir in self._subdir]))
     
     def get_src_dir(self):
         return self._path_root_src
@@ -56,25 +58,37 @@ class SortFiles(object):
                 try:
                     # get date directory name from specified file.
                     date = self.get_date_of_file(path_src_img)
+                    (year, month, day) = date.split('-')
                     date = date.replace('-', self._delimiter)
                     
                     logging.debug("date is %s." + date)
-                    
+
                     # if destination path is not set, destination is same as source.
                     if len(self._path_root_dst) is not 0:
-                        path_dst_dir = os.path.join(self._path_root_dst, date)
+                        path_dst_dir = self._path_root_dst
                     else:
-                        path_dst_dir = os.path.join(os.path.dirname(path_src_img), date)
+                        path_dst_dir = os.path.dirname(path_src_img)
+
+                    # if the first subdir is False, sub directory is not created.
+                    path_sub_dir = ''
+                    if self._subdir[0]:
+                        path_sub_dir = year
+                        if self._subdir[1]:
+                            path_sub_dir = os.path.join(path_sub_dir, month)
+
+                    if len(path_sub_dir) is not 0:
+                        path_dst_dir = os.path.join(path_dst_dir, path_sub_dir)
+
+                    path_dst_dir = os.path.join(path_dst_dir, date)
                     path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
-                    
+
                     logging.debug("path_src_img is %s." % (path_src_img))
                     logging.debug("path_dst_img is %s." % (path_dst_img))
-                    
                     logging.info("move \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
-                    
+
                     # create directory to move.
                     if not os.path.isdir(path_dst_dir):
-                        os.mkdir(path_dst_dir)
+                        os.makedirs(path_dst_dir)
                     shutil.move(path_src_img, path_dst_img)
 
                 except KeyError:
@@ -166,6 +180,16 @@ if __name__ == '__main__':
                 required=False, \
                 help='A character as delimiter which you want to set the name of date folder like "2014-05-01". (default: none)', \
                 metavar=None)
+        parser.add_argument('--subdir-year', \
+                action='store_true', \
+                default=False, \
+                required=False, \
+                help='Generate sub directory of year if this is set.')
+        parser.add_argument('--subdir-month', \
+                action='store_true', \
+                default=False, \
+                required=False, \
+                help='Generate sub directory of month if this is set.')
         parser.add_argument('--debug', \
                 action='store', \
                 default='info', \
@@ -184,13 +208,17 @@ if __name__ == '__main__':
                     path_root_src=args.path_root_src, \
                     path_root_dst=args.path_root_dst, \
                     ext_src=args.sort_photo_extentions, \
-                    delimiter=args.delimiter))
+                    delimiter=args.delimiter, \
+                    subdir=(args.subdir_year, \
+                        args.subdir_month)))
         if len(args.sort_video_extentions) > 0:
             obj_sort.append(SortVideoFiles(\
                     path_root_src=args.path_root_src, \
                     path_root_dst=args.path_root_dst, \
                     ext_src=args.sort_video_extentions, \
-                    delimiter=args.delimiter))
+                    delimiter=args.delimiter, \
+                    subdir=(args.subdir_year, \
+                        args.subdir_month)))
 
         for obj in obj_sort:
             obj.sort_files()

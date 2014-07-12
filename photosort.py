@@ -22,10 +22,10 @@ class SortFiles(object):
         setattr(self, "_path_root_dst", path_root_dst)
         setattr(self, "_delimiter", delimiter)
 
-        logging.debug(self._ext_src)
-        logging.debug(self._path_root_src)
-        logging.debug(self._path_root_dst)
-        logging.debug(self._delimiter)
+        logging.debug("_ext_src : " + ','.join(self._ext_src))
+        logging.debug("_path_root_src : " + self._path_root_src)
+        logging.debug("_path_root_dst : " + self._path_root_dst)
+        logging.debug("_delimiter : " + self._delimiter)
     
     def get_src_dir(self):
         return self._path_root_src
@@ -76,14 +76,13 @@ class SortFiles(object):
                     if not os.path.isdir(path_dst_dir):
                         os.mkdir(path_dst_dir)
                     shutil.move(path_src_img, path_dst_img)
-                    
-                except Exception as err:
-                    logging.debug(str(type(err)) + " occurs with message \"" + err.message + "\".")
+
+                except KeyError:
                     continue
-                
-                finally:
-                    pass
-    
+
+                else:
+                    logging.debug("Unexpected error occurs.")
+
     def __del__(self):
         pass
 
@@ -193,11 +192,9 @@ if __name__ == '__main__':
         
         for obj in obj_sort:
             obj.sort_files()
-        
+
     except Exception as err:
-        logging.debug("Exception type is " + type(err))
-        logging.debug("Exception arg is " + err.args)
-        logging.debug("Exception is " + err)
-        
+        traceback.print_exc()
+
     finally:
         pass

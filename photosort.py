@@ -94,7 +94,7 @@ class SortFiles(object):
 
                     logging.info("{0}{1} {2} to {3}.".format(\
                             (lambda x: "skip " if x else "")(os.path.isfile(path_dst_img)), \
-                            (lambda x: "moving" if x else "copying")(self._is_copy), \
+                            (lambda x: "copying" if x else "moving")(self._is_copy), \
                             path_src_img, \
                             path_dst_img))
 

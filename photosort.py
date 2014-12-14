@@ -22,6 +22,7 @@ class SortFiles(object):
         self._path_root_dst = kwargs['path_root_dst']
         self._delimiter = kwargs['delimiter']
         self._subdir = kwargs['subdir']
+        self._is_copy = kwargs['is_copy']
 
         logging.debug("_ext_src : " + ','.join(self._ext_src))
         logging.debug("_path_root_src : " + self._path_root_src)
@@ -50,8 +51,10 @@ class SortFiles(object):
     
     def sort_files(self):
         for extention in self._ext_src:
-            pattern_search = '*.%s' % extention
-            for path_src_img in glob.glob(os.path.join(self._path_root_src, pattern_search)):
+            pattern_search = '*.{0}'.format(extention)
+            paths_src_img = glob.glob(os.path.join(self._path_root_src, pattern_search))
+
+            for path_src_img in paths_src_img:
                 if not os.path.isfile(path_src_img):
                     continue
                 
@@ -60,8 +63,8 @@ class SortFiles(object):
                     date = self.get_date_of_file(path_src_img)
                     (year, month, day) = date.split('-')
                     date = date.replace('-', self._delimiter)
-                    
-                    logging.debug("date is %s." + date)
+
+                    logging.debug("date is {0}.".format(date))
 
                     # if destination path is not set, destination is same as source.
                     if len(self._path_root_dst) is not 0:
@@ -82,17 +85,22 @@ class SortFiles(object):
                     path_dst_dir = os.path.join(path_dst_dir, date)
                     path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
 
-                    logging.debug("path_src_img is %s." % (path_src_img))
-                    logging.debug("path_dst_img is %s." % (path_dst_img))
+                    logging.debug("path_src_img is {0}.".format(path_src_img))
+                    logging.debug("path_dst_img is {0}.".format(path_dst_img))
 
                     # create directory to move.
                     if not os.path.isdir(path_dst_dir):
                         os.makedirs(path_dst_dir)
 
-                    if os.path.isfile(path_dst_img):
-                        logging.info("skip moving \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
+                    logging.info("{0}{1} {2} to {3}.".format(\
+                            (lambda x: "skip " if x else "")(os.path.isfile(path_dst_img)), \
+                            (lambda x: "moving" if x else "copying")(self._is_copy), \
+                            path_src_img, \
+                            path_dst_img))
+
+                    if self._is_copy:
+                        shutil.copy2(path_src_img, path_dst_img)
                     else:
-                        logging.info("move \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
                         shutil.move(path_src_img, path_dst_img)
 
                 except KeyError:
@@ -194,6 +202,11 @@ if __name__ == '__main__':
                 default=False, \
                 required=False, \
                 help='Generate sub directory of month if this is set.')
+        parser.add_argument('--copy', \
+                action='store_true', \
+                default=False, \
+                required=False, \
+                help='Copy media files but not move.')
         parser.add_argument('--debug', \
                 action='store', \
                 default='info', \
@@ -214,7 +227,8 @@ if __name__ == '__main__':
                     ext_src=args.sort_photo_extentions, \
                     delimiter=args.delimiter, \
                     subdir=(args.subdir_year, \
-                        args.subdir_month)))
+                        args.subdir_month), \
+                    is_copy=args.copy))
         if len(args.sort_video_extentions) > 0:
             obj_sort.append(SortVideoFiles(\
                     path_root_src=args.path_root_src, \
@@ -222,7 +236,8 @@ if __name__ == '__main__':
                     ext_src=args.sort_video_extentions, \
                     delimiter=args.delimiter, \
                     subdir=(args.subdir_year, \
-                        args.subdir_month)))
+                        args.subdir_month), \
+                    is_copy=args.copy))
 
         for obj in obj_sort:
             obj.sort_files()

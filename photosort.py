@@ -98,10 +98,11 @@ class SortFiles(object):
                             path_src_img, \
                             path_dst_img))
 
-                    if self._is_copy:
-                        shutil.copy2(path_src_img, path_dst_img)
-                    else:
-                        shutil.move(path_src_img, path_dst_img)
+                    if not os.path.isfile(path_dst_img):
+                        if self._is_copy:
+                            shutil.copy2(path_src_img, path_dst_img)
+                        else:
+                            shutil.move(path_src_img, path_dst_img)
 
                 except KeyError:
                     continue

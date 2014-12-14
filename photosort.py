@@ -84,12 +84,16 @@ class SortFiles(object):
 
                     logging.debug("path_src_img is %s." % (path_src_img))
                     logging.debug("path_dst_img is %s." % (path_dst_img))
-                    logging.info("move \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
 
                     # create directory to move.
                     if not os.path.isdir(path_dst_dir):
                         os.makedirs(path_dst_dir)
-                    shutil.move(path_src_img, path_dst_img)
+
+                    if os.path.isdir(path_dst_img):
+                        logging.info("skip moving \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
+                    else:
+                        logging.info("move \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
+                        shutil.move(path_src_img, path_dst_img)
 
                 except KeyError:
                     continue

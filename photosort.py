@@ -89,7 +89,7 @@ class SortFiles(object):
                     if not os.path.isdir(path_dst_dir):
                         os.makedirs(path_dst_dir)
 
-                    if os.path.isdir(path_dst_img):
+                    if os.path.isfile(path_dst_img):
                         logging.info("skip moving \"%s\" to \"%s\"." % (path_src_img, path_dst_img))
                     else:
                         logging.info("move \"%s\" to \"%s\"." % (path_src_img, path_dst_img))

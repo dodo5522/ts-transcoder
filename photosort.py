@@ -82,12 +82,12 @@ class SortFiles(object):
                     if len(path_sub_dir) is not 0:
                         path_dst_dir = os.path.join(path_dst_dir, path_sub_dir)
 
-                    path_dst_dir = os.path.join(path_dst_dir, date)
-                    path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
-
                     # nearly same directory exists, use it.
+                    path_dst_dir = os.path.join(path_dst_dir, date)
                     path_dst_dirs = glob.glob("{0}*".format(path_dst_dir))
                     path_dst_dir = path_dst_dirs[0] if len(path_dst_dirs) else path_dst_dir
+
+                    path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
 
                     # create directory to move.
                     if not os.path.isdir(path_dst_dir):

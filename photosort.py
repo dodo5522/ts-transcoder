@@ -17,6 +17,85 @@ from exifread import process_file
 TAG_DATE_TIME = 'EXIF DateTimeOriginal'
 
 
+def init_args(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser(description='This script to make directory of date which the photo is taken, and move the photo into the directory.')
+    parser.add_argument(
+        'path_root_src',
+        action='store',
+        nargs=None,
+        const=None,
+        default=None,
+        type=str,
+        choices=None,
+        help='Directory path where your taken photo files are located.',
+        metavar=None)
+    parser.add_argument(
+        '-d', '--path-root-dst',
+        action='store',
+        nargs='?',
+        const=None,
+        default='',
+        type=str,
+        choices=None,
+        help='Directory path where you want to create date folder and locate photo files. (default: same as source directory)',
+        metavar=None)
+    parser.add_argument(
+        '-p', '--sort-photo-extentions',
+        action='store',
+        nargs='+',
+        const=None,
+        default=(),
+        type=str,
+        choices=None,
+        help='Extentions of photo file which you want to sort. (default: jpg)',
+        metavar=None)
+    parser.add_argument(
+        '-v', '--sort-video-extentions',
+        action='store',
+        nargs='+',
+        const=None,
+        default=(),
+        type=str,
+        choices=None,
+        help='Extentions of video file which you want to sort. (default: jpg)',
+        metavar=None)
+    parser.add_argument(
+        '-l', '--delimiter',
+        action='store',
+        default='',
+        type=str,
+        choices=None,
+        required=False,
+        help='A character as delimiter which you want to set the name of date folder like "2014-05-01". (default: none)',
+        metavar=None)
+    parser.add_argument(
+        '--subdir-year',
+        action='store_true',
+        default=False,
+        required=False,
+        help='Generate sub directory of year if this is set.')
+    parser.add_argument(
+        '--subdir-month',
+        action='store_true',
+        default=False,
+        required=False,
+        help='Generate sub directory of month if this is set.')
+    parser.add_argument(
+        '--copy',
+        action='store_true',
+        default=False,
+        required=False,
+        help='Copy media files but not move.')
+    parser.add_argument(
+        '--debug',
+        action='store',
+        default='info',
+        required=False,
+        help='debug mode if this flag is set (default: info)')
+
+    return parser.parse_args(args)
+
+
 class SortFiles(object):
     def __init__(self, ext_src=['jpg', ], path_root_src='.', path_root_dst='.', delimiter='', **kwargs):
         self._ext_src = []
@@ -147,81 +226,7 @@ class SortVideoFiles(SortFiles):
 
 if __name__ == '__main__':
     try:
-        parser = argparse.ArgumentParser(description='This script to make directory of date which the photo is taken, and move the photo into the directory.')
-        parser.add_argument(
-            'path_root_src',
-            action='store',
-            nargs=None,
-            const=None,
-            default=None,
-            type=str,
-            choices=None,
-            help='Directory path where your taken photo files are located.',
-            metavar=None)
-        parser.add_argument(
-            '-d', '--path-root-dst',
-            action='store',
-            nargs='?',
-            const=None,
-            default='',
-            type=str,
-            choices=None,
-            help='Directory path where you want to create date folder and locate photo files. (default: same as source directory)',
-            metavar=None)
-        parser.add_argument(
-            '-p', '--sort-photo-extentions',
-            action='store',
-            nargs='+',
-            const=None,
-            default=(),
-            type=str,
-            choices=None,
-            help='Extentions of photo file which you want to sort. (default: jpg)',
-            metavar=None)
-        parser.add_argument(
-            '-v', '--sort-video-extentions',
-            action='store',
-            nargs='+',
-            const=None,
-            default=(),
-            type=str,
-            choices=None,
-            help='Extentions of video file which you want to sort. (default: jpg)',
-            metavar=None)
-        parser.add_argument(
-            '-l', '--delimiter',
-            action='store',
-            default='',
-            type=str,
-            choices=None,
-            required=False,
-            help='A character as delimiter which you want to set the name of date folder like "2014-05-01". (default: none)',
-            metavar=None)
-        parser.add_argument(
-            '--subdir-year',
-            action='store_true',
-            default=False,
-            required=False,
-            help='Generate sub directory of year if this is set.')
-        parser.add_argument(
-            '--subdir-month',
-            action='store_true',
-            default=False,
-            required=False,
-            help='Generate sub directory of month if this is set.')
-        parser.add_argument(
-            '--copy',
-            action='store_true',
-            default=False,
-            required=False,
-            help='Copy media files but not move.')
-        parser.add_argument(
-            '--debug',
-            action='store',
-            default='info',
-            required=False,
-            help='debug mode if this flag is set (default: info)')
-        args = parser.parse_args()
+        args = init_args()
 
         if hasattr(logging, args.debug.upper()):
             numeric_level = getattr(logging, args.debug.upper())
@@ -229,7 +234,8 @@ if __name__ == '__main__':
                 logging.basicConfig(level=numeric_level)
 
         obj_sort = []
-        if len(args.sort_photo_extentions) > 0:
+
+        if len(args.sort_photo_extentions):
             obj_sort.append(SortPhotoFiles(
                 path_root_src=args.path_root_src,
                 path_root_dst=args.path_root_dst,
@@ -239,7 +245,8 @@ if __name__ == '__main__':
                     args.subdir_year,
                     args.subdir_month),
                 is_copy=args.copy))
-        if len(args.sort_video_extentions) > 0:
+
+        if len(args.sort_video_extentions):
             obj_sort.append(SortVideoFiles(
                 path_root_src=args.path_root_src,
                 path_root_dst=args.path_root_dst,

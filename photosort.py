@@ -204,7 +204,9 @@ class SortFiles(object):
                         else:
                             shutil.move(path_src_img, path_dst_img)
 
-                        if self._callback_function:
+                        if self._callback_function and (
+                                os.path.splitext(path_dst_img)[1].lower() == '.jpg' or
+                                os.path.splitext(path_dst_img)[1].lower() == '.png'):
                             logging.info("calling {}:{} on {}.".format(
                                 self._callback_module, self._callback_function, self._callback_module_path))
 

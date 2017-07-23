@@ -204,15 +204,15 @@ class SortFiles(object):
                         else:
                             shutil.move(path_src_img, path_dst_img)
 
-                    if self._callback_function:
-                        logging.info("calling {}:{}.".format(
-                            self._callback_module, self._callback_function))
+                        if self._callback_function:
+                            logging.info("calling {}:{}.".format(
+                                self._callback_module, self._callback_function))
 
-                        sys.path.append(self._callback_module_path)
-                        mod_ = import_module(self._callback_module)
-                        callback_ = getattr(mod_, self._callback_function)
+                            sys.path.append(self._callback_module_path)
+                            mod_ = import_module(self._callback_module)
+                            callback_ = getattr(mod_, self._callback_function)
 
-                        callback_(path_dst_img, **self._callback_kwargs)
+                            callback_(path_dst_img, **self._callback_kwargs)
 
                 except KeyError:
                     continue

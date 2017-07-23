@@ -205,8 +205,8 @@ class SortFiles(object):
                             shutil.move(path_src_img, path_dst_img)
 
                         if self._callback_function:
-                            logging.info("calling {}:{}.".format(
-                                self._callback_module, self._callback_function))
+                            logging.info("calling {}:{} on {}.".format(
+                                self._callback_module, self._callback_function, self._callback_module_path))
 
                             sys.path.append(self._callback_module_path)
                             mod_ = import_module(self._callback_module)

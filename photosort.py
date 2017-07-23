@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from importlib import import_module
 import os
 import glob
 import sys
@@ -87,6 +88,15 @@ def init_args(args=sys.argv[1:]):
         required=False,
         help='Copy media files but not move.')
     parser.add_argument(
+        '--callback-function',
+        action='store',
+        default=None,
+        type=str,
+        choices=None,
+        required=False,
+        help='Function to be callback when copying/moving a photo finished. The format is like "/User/takashi/flickr_uploader/flickr_uploader:upload?key=xxx&param=yyy". The "upload" function should have an argument "path_to_photo_uploading" as first and another args is passed to keyword arguments. (default: none)',
+        metavar=None)
+    parser.add_argument(
         '--debug',
         action='store',
         default='info',
@@ -114,6 +124,20 @@ class SortFiles(object):
         logging.debug("_path_root_dst : " + self._path_root_dst)
         logging.debug("_delimiter : " + self._delimiter)
         logging.debug("_subdir : " + ','.join([str(subdir) for subdir in self._subdir]))
+
+        callback_full = kwargs.get('callback_function')
+        self._callback_module_path = os.path.dirname(callback_full) if callback_full else ""
+        self._callback_module = os.path.basename(callback_full).split(":")[0] if callback_full else ""
+        self._callback_function = os.path.basename(callback_full).split(":")[1].split("?")[0] if callback_full else ""
+
+        self._callback_kwargs = {}
+        if callback_full and len(os.path.basename(callback_full).split(":")[1].split("?")) >= 2:
+            kw_strs = os.path.basename(callback_full).split(":")[1].split("?")[1].split("&")
+            self._callback_kwargs = {kw_str.split("=")[0]: kw_str.split("=")[1] for kw_str in kw_strs}
+
+        logging.debug("callback_module_path : {}".format(self._callback_module_path))
+        logging.debug("callback_module : {}".format(self._callback_module))
+        logging.debug("callback_function : {}".format(self._callback_function))
 
     def get_date_of_file(self, path_file_src):
         epoc_time = os.stat(path_file_src)
@@ -180,6 +204,16 @@ class SortFiles(object):
                         else:
                             shutil.move(path_src_img, path_dst_img)
 
+                    if self._callback_function:
+                        logging.info("calling {}:{}.".format(
+                            self._callback_module, self._callback_function))
+
+                        sys.path.append(self._callback_module_path)
+                        mod_ = import_module(self._callback_module)
+                        callback_ = getattr(mod_, self._callback_function)
+
+                        callback_(path_dst_img, **self._callback_kwargs)
+
                 except KeyError:
                     continue
 
@@ -244,7 +278,8 @@ if __name__ == '__main__':
                 subdir=(
                     args.subdir_year,
                     args.subdir_month),
-                is_copy=args.copy))
+                is_copy=args.copy,
+                callback_function=args.callback_function))
 
         if len(args.sort_video_extentions):
             obj_sort.append(SortVideoFiles(
@@ -255,7 +290,8 @@ if __name__ == '__main__':
                 subdir=(
                     args.subdir_year,
                     args.subdir_month),
-                is_copy=args.copy))
+                is_copy=args.copy,
+                callback_function=args.callback_function))
 
         for obj in obj_sort:
             obj.sort_files()

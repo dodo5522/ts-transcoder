@@ -118,7 +118,7 @@ class MediaInfo(object):
 
         for etrack in efile:
             attr = etrack.attrib
-            if attr.has_key('type'):
+            if 'type' in attr:
                 attr_type = attr['type']
 
             if attr_type == 'General':

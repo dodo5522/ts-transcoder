@@ -162,65 +162,65 @@ class SortFiles(object):
                     date = date.replace('-', self._delimiter)
 
                     logging.debug("date is {0}.".format(date))
-
-                    # if destination path is not set, destination is same as source.
-                    if len(self._path_root_dst) is not 0:
-                        path_dst_dir = self._path_root_dst
-                    else:
-                        path_dst_dir = os.path.dirname(path_src_img)
-
-                    # if the first subdir is False, sub directory is not created.
-                    path_sub_dir = ''
-                    if self._subdir[0]:
-                        path_sub_dir = year
-                        if self._subdir[1]:
-                            path_sub_dir = os.path.join(path_sub_dir, month)
-
-                    if len(path_sub_dir) is not 0:
-                        path_dst_dir = os.path.join(path_dst_dir, path_sub_dir)
-
-                    # nearly same directory exists, use it.
-                    path_dst_dir = os.path.join(path_dst_dir, date)
-                    path_dst_dirs = glob.glob("{0}*".format(path_dst_dir))
-                    path_dst_dir = path_dst_dirs[0] if len(path_dst_dirs) else path_dst_dir
-
-                    path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
-
-                    # create directory to move.
-                    if not os.path.isdir(path_dst_dir):
-                        os.makedirs(path_dst_dir)
-
-                    logging.debug("path_src_img is {0}.".format(path_src_img))
-                    logging.debug("path_dst_img is {0}.".format(path_dst_img))
-
-                    logging.info("{0}{1} {2} to {3}.".format(
-                        "skip " if os.path.isfile(path_dst_img) else "",
-                        "copying" if self._is_copy else "moving",
-                        path_src_img, path_dst_img))
-
-                    if not os.path.isfile(path_dst_img):
-                        if self._is_copy:
-                            shutil.copy2(path_src_img, path_dst_img)
-                        else:
-                            shutil.move(path_src_img, path_dst_img)
-
-                        if self._callback_function and (
-                                os.path.splitext(path_dst_img)[1].lower() == '.jpg' or
-                                os.path.splitext(path_dst_img)[1].lower() == '.png'):
-                            logging.info("calling {}:{} on {}.".format(
-                                self._callback_module, self._callback_function, self._callback_module_path))
-
-                            sys.path.append(self._callback_module_path)
-                            mod_ = import_module(self._callback_module)
-                            callback_ = getattr(mod_, self._callback_function)
-
-                            callback_(path_dst_img, **self._callback_kwargs)
-
-                except KeyError:
+                except Exception as e:
+                    logging.info("{}: {} ".format(path_src_img, e))
                     continue
 
+                # if destination path is not set, destination is same as source.
+                if len(self._path_root_dst) is not 0:
+                    path_dst_dir = self._path_root_dst
                 else:
-                    logging.debug("Unexpected error occurs.")
+                    path_dst_dir = os.path.dirname(path_src_img)
+
+                # if the first subdir is False, sub directory is not created.
+                path_sub_dir = ''
+                if self._subdir[0]:
+                    path_sub_dir = year
+                    if self._subdir[1]:
+                        path_sub_dir = os.path.join(path_sub_dir, month)
+
+                if len(path_sub_dir) is not 0:
+                    path_dst_dir = os.path.join(path_dst_dir, path_sub_dir)
+
+                # nearly same directory exists, use it.
+                path_dst_dir = os.path.join(path_dst_dir, date)
+                path_dst_dirs = glob.glob("{0}*".format(path_dst_dir))
+                path_dst_dir = path_dst_dirs[0] if len(path_dst_dirs) else path_dst_dir
+
+                path_dst_img = os.path.join(path_dst_dir, os.path.basename(path_src_img))
+
+                # create directory to move.
+                if not os.path.isdir(path_dst_dir):
+                    os.makedirs(path_dst_dir)
+
+                logging.debug("path_src_img is {0}.".format(path_src_img))
+                logging.debug("path_dst_img is {0}.".format(path_dst_img))
+
+                logging.info("{0}{1} {2} to {3}.".format(
+                    "skip " if os.path.isfile(path_dst_img) else "",
+                    "copying" if self._is_copy else "moving",
+                    path_src_img, path_dst_img))
+
+                if not os.path.isfile(path_dst_img):
+                    if self._is_copy:
+                        shutil.copy2(path_src_img, path_dst_img)
+                    else:
+                        shutil.move(path_src_img, path_dst_img)
+
+                    if self._callback_function and (
+                            os.path.splitext(path_dst_img)[1].lower() == '.mp4' or
+                            os.path.splitext(path_dst_img)[1].lower() == '.avi' or
+                            os.path.splitext(path_dst_img)[1].lower() == '.mov' or
+                            os.path.splitext(path_dst_img)[1].lower() == '.jpg' or
+                            os.path.splitext(path_dst_img)[1].lower() == '.png'):
+                        logging.info("calling {}:{} on {}.".format(
+                            self._callback_module, self._callback_function, self._callback_module_path))
+
+                        sys.path.append(self._callback_module_path)
+                        mod_ = import_module(self._callback_module)
+                        callback_ = getattr(mod_, self._callback_function)
+
+                        callback_(path_dst_img, **self._callback_kwargs)
 
     def __del__(self):
         pass

@@ -4,6 +4,7 @@
 import platform
 import unicodedata
 
+
 def str_to_uni(string):
     if platform.system() == 'Windows':
         system_encoding = 'shift-jis'
@@ -18,6 +19,7 @@ def str_to_uni(string):
         raise SystemError('System platform is not defined.')
     unicode_string = string.decode(system_encoding)
     return unicodedata.normalize(target_form, unicode_string)
+
 
 def strs_to_unis(strings):
     for string in strings:

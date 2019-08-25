@@ -1,15 +1,21 @@
 #!/usr/bin/env python2.7
 
-import os, glob, shutil
 import argparse
-import logging, traceback
-from conv_uni import *
+import os
+import glob
+import logging
+import shutil
+import traceback
+from conv_uni import str_to_uni, strs_to_unis
+
 
 '''
 DESCRIPTION
     To find all target directories to move media files.
     The target directories' name is the keyword to find media files.
 '''
+
+
 class AutoMove(object):
     def __init__(self, path_dest_root):
         self._path_dest_root = path_dest_root
@@ -29,6 +35,7 @@ class AutoMove(object):
                 return True
         return False
 
+
 class AutoSearchMove(AutoMove):
     def __init__(self, path_dest_root, path_src_root):
         AutoMove.__init__(self, path_dest_root)
@@ -47,7 +54,7 @@ class AutoSearchMove(AutoMove):
             logging.debug(u"Target dir:{PATH_TARGET}".format(PATH_TARGET=self._dict_paths_dest[keyword]))
 
             for path_media_src in self._dict_mediafiles[keyword]:
-                logging.debug(u"Found media:{PATH_MEDIA}".format(PATH_MEDIA=path_media_src)) 
+                logging.debug(u"Found media:{PATH_MEDIA}".format(PATH_MEDIA=path_media_src))
                 path_media_dst = os.path.join(self._dict_paths_dest[keyword], os.path.basename(path_media_src))
 
                 if os.path.isfile(path_media_dst):
@@ -60,34 +67,40 @@ class AutoSearchMove(AutoMove):
 
                     shutil.move(path_media_src, path_media_dst)
 
+
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser(description='This script to move media files into the directory path named with keyword.')
-        parser.add_argument('-f', '--path-source-file', \
-                action='store', \
-                default=None, \
-                required=False, \
-                help='Path of media file which is going to be moved.')
-        parser.add_argument('-s', '--path-source-dir', \
-                action='store', \
-                default=None, \
-                required=False, \
-                help='Path of root directory having media files.')
-        parser.add_argument('-d', '--path-destination-dir', \
-                action='store', \
-                default=None, \
-                required=True, \
-                help='Path of destination directory path which has child directories named with keyword.')
-        parser.add_argument('--stub', \
-                action='store', \
-                default=False, \
-                required=False, \
-                help='Use stub to debug if this flag is set.')
-        parser.add_argument('--log-level', \
-                action='store', \
-                default='info', \
-                required=False, \
-                help='Set log level.')
+        parser.add_argument(
+            '-f', '--path-source-file',
+            action='store',
+            default=None,
+            required=False,
+            help='Path of media file which is going to be moved.')
+        parser.add_argument(
+            '-s', '--path-source-dir',
+            action='store',
+            default=None,
+            required=False,
+            help='Path of root directory having media files.')
+        parser.add_argument(
+            '-d', '--path-destination-dir',
+            action='store',
+            default=None,
+            required=True,
+            help='Path of destination directory path which has child directories named with keyword.')
+        parser.add_argument(
+            '--stub',
+            action='store',
+            default=False,
+            required=False,
+            help='Use stub to debug if this flag is set.')
+        parser.add_argument(
+            '--log-level',
+            action='store',
+            default='info',
+            required=False,
+            help='Set log level.')
         args = parser.parse_args()
 
         numeric_level = getattr(logging, args.log_level.upper(), None)
@@ -101,11 +114,10 @@ if __name__ == '__main__':
             obj_automv.move(str_to_uni(args.path_source_file))
 
         if args.path_source_dir is not None:
-            obj_searchmv = AutoSearchMove(\
-                    str_to_uni(args.path_destination_dir), \
-                    str_to_uni(args.path_source_dir))
+            obj_searchmv = AutoSearchMove(
+                str_to_uni(args.path_destination_dir),
+                str_to_uni(args.path_source_dir))
             obj_searchmv.move()
 
     except Exception as err:
         traceback.print_exc()
-
